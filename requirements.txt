@@ -1,2 +1,8 @@
+pyannote.audio
 torch
+mediapipe
 transformers
+vosk
+opencv-python
+decord
+gdown

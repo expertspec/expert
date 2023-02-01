@@ -9,7 +9,7 @@ from typing import Tuple
 import gdown
 import os
 
-from ...utils import get_torch_home
+from expert.core.utils import get_torch_home
 
 
 class DAN(nn.Module):
