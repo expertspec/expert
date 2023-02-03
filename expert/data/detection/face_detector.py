@@ -121,7 +121,8 @@ class FaceDetector:
                 face_location = [[int(bounding_box.xmin * image_width), int(bounding_box.ymin * image_height)],
                                  [int(bounding_box.width * image_width), int(bounding_box.height * image_height)]]
                 
-                face_array.append(face_location)
+                if sum([sum(loc) for loc in face_location]) == sum([sum(map(abs, loc)) for loc in face_location]):
+                    face_array.append(face_location)
         
         return face_array
     

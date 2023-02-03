@@ -43,10 +43,10 @@ def transcribe_video(video_path: str | PathLike, sample_rate: int = 16000) -> Li
     return results
 
 
-def get_all_words(results: List) -> List:
+def get_all_words(transcribation: List) -> List:
     # Return all stamps with words from the transcribed text.
     all_words = []
-    for i, res in enumerate(results):
+    for i, res in enumerate(transcribation):
         words = json.loads(res).get("result")
         if not words:
             continue
