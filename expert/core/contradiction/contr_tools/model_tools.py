@@ -20,7 +20,7 @@ def create_model(lang='en', device='cpu'):
 
     Args:
         lang (str, optional): flag of the language can be 'en'|'ru'. Defaults to 'en'.
-        device (torch.device, optional): setting of computational device 'cpu'|'cuda'. Defaults to 'cpu'.
+        device (str, optional): setting of computational device 'cpu'|'cuda'. Defaults to 'cpu'.
 
     Raises:
         NameError: Inappropriate language flag

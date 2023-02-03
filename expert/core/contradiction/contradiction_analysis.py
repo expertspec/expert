@@ -12,19 +12,19 @@ class ContradictionDetector:
     def __init__(
         self,
         lang: str = 'en',
-        device: torch.device | None = None
+        device: str = 'cpu'
     ) -> None:
         """Object initialization.
          Creates instance with information about language and device
 
         Args:
             lang (str, optional): flag of the language can be 'en'|'ru'. Defaults to 'en'.
-            device (torch.device, optional): setting of computational device 'cpu'|'cuda'. Defaults to None.
+            device (str, optional): setting of computational device 'cpu'|'cuda'. Defaults to 'cpu'.
         """
         self.lang = lang
-        if device is not None:
-            self._device = device
 
+        self._device = device
+        self.to(self._device)
 
     def get_sentences(self, all_words):
         sentences = []
@@ -108,7 +108,12 @@ class ContradictionDetector:
         else:
             raise TypeError
         return analysis_results
-        
+
+    @property
+    def device(self) -> torch.device:
+        """Check the device type."""
+        return self._device
+
     def get_contradiction(self,
                         entered_text: str,
                         words_path: str,
