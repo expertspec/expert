@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 from typing import List, Union
@@ -12,7 +14,7 @@ class ContradictionDetector:
     def __init__(
         self,
         lang: str = 'en',
-        device: str = 'cpu'
+        device: torch.device | None = None
     ) -> None:
         """Object initialization.
          Creates instance with information about language and device
@@ -23,8 +25,12 @@ class ContradictionDetector:
         """
         self.lang = lang
 
-        self._device = device
-        self.to(self._device)
+        self._device = torch.device("cpu")
+        self.model = model_tools.create_model(self.lang, self._device)
+
+        if device is not None:
+            self._device = device
+            self.model.to(self._device)
 
     def get_sentences(self, all_words):
         sentences = []
@@ -69,13 +75,10 @@ class ContradictionDetector:
                 texts: Union[str, List[str]],
                 ind=0
                 ) -> List[dict]:
-        
-        model = model_tools.create_model(self.lang, self._device)
-
         analysis_results = []
         if isinstance(texts, str):
             part, predict = model_tools.predict_inference(
-                entered_text, texts, model, lang=self.lang, device=self._device
+                entered_text, texts, self.model, lang=self.lang, device=self._device
             )
             analysis_results.append(
                 {
@@ -87,7 +90,7 @@ class ContradictionDetector:
         elif isinstance(texts, list):
             for text in texts:
                 part, predict = model_tools.predict_inference(
-                entered_text, text, model, lang=self.lang, device=self._device
+                entered_text, text, self.model, lang=self.lang, device=self._device
             )
                 try:
                     analysis_results.append(
