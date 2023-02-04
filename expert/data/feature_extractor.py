@@ -81,12 +81,12 @@ class FeatureExtractor:
             json.dump(stamps, filename)
         
         transcribed_text = transcribe_video(video_path=self.video_path)
+        transcribed_text = get_all_words(transcribation=transcribed_text)
         
         with open(os.path.join(self.temp_path, "transcription.json"), "w") as filename:
             json.dump(transcribed_text, filename)
         
-        all_words = get_all_words(transcribation=transcribed_text)
-        full_text = " ".join([x["word"] for x in all_words])
+        full_text = " ".join([x["word"] for x in transcribed_text])
         
         with open(os.path.join(self.temp_path, "text.txt"), "w") as filename:
             filename.write(full_text)
