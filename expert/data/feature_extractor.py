@@ -143,7 +143,7 @@ class FeatureExtractor:
         return self._device
     
     def analyze_speech(self) -> Dict:
-        """."""
+        """Method for processing audio signal from video."""
         diarization_pipe = SpeakerDiarization(audio=self.video_path, sr=self.sr, device=self._device)
         self.stamps = diarization_pipe.apply()
         with open(os.path.join(self.temp_path, "diarization.json"), "w") as filename:
@@ -175,6 +175,7 @@ class FeatureExtractor:
         return self.stamps
     
     def cluster_faces(self) -> pd.DataFrame:
+        """Method for clustering the faces of speakers from a video."""
         self.face_features = pd.DataFrame(data=self.face_features)
         
         # Train a face clusterer and make prediction.
@@ -188,7 +189,12 @@ class FeatureExtractor:
         
         return self.face_features
     
-    def get_features(self) -> pd.DataFrame:
+    def get_features(self) -> str:
+        """Method for extracting features from video.
+        
+        Returns:
+            str: Path to the folder with the results of recognition modules.
+        """
         self.stamps = self.analyze_speech()
         fps = self.video.fps
         
@@ -221,6 +227,7 @@ class FeatureExtractor:
         return self.temp_path
     
     def get_face_images(self) -> int:
+        """Method for extracting images of speakers' faces."""
         images_path = os.path.join(self.temp_path, "faces")
         if not os.path.exists(images_path):
             os.makedirs(images_path)
