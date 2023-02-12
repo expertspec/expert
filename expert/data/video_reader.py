@@ -12,8 +12,13 @@ class Cache:
     
     If the same video frame is cached and used a
     second time, there is no need to decode it twice.
-    """
     
+    Args:
+        capacity (int): Buffer size for storing frames.
+    
+    Raises:
+        ValueError: If "capacity" is not a positive integer.
+    """
     def __init__(self, capacity: int) -> None:
         self._cache = OrderedDict()
         self._capacity = int(capacity)
@@ -37,6 +42,7 @@ class Cache:
     
     def get(self, key: int, default: int | None = None):
         val = self._cache[key] if key in self._cache else default
+        
         return val
 
 
@@ -44,8 +50,16 @@ class VideoReader:
     """Class for decoding video to a list object.
     
     This video wrapper class decodes the video and provides access to frames.
-    """
     
+    Args:
+        filename (str | PathLike): Path to local video file.
+        cache_capacity (int, optional): Buffer size for storing frames. Defaults to 10.
+    
+    Raises:
+        IndexError: If the entered frame index is outside the allowed range of integer values.
+        IndexError: If the entered frame index is out of range.
+        StopIteration: If the end of the video has been reached.
+    """
     def __init__(self, filename: str | PathLike, cache_capacity: int = 10) -> None:
         self._vcap = cv2.VideoCapture(filename)
         self._cache = Cache(cache_capacity)
@@ -59,47 +73,83 @@ class VideoReader:
     
     @property
     def vcap(self) -> cv2.VideoCapture:
-        """Returns cv2.VideoCapture: The raw VideoCapture object."""
+        """Get VideoCapture object.
+        
+        Returns:
+            cv2.VideoCapture: Raw VideoCapture object.
+        """
         return self._vcap
     
     @property
     def opened(self) -> bool:
-        """Returns bool: Indicate whether the video is opened."""
+        """Check whether the video is opened.
+        
+        Returns:
+            bool: Indicate whether the video is opened.
+        """
         return self._vcap.isOpened()
     
     @property
     def width(self) -> int:
-        """Returns int: Width of video frames."""
+        """Get width of video frames.
+        
+        Returns:
+            int: Width of video frames.
+        """
         return self._width
     
     @property
     def height(self) -> int:
-        """Returns int: Height of video frames."""
+        """Get height of video frames.
+        
+        Returns:
+            int: Height of video frames.
+        """
         return self._height
     
     @property
     def resolution(self) -> Tuple[int, int]:
-        """Returns Tuple: Video resolution (width, height)."""
+        """Get Video resolution (width, height).
+        
+        Returns:
+            Tuple: Video resolution (width, height).
+        """
         return (self._width, self._height)
     
     @property
     def fps(self) -> float:
-        """Returns float: FPS of the video."""
+        """Get FPS of the video.
+        
+        Returns:
+            float: FPS of the video.
+        """
         return self._fps
     
     @property
     def frame_cnt(self) -> int:
-        """Returns int: Total frames of the video."""
+        """Get total number frames.
+        
+        Returns:
+            int: Total frames of the video.
+        """
         return self._frame_cnt
     
     @property
     def fourcc(self) -> str:
-        """Returns str: "Four character code" of the video."""
+        """Get four character code.
+        
+        Returns:
+            str: "Four character code" of the video.
+        """
         return self._fourcc
     
     @property
     def position(self) -> int:
-        """Returns int: Current cursor position, indicating frame decoded."""
+        """Get current cursor position.
+        
+        Returns:
+            int: Current cursor position, indicating frame decoded.
+        """
         return self._position
     
     def _get_real_position(self) -> int:
@@ -121,7 +171,6 @@ class VideoReader:
         Returns:
             ndarray or None: Returns the frame if successful, otherwise returns None.
         """
-        
         if self._cache:
             image = self._cache.get(self._position)
             if image is not None:
@@ -136,6 +185,7 @@ class VideoReader:
             ret, image = self._vcap.read()
         if ret:
             self._position += 1
+        
         return image
     
     def get_frame(self, frame_id: int) -> np.ndarray | None:
@@ -147,7 +197,6 @@ class VideoReader:
         Returns:
             ndarray or None: Returns the frame if successful, otherwise returns None.
         """
-        
         if frame_id < 0 or frame_id >= self._frame_cnt:
             raise IndexError(
                 f'"frame_id" must be between 0 and {self._frame_cnt - 1}')
@@ -172,7 +221,6 @@ class VideoReader:
         Returns:
             ndarray or None: If the video is fresh returns None, otherwise returns the frame.
         """
-        
         if self._position == 0:
             return None
         return self._cache.get(self._position-1)
@@ -191,10 +239,12 @@ class VideoReader:
             index += self.frame_cnt
             if index < 0:
                 raise IndexError("Index out of range.")
+        
         return self.get_frame(index)
     
     def __iter__(self):
         self._set_real_position(0)
+        
         return self
     
     def __next__(self):

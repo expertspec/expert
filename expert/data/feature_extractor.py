@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import torch
 from sklearn.cluster import OPTICS
+from typing import Dict, Tuple
 from os import PathLike
 import pandas as pd
 import numpy as np
@@ -9,53 +10,111 @@ import json
 import cv2
 import os
 
+from expert.core.utils import Rescale
 from expert.data.video_reader import VideoReader
-from expert.data.detection.face_detector import FaceDetector, Rescale
+from expert.data.detection.face_detector import FaceDetector
 from expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
 from expert.data.diarization.speaker_diarization import SpeakerDiarization
 from expert.data.annotation.summarization import Summarization
 
 
 class FeatureExtractor:
+    """Extracting data from a video presentation.
+    
+    The FeatureExtractor extracts information about a speaker from a video presentation.
+    Enabled SpeakerDiarization module for diarization of speakers by audio signal, speech
+    recognition modules for obtaining stripped phrases of the speaker and the full text
+    of the speech, Summarization module for obtaining annotations of expert statements,
+    FaceDetector module for detecting and obtaining speaker face embeddings, clustering
+    of faces based on the resulting embeddings and extracting images of speakers.
+    
+    Returns:
+        str: Path to the folder with the results of recognition modules.
+    
+    Raises:
+        ValueError: If 'frame_per_second' is greater than video fps.
+        Warning: If failed to detect faces. Recommended to change 'min_detection_confidence'."
+        Warning: If unable to identify unique faces. Recommended to change 'min_cluster_samples'."
+    
+    Example:
+        >>> test_video_path: str = "test_video.mp4"
+        >>> extractor = FeatureExtractor(video_path=test_video_path)
+        >>> extractor.get_features()
+        "temp\\test_video"
+    
+    Todo:
+        * Add Russian speech recognition module.
+        * Add Russian text annotation module.
+    """
     def __init__(
         self,
         video_path: str | Pathlike,
+        cache_capacity: int = 10,
         device: torch.device | None = None,
-        max_faces: int = 10,
+        model_selection: int = 0,
+        min_detection_confidence: float = 0.75,
+        max_num_faces: int = 10,
         frame_per_second: int | None = None,
-        get_summary: bool = False,
-        summary_step: int = 10,
+        min_cluster_samples: int | None = None,
+        sr: int = 16000,
+        phrase_duration: int = 10,
+        get_summary: bool = True,
+        summary_max_length: int = 25,
+        summary_percent: int = 25,
         output_dir: str | Pathlike | None = None,
+        output_img_size: int | Tuple = 512,
         drop_extra: bool = True
     ) -> None:
         """
-        Args:
-            video_path (str | Pathlike)
-            device (torch.device | None, optional)
-            max_faces (int, optional)
-            frame_per_second (int | None, optional)
-            get_summary (bool, optional)
-            summary_step (int, optional)
-            output_dir (str | Pathlike | None, optional)
-            drop_extra (bool, optional)
-        """
-        super(FeatureExtractor, self).__init__()
+        Initialization of audio, text and video models parameters.
         
+        Args:
+            video_path (str | Pathlike): Path to local video file.
+            cache_capacity (int, optional): Buffer size for storing frames. Defaults to 10.
+            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+            model_selection (int, optional): 0 or 1. 0 to select a short-range model that works best
+                for faces within 2 meters from the camera, and 1 for a full-range model best for
+                faces within 5 meters. Defaults to 0.
+            min_detection_confidence (float, optional): Minimum confidence value ([0.0, 1.0]) for face
+                detection to be considered successful. Defaults to 0.75.
+            max_num_faces (int, optional): Maximum number of faces to detect. Defaults to 10.
+            frame_per_second (int | None, optional): Frame rate for the face detector. Defaults to None.
+            min_cluster_samples (int | None, optional): Minimum number of samples for clustering. Defaults to None.
+            sr (int, optional): Sample rate. Defaults to 16000.
+            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
+            get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
+            summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
+            summary_percent (int, optional): Maximum annotation percentage of original text size. Defaults to 25.
+            output_dir (str | Pathlike | None, optional): Path to the folder for saving results
+            output_img_size (int | Tuple, optional): Size of faces extracted from video.
+            drop_extra (bool, optional): Remove intermediate features from the final results.
+        """
         self.video_path = video_path
-        self.video = VideoReader(filename=video_path)
-        self.frame_step = int(self.video.fps)
-        if output_dir is not None:
-            self.frame_step = frame_per_second
+        self.cache_capacity = cache_capacity
+        self.video = VideoReader(filename=video_path, cache_capacity=self.cache_capacity)
         
         self._device = torch.device("cpu")
         if device is not None:
             self._device = device
         
-        self.detector = FaceDetector(device=self._device)
+        self.model_selection = model_selection
+        self.min_detection_confidence = min_detection_confidence
+        self.max_num_faces = max_num_faces
+        self.detector = FaceDetector(device=self._device, model_selection=self.model_selection,
+            min_detection_confidence=self.min_detection_confidence, max_num_faces=self.max_num_faces)
+        self.frame_step = int(self.video.fps)
         
-        self.max_faces = max_faces
+        if frame_per_second is not None:
+            if frame_per_second > self.video.fps:
+                raise ValueError(f"'frame_per_second' must be less than or equal to {self.frame_step}.")
+            self.frame_step = int(self.video.fps // frame_per_second)
+        
+        self.min_cluster_samples = min_cluster_samples
         self.get_summary = get_summary
-        self.summary_step = summary_step
+        self.sr = sr
+        self.phrase_duration = phrase_duration
+        self.summary_max_length = summary_max_length
+        self.summary_percent = summary_percent
         self.drop_extra= drop_extra
         
         if output_dir is not None:
@@ -66,66 +125,75 @@ class FeatureExtractor:
         if not os.path.exists(self.temp_path):
             os.makedirs(self.temp_path)
         
-        self.transforms = Rescale((512, 512))
+        self.output_img_size = output_img_size
+        self.transforms = Rescale(output_img_size)
+        self.stamps = {}
+        self.transcribed_text = []
+        self.full_text = ""
+        self.face_features = []
+        self.annotations = []
     
     @property
     def device(self) -> torch.device:
-        """Check the device type."""
+        """Check the device type.
+        
+        Returns:
+            torch.device: Device type on local machine.
+        """
         return self._device
     
-    def analyze_speech(self):
-        diarization_pipe = SpeakerDiarization(self.video_path)
-        stamps = diarization_pipe.apply()
-        
+    def analyze_speech(self) -> Dict:
+        """."""
+        diarization_pipe = SpeakerDiarization(audio=self.video_path, sr=self.sr, device=self._device)
+        self.stamps = diarization_pipe.apply()
         with open(os.path.join(self.temp_path, "diarization.json"), "w") as filename:
-            json.dump(stamps, filename)
+            json.dump(self.stamps, filename)
         
-        transcribed_text = transcribe_video(video_path=self.video_path)
-        transcribed_text = get_all_words(transcribation=transcribed_text)
-        
+        self.transcribed_text = transcribe_video(video_path=self.video_path, sample_rate=self.sr)
+        self.transcribed_text = get_all_words(transcribation=self.transcribed_text)
         with open(os.path.join(self.temp_path, "transcription.json"), "w") as filename:
-            json.dump(transcribed_text, filename)
+            json.dump(self.transcribed_text, filename)
         
-        full_text = " ".join([x["word"] for x in transcribed_text])
-        
+        self.full_text = " ".join([x["word"] for x in self.transcribed_text])
         with open(os.path.join(self.temp_path, "text.txt"), "w") as filename:
-            filename.write(full_text)
+            filename.write(self.full_text)
         
         if self.get_summary:
-            summary = Summarization(device=self._device)
-            phrases = get_phrases(all_words, duration=self.summary_step)
+            summarizer = Summarization(device=self._device, max_length=self.summary_max_length,
+                summary_percent=self.summary_percent)
+            phrases = get_phrases(self.transcribed_text, duration=self.phrase_duration)
             annotations = []
             for phrase in phrases:
                 annotations.append(
-                    {"time": phrase["time"], "annotation": summary.get_summary(phrase["text"])}
+                    {"time": phrase["time"], "annotation": summarizer.get_summary(phrase["text"])}
                 )
             
+            self.annotations = annotations
             with open(os.path.join(self.temp_path, "summarization.json"), "w") as filename:
-                json.dump(annots, filename)
+                json.dump(self.annotations, filename)
         
-        return stamps
+        return self.stamps
     
-    def cluster_faces(self):
-        data = pd.DataFrame(data=self._features)
+    def cluster_faces(self) -> pd.DataFrame:
+        self.face_features = pd.DataFrame(data=self.face_features)
         
         # Train a face clusterer and make prediction.
-        min_samples = int(data["speaker_by_audio"].value_counts().mean())
+        min_samples = int(self.face_features["speaker_by_audio"].value_counts().mean() // 2)
         cl_model = OPTICS(metric="euclidean", n_jobs=-1, cluster_method="xi", min_samples=min_samples)
-        data["cluster"] = cl_model.fit_predict(np.array(data["face_emb"].tolist()))
+        self.face_features["speaker_by_video"] = cl_model.fit_predict(np.array(self.face_features["face_embedding"].tolist()))
         
         # Optional step to save memory.
         if self.drop_extra:
-            data.drop(columns=["face_emb"], inplace=True)
+            self.face_features.drop(columns=["face_embedding"], inplace=True)
         
-        return data
+        return self.face_features
     
-    def get_features(self):
-        stamps = self.analyze_speech()
+    def get_features(self) -> pd.DataFrame:
+        self.stamps = self.analyze_speech()
         fps = self.video.fps
-        self._features = []
         
-        for speaker in stamps:
-            for start_sec, finish_sec in stamps[speaker]:
+        for speaker in self.stamps:
+            for start_sec, finish_sec in self.stamps[speaker]:
                 start_frame, finish_frame = int(-(-start_sec*fps//1)), int(-(-finish_sec*fps//1))
                 frames = [frame for frame in range(start_frame, finish_frame) if not frame % self.frame_step]
                 
@@ -135,30 +203,34 @@ class FeatureExtractor:
                     # Recording if face was detected.
                     if face_batch is not None:
                         for face_emb, face_location in face_batch:
-                            self._features.append({
+                            self.face_features.append({
                                 "video_path": self.video_path,
-                                "speaker_by_audio": speaker,
                                 "time_sec": int(-(-frame_idx//fps)),
-                                "frame_idx": frame_idx,
+                                "frame_index": frame_idx,
                                 "face_bbox": face_location,
-                                "face_emb": face_emb[:150],
+                                "face_embedding": face_emb[:150],
+                                "speaker_by_audio": speaker
                             })
         
-        self._features = self.cluster_faces()
-        self._features.to_json(os.path.join(self.temp_path, "features.json"), orient="records")
-        num_faces = self.get_face_images() + 1
+        if len(self.face_features) == 0:
+            raise Warning("Failed to detect faces. Try to change 'min_detection_confidence' manually.")
+        self.face_features = self.cluster_faces()
+        self.face_features.to_json(os.path.join(self.temp_path, "features.json"), orient="records")
+        n_faces = self.get_face_images() + 1
         
-        return self._features
+        return self.temp_path
     
-    def get_face_images(self):
+    def get_face_images(self) -> int:
         images_path = os.path.join(self.temp_path, "faces")
         if not os.path.exists(images_path):
             os.makedirs(images_path)
         
-        idxes = self._features[self._features["cluster"] != -1]["cluster"].unique()
-        for idx, cluster in zip(range(self.max_faces), idxes):
-            cur_row = self._features[self._features["cluster"] == cluster].sample()
-            cur_frame = self.video[cur_row["frame_idx"].item()]
+        idxes = self.face_features[self.face_features["speaker_by_video"] != -1]["speaker_by_video"].unique()
+        if len(idxes) == 0:
+            raise Warning("Unable to identify unique faces. Try to change 'min_cluster_samples' manually.")
+        for idx, cluster in zip(range(self.max_num_faces), idxes):
+            cur_row = self.face_features[self.face_features["speaker_by_video"] == cluster].sample()
+            cur_frame = self.video[cur_row["frame_index"].item()]
             cur_loc = cur_row["face_bbox"].item()
             cur_face = cur_frame[cur_loc[0][1]:cur_loc[0][1]+cur_loc[1][1],
                                  cur_loc[0][0]:cur_loc[0][0]+cur_loc[1][0]]

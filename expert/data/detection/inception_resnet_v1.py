@@ -6,7 +6,7 @@ from torch.nn import functional as F
 import gdown
 import os
 
-from expert.core.utils import get_torch_home
+from expert.core.utils import get_model_weights
 
 
 class BasicConv2d(nn.Module):
@@ -188,6 +188,9 @@ class InceptionResnetV1(nn.Module):
     requested and cached in the torch cache. Subsequent instantiations use the cache rather than
     redownloading.
     
+    Raises:
+        Exception: If "pretrained" is not specified and "classify" is True, "num_classes" must be specified.
+    
     Example:
         >>> import torch
         >>> device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -204,13 +207,13 @@ class InceptionResnetV1(nn.Module):
     ) -> None:
         """
         Args:
-            pretrained (string, optional): Optional pretraining dataset. Either 'vggface2' or 'casia-webface'.
+            pretrained (str, optional): Optional pretraining dataset. Either 'vggface2' or 'casia-webface'.
             classify (bool, optional): Whether the model should output classification probabilities or feature embeddings.
             num_classes (int | None, optional): Number of output classes. If 'pretrained' is set and num_classes not
                 equal to that used for the pretrained model, the final linear layer will be randomly
                 initialized.
             dropout_prob (float | None, optional): Dropout probability.
-            device (torch.device | None, optional): Object representing device type.
+            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
         """
         
         super().__init__()
@@ -221,11 +224,11 @@ class InceptionResnetV1(nn.Module):
         
         if pretrained == "vggface2":
             tmp_classes = 8631
-            path = "https://drive.google.com/uc?export=view&id=1P4OqfwcUXXuycmow_Fb8EXqQk5E7-H5E"
+            url = "https://drive.google.com/uc?export=view&id=1P4OqfwcUXXuycmow_Fb8EXqQk5E7-H5E"
             model_name = "20180402-114759-vggface2.pt"
         elif pretrained == "casia-webface":
             tmp_classes = 10575
-            path = "https://drive.google.com/uc?export=view&id=1rgLytxUaOUrtjpxCl-mQFGYdUfSWgQCo"
+            url = "https://drive.google.com/uc?export=view&id=1rgLytxUaOUrtjpxCl-mQFGYdUfSWgQCo"
             model_name = "20180408-102900-casia-webface.pt"
         elif pretrained is None and self.classify and self.num_classes is None:
             raise Exception('If "pretrained" is not specified and "classify" is True, "num_classes" must be specified.')
@@ -274,14 +277,7 @@ class InceptionResnetV1(nn.Module):
         
         if pretrained is not None:
             self.logits = nn.Linear(in_features=512, out_features=tmp_classes)
-            
-            model_dir = os.path.join(get_torch_home(), "checkpoints")
-            os.makedirs(model_dir, exist_ok=True)
-            cached_file = os.path.join(model_dir, os.path.basename(model_name))
-            
-            if not os.path.exists(cached_file):
-                gdown.download(path, cached_file, quiet=False)
-            
+            cached_file = get_model_weights(model_name=model_name, url=url)
             state_dict = torch.load(cached_file, map_location=self._device)
             self.load_state_dict(state_dict, strict=True)
         
@@ -294,11 +290,15 @@ class InceptionResnetV1(nn.Module):
     
     @property
     def device(self) -> torch.device:
-        """Check the device type."""
+        """Check the device type.
+        
+        Returns:
+            torch.device: Device type on local machine.
+        """
         return self._device
     
     def forward(self, x: Tensor) -> Tensor:
-        """Calculate embeddings or logits given a batch of input image tensors
+        """Calculate embeddings or logits given a batch of input image tensors.
         
         Args:
             x (Tensor): Batch of image tensors representing faces.
@@ -306,7 +306,6 @@ class InceptionResnetV1(nn.Module):
         Returns:
             Tensor: Batch of embedding vectors or multinomial logits.
         """
-        
         x = self.conv2d_1a(x)
         x = self.conv2d_2a(x)
         x = self.conv2d_2b(x)

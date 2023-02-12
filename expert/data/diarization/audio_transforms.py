@@ -76,8 +76,8 @@ def create_separated_signals(signal: List, speakers_info: Dict, name: str, sr: i
 def get_rounded_intervals(stamps: Dict) -> Dict:
     for speaker in stamps:
         for interval in stamps[speaker]:
-            interval[0] = int(interval[0]) # math.floor
-            interval[1] = int(-(-interval[1] // 1)) # math.ceil
+            interval[0] = int(interval[0])
+            interval[1] = int(-(-interval[1] // 1))
     
     return stamps
 

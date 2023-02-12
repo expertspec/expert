@@ -10,6 +10,12 @@ SetLogLevel(-1)
 
 
 def transcribe_video(video_path: str | PathLike, sample_rate: int = 16000) -> List:
+    """Speech recognition module from video.
+    
+    Args:
+        video_path (str | Pathlike): Path to local video file.
+        sample_rate (int, optional): Sample rate. Defaults to 16000.
+    """
     model = Model(lang="en-us")
     rec = KaldiRecognizer(model, sample_rate)
     rec.SetWords(True)
@@ -44,7 +50,11 @@ def transcribe_video(video_path: str | PathLike, sample_rate: int = 16000) -> Li
 
 
 def get_all_words(transcribation: List) -> List:
-    # Return all stamps with words from the transcribed text.
+    """Get all stamps with words from the transcribed text.
+    
+    Args:
+        transcribation(List): Speech recognition module result.
+    """
     all_words = []
     for i, res in enumerate(transcribation):
         words = json.loads(res).get("result")
@@ -57,6 +67,12 @@ def get_all_words(transcribation: List) -> List:
 
 
 def get_phrases(all_words: List, duration: int = 10) -> List:
+    """Split transcribed text into segments of a fixed length.
+    
+    Args:
+        all_words (List): All stamps with words from the transcribed text.
+        duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
+    """
     phrases = []
     
     assert len(all_words) > 1, "Not enough words in text."

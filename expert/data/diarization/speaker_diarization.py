@@ -16,22 +16,23 @@ bridge.set_bridge(new_bridge="torch")
 
 
 class SpeakerDiarization:
+    """Speaker diarization module by audio signal."""
     def __init__(
-        self, audio: PathLike | Tensor,
+        self,
+        audio: PathLike | Tensor,
         sr: int = 16000,
         rttm_file: str | PathLike | None = None,
         device: torch.device | None = None
     ) -> None:
-        """Initialize the object.
-        
+        """
         Args:
-            audio (PathLike | Tensor): Path to file with audio channel
-                (it can be a video) | speech as tensor.
+            audio (PathLike | Tensor): Path to file with audio channel or Tensor.
             sr (int, optional): Sample rate. Defaults to 16000.
-            rttm_file (str | PathLike | None, optional): Path to annotation file. Default is None.
+            rttm_file (str | PathLike | None, optional): Path to annotation file. Defaults to None.
+            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
         
         Raises:
-            TypeError: Audio isn't in appropriate form.
+            TypeError: If audio isn't in appropriate form.
         """
         
         if isinstance(audio, Tensor):
@@ -41,7 +42,7 @@ class SpeakerDiarization:
             self.audio = AudioReader(audio, sample_rate=sr, mono=True)
             self.audio = self.audio[:]
         else:
-            raise TypeError
+            raise TypeError("Audio isn't in appropriate form.")
         
         self.sr = sr
         self.rttm_file = rttm_file
@@ -56,14 +57,18 @@ class SpeakerDiarization:
     
     @property
     def device(self) -> torch.device:
-        """Check the device type."""
+        """Check the device type.
+        
+        Returns:
+            torch.device: Device type on local machine.
+        """
         return self._device
     
     def apply(self) -> Dict:
-        """
-        Allows to extract timestamps for every unique speaker in form of dictionary
-        {Speaker : list with timestamps}.
-        If path to rttm file is set, function will create a file.
+        """Extract timestamps for every unique speaker. Will create rttm file if 'rttm_file' is set
+        
+        Returns:
+            Dict: Dictionary {Speaker ID: List with timestamps}.
         """
         self.annotation = self.pipeline(
             {"waveform": self.audio, "sample_rate": self.sr}

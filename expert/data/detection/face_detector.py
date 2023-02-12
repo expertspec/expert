@@ -8,49 +8,7 @@ import mediapipe
 import cv2
 
 from expert.data.detection.inception_resnet_v1 import InceptionResnetV1
-
-
-class Rescale:
-    """Rescale image to a given size."""
-    
-    def __init__(self, output_size: Tuple | int) -> None:
-        """
-        Args:
-            output_size (Tuple | int): Desired output size.
-        """
-        
-        assert isinstance(output_size, (int, tuple))
-        self.output_size = output_size
-    
-    def __call__(self, image: np.ndarray) -> np.ndarray:
-        if isinstance(self.output_size, int):
-            out_height, out_width = self.output_size, self.output_size
-        else:
-            out_height, out_width = self.output_size
-        
-        out_height, out_width = int(out_height), int(out_width)
-        image = cv2.resize(image, (out_height, out_width), interpolation=cv2.INTER_AREA)
-        
-        return image
-
-
-class ToTensor:
-    """Convert ndarrays to tensors."""
-    
-    def __call__(self, image: np.ndarray) -> Tensor:
-        # Swap color axis.
-        image = np.transpose(image, axes=(2, 0, 1))
-        
-        return torch.from_numpy(image).float()
-
-
-class Normalize:
-    """Normalize tensor image."""
-    
-    def __call__(self, image: Tensor) -> Tensor:
-        normalization = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-        
-        return normalization(image).float()
+from expert.core.utils import Rescale, ToTensor, Normalize
 
 
 class FaceDetector:
@@ -77,7 +35,7 @@ class FaceDetector:
             min_detection_confidence (float, optional): Minimum confidence value ([0.0, 1.0]) for face
                 detection to be considered successful.
             max_num_faces (int, optional): Maximum number of faces to detect.
-            device (torch.device | None, optional): Object representing device type.
+            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
         """
         super().__init__()
         
@@ -102,13 +60,21 @@ class FaceDetector:
     
     @property
     def device(self) -> torch.device:
-        """Check the device type."""
+        """Check the device type.
+        
+        Returns:
+            torch.device: Device type on local machine.
+        """
         return self._device
     
+    @torch.no_grad()
     def detect(self, image: np.ndarray) -> List:
         """
         Args:
             image (np.ndarray): RGB image represented as numpy ndarray.
+        
+        Returns:
+            List: List with detected face locations.
         """
         
         face_array = []
@@ -128,10 +94,13 @@ class FaceDetector:
     
     @torch.no_grad()
     def embed(self, image: np.ndarray) -> List:
-        """Cropping and embedding area where the face is located
+        """Cropping and embedding area where the face is located.
         
         Args:
             image (np.ndarray): BGR image represented as numpy ndarray.
+        
+        Returns:
+            List: List with detected face locations and embeddings.
         """
         
         face_batch = []
