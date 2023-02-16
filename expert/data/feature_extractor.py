@@ -2,20 +2,22 @@ from __future__ import annotations
 
 import torch
 from sklearn.cluster import OPTICS
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
+from tqdm.auto import tqdm
 from os import PathLike
 import pandas as pd
 import numpy as np
+import logging
 import json
 import cv2
 import os
 
-from expert.core.utils import Rescale
+from expert.core.functional_tools import Rescale
 from expert.data.video_reader import VideoReader
 from expert.data.detection.face_detector import FaceDetector
 from expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
 from expert.data.diarization.speaker_diarization import SpeakerDiarization
-from expert.data.annotation.summarization import Summarization
+from expert.data.annotation.summarization import SummarizationRU, SummarizationEN
 
 
 class FeatureExtractor:
@@ -33,8 +35,9 @@ class FeatureExtractor:
     
     Raises:
         ValueError: If 'frame_per_second' is greater than video fps.
-        Warning: If failed to detect faces. Recommended to change 'min_detection_confidence'."
-        Warning: If unable to identify unique faces. Recommended to change 'min_cluster_samples'."
+        NotImplementedError: If 'language' is not equal to 'EN' or 'RU'.
+        Warning: If failed to detect faces. Recommended to change 'min_detection_confidence'.
+        Warning: If unable to identify unique faces. Recommended to change 'min_cluster_samples'.
     
     Example:
         >>> test_video_path: str = "test_video.mp4"
@@ -44,7 +47,6 @@ class FeatureExtractor:
     
     Todo:
         * Add Russian speech recognition module.
-        * Add Russian text annotation module.
     """
     def __init__(
         self,
@@ -58,9 +60,15 @@ class FeatureExtractor:
         min_cluster_samples: int | None = None,
         sr: int = 16000,
         phrase_duration: int = 10,
+        language: str = "EN",
         get_summary: bool = True,
         summary_max_length: int = 25,
         summary_percent: int = 25,
+        rusum_sentences_count: int = 2,
+        rusum_max_length: int = 300,
+        rusum_over_chared_postfix: str = "...",
+        rusum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
+                                           "(", ")", "–", "%", "&", "@", '"', "'",],
         output_dir: str | Pathlike | None = None,
         output_img_size: int | Tuple = 512,
         drop_extra: bool = True
@@ -85,6 +93,13 @@ class FeatureExtractor:
             get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
             summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
             summary_percent (int, optional): Maximum annotation percentage of original text size. Defaults to 25.
+            rusum_sentences_count (int, optional): Sentences count in output annotation
+                in Russian. Defaults to 2.
+            rusum_max_length (int, optional): Maximum number of symbols for annotation in Russian
+                in output annotation. Defaults to 300.
+            rusum_over_chared_postfix (str, optional): End of line character for annotation in Russian
+                when truncated. Defaults to "...".
+            rusum_allowed_punctuation (List, optional): Allowed punctuation for annotation in Russian.
             output_dir (str | Pathlike | None, optional): Path to the folder for saving results
             output_img_size (int | Tuple, optional): Size of faces extracted from video.
             drop_extra (bool, optional): Remove intermediate features from the final results.
@@ -109,12 +124,20 @@ class FeatureExtractor:
                 raise ValueError(f"'frame_per_second' must be less than or equal to {self.frame_step}.")
             self.frame_step = int(self.video.fps // frame_per_second)
         
+        if language not in ["EN", "RU"]:
+            raise NotImplementedError("'language' must be 'EN' or 'RU'.")
+        self.language = language
+        
         self.min_cluster_samples = min_cluster_samples
         self.get_summary = get_summary
         self.sr = sr
         self.phrase_duration = phrase_duration
         self.summary_max_length = summary_max_length
         self.summary_percent = summary_percent
+        self.rusum_sentences_count = rusum_sentences_count
+        self.rusum_max_length = rusum_max_length
+        self.rusum_over_chared_postfix = rusum_over_chared_postfix
+        self.rusum_allowed_punctuation = rusum_allowed_punctuation
         self.drop_extra= drop_extra
         
         if output_dir is not None:
@@ -159,15 +182,29 @@ class FeatureExtractor:
             filename.write(self.full_text)
         
         if self.get_summary:
-            summarizer = Summarization(device=self._device, max_length=self.summary_max_length,
-                summary_percent=self.summary_percent)
-            phrases = get_phrases(self.transcribed_text, duration=self.phrase_duration)
-            annotations = []
-            for phrase in phrases:
-                annotations.append(
-                    {"time": phrase["time"], "annotation": summarizer.get_summary(phrase["text"])}
-                )
+            if self.language == "EN":
+                summarizer = SummarizationEN(device=self._device, max_length=self.summary_max_length,
+                    summary_percent=self.summary_percent)
+                phrases = get_phrases(self.transcribed_text, duration=self.phrase_duration)
+                annotations = []
+                for phrase in phrases:
+                    annotations.append(
+                        {"time": phrase["time"], "annotation": summarizer.get_summary(phrase["text"])}
+                    )
             
+            if self.language == "RU":
+                summarizer = SummarizationRU()
+                phrases = get_phrases(self.transcribed_text, duration=self.phrase_duration)
+                annotations = []
+                for phrase in phrases:
+                    annotations.append(
+                        {"time": phrase["time"], "annotation": summarizer.get_summary(
+                            text=phrase["text"],
+                            sentences_count=self.rusum_sentences_count,
+                            max_length=self.rusum_max_length,
+                            over_chared_postfix=self.rusum_over_chared_postfix,
+                            allowed_punctuation=self.rusum_over_chared_postfix
+                        )})
             self.annotations = annotations
             with open(os.path.join(self.temp_path, "summarization.json"), "w") as filename:
                 json.dump(self.annotations, filename)
@@ -198,11 +235,11 @@ class FeatureExtractor:
         self.stamps = self.analyze_speech()
         fps = self.video.fps
         
-        for speaker in self.stamps:
+        logging.warning("Extracting features will take some time. Please, wait.")
+        for speaker in tqdm(self.stamps):
             for start_sec, finish_sec in self.stamps[speaker]:
                 start_frame, finish_frame = int(-(-start_sec*fps//1)), int(-(-finish_sec*fps//1))
                 frames = [frame for frame in range(start_frame, finish_frame) if not frame % self.frame_step]
-                
                 for frame_idx in frames:
                     face_batch = self.detector.embed(self.video[frame_idx])
                     
@@ -214,6 +251,7 @@ class FeatureExtractor:
                                 "time_sec": int(-(-frame_idx//fps)),
                                 "frame_index": frame_idx,
                                 "face_bbox": face_location,
+                                # Truncate embedding to reduce computational complexity.
                                 "face_embedding": face_emb[:150],
                                 "speaker_by_audio": speaker
                             })
@@ -227,7 +265,7 @@ class FeatureExtractor:
         return self.temp_path
     
     def get_face_images(self) -> int:
-        """Method for extracting images of speakers' faces."""
+        """Method for extracting images of speakers faces."""
         images_path = os.path.join(self.temp_path, "faces")
         if not os.path.exists(images_path):
             os.makedirs(images_path)

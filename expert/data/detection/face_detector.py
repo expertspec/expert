@@ -8,7 +8,7 @@ import mediapipe
 import cv2
 
 from expert.data.detection.inception_resnet_v1 import InceptionResnetV1
-from expert.core.utils import Rescale, ToTensor, Normalize
+from expert.core.functional_tools import Rescale, ToTensor, Normalize
 
 
 class FaceDetector:

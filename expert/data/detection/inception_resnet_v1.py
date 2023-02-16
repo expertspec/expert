@@ -6,7 +6,7 @@ from torch.nn import functional as F
 import gdown
 import os
 
-from expert.core.utils import get_model_weights
+from expert.core.functional_tools import get_model_weights
 
 
 class BasicConv2d(nn.Module):
@@ -181,7 +181,7 @@ class Mixed_7a(nn.Module):
 
 
 class InceptionResnetV1(nn.Module):
-    """Inception Resnet V1 model with optional loading of pretrained weights
+    """Inception Resnet V1 model with optional loading of pretrained weights.
     
     Model parameters can be loaded based on pretraining on the VGGFace2 or CASIA-Webface
     datasets. Pretrained state_dicts are automatically downloaded on model instantiation if

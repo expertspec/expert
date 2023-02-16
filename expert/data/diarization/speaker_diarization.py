@@ -65,7 +65,7 @@ class SpeakerDiarization:
         return self._device
     
     def apply(self) -> Dict:
-        """Extract timestamps for every unique speaker. Will create rttm file if 'rttm_file' is set
+        """Extract timestamps for every unique speaker. Will create rttm file if 'rttm_file' is set.
         
         Returns:
             Dict: Dictionary {Speaker ID: List with timestamps}.
