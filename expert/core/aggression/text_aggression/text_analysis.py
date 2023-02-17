@@ -16,6 +16,7 @@ from expert.core.aggression.text_aggression.text_models_ru import Toxic as Toxic
 
 
 class TextAggression:
+    """Aggression markers extraction across the text channel."""
     def __init__(
         self,
         # words_path
@@ -25,13 +26,12 @@ class TextAggression:
     ) -> None:
         if lang not in ['en', 'ru']:
             raise NameError
-
-        self.lang = lang
         self._device = torch.device("cpu")
+        
+        if device is not None:
+            self._device = device
+        self.lang = lang
         self.analysis_result = []
-        # if device is not None:
-        #     self._device = device
-        #     self.model.to(self._device)\
         self.fragments = fragments
         self.div_aud_agg = []
         if type(self.fragments) not in [str, list]:
@@ -62,7 +62,7 @@ class TextAggression:
 
     def is_toxic(self) -> List[bool]:
         if self.lang == 'en':
-            toxic = ToxicEn()
+            toxic = ToxicEn(self._device)
             if type(self.fragments) is str:
                 return [toxic.is_toxic(self.fragments)]
             elif type(self.fragments) is list:
@@ -72,7 +72,7 @@ class TextAggression:
                 return result_list
 
         elif self.lang == 'ru':
-            toxic = ToxicRu('/expert/expert/core/aggression/text_aggression/aggressive-rus/app/data/rubert-toxic-detection')
+            toxic = ToxicRu(self._device)
             if type(self.fragments) is str:
                 return [toxic.is_toxic(self.fragments)]
             elif type(self.fragments) is list:

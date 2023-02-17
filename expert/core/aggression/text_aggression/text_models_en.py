@@ -67,13 +67,13 @@ class Depreciation:
 
 class Toxic:
 
-    def __init__(self) -> None:
-        if torch.cuda.is_available():
-            self.device = 'cuda'
-        else:
-            self.device = 'cpu'
+    def __init__(self, device) -> None:
+        self._device = torch.device("cpu")
+        
+        if device is not None:
+            self._device = device
 
-        self.model = Detoxify('original', device=self.device)
+        self.model = Detoxify('original', device=self._device)
 
     def is_toxic(self, sent: str) -> bool:
 
@@ -83,7 +83,8 @@ class Toxic:
         else:
             return False
 
-class Imperative():
+
+class Imperative:
 
     def _get_chunks(self, tagged_sent):
         # chunks the sentence into grammatical phrases based on its POS-tags

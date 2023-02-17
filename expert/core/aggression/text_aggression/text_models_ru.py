@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+import os
+import gdown
+
 import re
 import pymorphy2
 
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
+from expert.core.utils import get_torch_home
 
 
 class Porter:
@@ -107,7 +113,7 @@ class Imperative:
 
 
 class Depreciation:
-
+    """Depreciation detector"""
     def __init__(self) -> None:
         self.morph = pymorphy2.MorphAnalyzer()
         self.stemmer = Porter()
@@ -117,7 +123,7 @@ class Depreciation:
 
     def is_depreciation(self, sentence: str) -> tuple:
         """
-            Передается предложение и возвращается tuple(bool, list) есть ли уменьшительно-ласткательные слова и список таких слов
+            Returns a tuple(bool, list) whether there are depreciation and list of such words
         """
         words = sentence.split()
         words_affect = []
@@ -156,13 +162,23 @@ class Depreciation:
 
 class Toxic:
 
-    def __init__(self, model_path: str) -> None:
-        self.device = torch.device(
-            "cuda:0" if torch.cuda.is_available() else "cpu")
+    def __init__(self, device) -> None:
+        self._device = torch.device("cpu")
+        
+        if device is not None:
+            self._device = device
         self.max_len = 512
-        self.tokenizer = BertTokenizer.from_pretrained(model_path)
-        self.model = BertForSequenceClassification.from_pretrained(model_path)
-        self.model.to(self.device)
+
+        model_path = "https://drive.google.com/drive/folders/1406TFOJC-knQmbich3czzh4lF04Q2gxe?usp=sharing"
+        model_dir = os.path.join(get_torch_home(), 'checkpoints', 'rubert-toxic-detection')
+        os.makedirs(model_dir, exist_ok=True)
+
+        cached_file = os.path.join(model_dir)
+        if not os.path.exists(cached_file):
+            gdown.download(model_path, cached_file, quiet=False)
+        self.tokenizer = BertTokenizer.from_pretrained(model_dir)
+        self.model = BertForSequenceClassification.from_pretrained(model_dir)
+        self.model.to(self._device)
         self.model.eval()
 
     def is_toxic(self, text) -> int:
@@ -183,8 +199,8 @@ class Toxic:
             'attention_mask': encoding['attention_mask'].flatten()
         }
 
-        input_ids = out["input_ids"].to(self.device)
-        attention_mask = out["attention_mask"].to(self.device)
+        input_ids = out["input_ids"].to(self._device)
+        attention_mask = out["attention_mask"].to(self._device)
 
         outputs = self.model(
             input_ids=input_ids.unsqueeze(0),
