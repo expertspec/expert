@@ -1,0 +1,1 @@
+from .antiplagiarism_module import AntiplagiatClient, AsyncAntiplagiatClient
