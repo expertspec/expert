@@ -60,7 +60,7 @@ Contacts
 Citation
 ==========================================================
 
-.. |eng| image:: https://img.shields.io/badge/lang-en-green.svg
+.. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
    :alt: Documentation in English
    :target: /README.rst
 

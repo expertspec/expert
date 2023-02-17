@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import torch
 import numpy as np
+import albumentations as A
+from albumentations.pytorch.transforms import ToTensorV2
 from typing import List, Tuple
-import torchvision.transforms as transforms
 import mediapipe
 import cv2
 
 from expert.data.detection.inception_resnet_v1 import InceptionResnetV1
-from expert.core.functional_tools import Rescale, ToTensor, Normalize
 
 
 class FaceDetector:
@@ -52,10 +52,10 @@ class FaceDetector:
         self.face_embedder = InceptionResnetV1(pretrained="vggface2", device=self._device).eval()
         
         # Declare an augmentation pipeline.
-        self.transform = transforms.Compose([
-            Rescale(output_size=(224, 224)),
-            ToTensor(),
-            Normalize(),
+        self.transform = A.Compose([
+            A.Resize(width=224, height=224),
+            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            ToTensorV2(),
         ])
     
     @property
@@ -112,7 +112,7 @@ class FaceDetector:
                 face_image = image[face_location[0][1]:face_location[0][1]+face_location[1][1],
                                    face_location[0][0]:face_location[0][0]+face_location[1][0]]
                 
-                transformed_face = self.transform(face_image)
+                transformed_face = self.transform(image=face_image)["image"]
                 in_face = transformed_face.unsqueeze(0).to(self._device)
                 face_emb = self.face_embedder(in_face)[0].detach().cpu().tolist()
                 

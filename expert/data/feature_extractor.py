@@ -40,8 +40,9 @@ class FeatureExtractor:
         Warning: If unable to identify unique faces. Recommended to change 'min_cluster_samples'.
     
     Example:
+        >>> import torch
         >>> test_video_path: str = "test_video.mp4"
-        >>> extractor = FeatureExtractor(video_path=test_video_path)
+        >>> extractor = FeatureExtractor(video_path=test_video_path, device=torch.device("cuda"))
         >>> extractor.get_features()
         "temp\\test_video"
     
@@ -56,8 +57,9 @@ class FeatureExtractor:
         model_selection: int = 0,
         min_detection_confidence: float = 0.75,
         max_num_faces: int = 10,
-        frame_per_second: int | None = None,
-        min_cluster_samples: int | None = None,
+        frame_per_second: int = 3,
+        min_cluster_samples: int =25,
+        max_eps: int = 2,
         sr: int = 16000,
         phrase_duration: int = 10,
         language: str = "EN",
@@ -86,10 +88,12 @@ class FeatureExtractor:
             min_detection_confidence (float, optional): Minimum confidence value ([0.0, 1.0]) for face
                 detection to be considered successful. Defaults to 0.75.
             max_num_faces (int, optional): Maximum number of faces to detect. Defaults to 10.
-            frame_per_second (int | None, optional): Frame rate for the face detector. Defaults to None.
-            min_cluster_samples (int | None, optional): Minimum number of samples for clustering. Defaults to None.
+            frame_per_second (int, optional): Frame rate for the face detector. Defaults to 3.
+            min_cluster_samples (int, optional): Minimum number of samples for clustering. Defaults to 25.
+            max_eps (int, optional): The maximum distance between two faces. Defaults to 2.
             sr (int, optional): Sample rate. Defaults to 16000.
             phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
+            language (str, optional): Speech language for text processing ['RU', 'EN']. Defaults to 'EN'.
             get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
             summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
             summary_percent (int, optional): Maximum annotation percentage of original text size. Defaults to 25.
@@ -100,9 +104,9 @@ class FeatureExtractor:
             rusum_over_chared_postfix (str, optional): End of line character for annotation in Russian
                 when truncated. Defaults to "...".
             rusum_allowed_punctuation (List, optional): Allowed punctuation for annotation in Russian.
-            output_dir (str | Pathlike | None, optional): Path to the folder for saving results
-            output_img_size (int | Tuple, optional): Size of faces extracted from video.
-            drop_extra (bool, optional): Remove intermediate features from the final results.
+            output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
+            output_img_size (int | Tuple, optional): Size of faces extracted from video. Defaults to 512.
+            drop_extra (bool, optional): Remove intermediate features from the final results. Defaults to True.
         """
         self.video_path = video_path
         self.cache_capacity = cache_capacity
@@ -129,6 +133,7 @@ class FeatureExtractor:
         self.language = language
         
         self.min_cluster_samples = min_cluster_samples
+        self.max_eps = max_eps
         self.get_summary = get_summary
         self.sr = sr
         self.phrase_duration = phrase_duration
@@ -216,13 +221,17 @@ class FeatureExtractor:
         self.face_features = pd.DataFrame(data=self.face_features)
         
         # Train a face clusterer and make prediction.
-        min_samples = int(self.face_features["speaker_by_audio"].value_counts().mean() // 2)
-        cl_model = OPTICS(metric="euclidean", n_jobs=-1, cluster_method="xi", min_samples=min_samples)
+        audio_samples = int(self.face_features["speaker_by_audio"].value_counts().mean() // 2)
+        # If the video is too short, decrease the cluster size.
+        min_samples = self.min_cluster_samples if audio_samples > self.min_cluster_samples else audio_samples
+        cl_model = OPTICS(metric="euclidean", n_jobs=-1, cluster_method="xi", min_samples=min_samples, max_eps=self.max_eps)
         self.face_features["speaker_by_video"] = cl_model.fit_predict(np.array(self.face_features["face_embedding"].tolist()))
         
         # Optional step to save memory.
         if self.drop_extra:
-            self.face_features.drop(columns=["face_embedding"], inplace=True)
+            self.face_features = self.face_features.drop(columns=["face_embedding"])
+            self.face_features = self.face_features.drop_duplicates(subset=["time_sec", "speaker_by_video"], keep="first")
+            self.face_features = self.face_features.reset_index(drop=True)
         
         return self.face_features
     
@@ -239,6 +248,8 @@ class FeatureExtractor:
         for speaker in tqdm(self.stamps):
             for start_sec, finish_sec in self.stamps[speaker]:
                 start_frame, finish_frame = int(-(-start_sec*fps//1)), int(-(-finish_sec*fps//1))
+                # Avoiding out-of-range error after diarization.
+                finish_frame = finish_frame if finish_frame <= len(self.video) else len(self.video)
                 frames = [frame for frame in range(start_frame, finish_frame) if not frame % self.frame_step]
                 for frame_idx in frames:
                     face_batch = self.detector.embed(self.video[frame_idx])

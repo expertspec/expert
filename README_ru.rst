@@ -64,7 +64,7 @@
    :alt: Documentation in English
    :target: /README.rst
 
-.. |rus| image:: https://img.shields.io/badge/lang-ru-green.svg
+.. |rus| image:: https://img.shields.io/badge/lang-ru-deepgreen.svg
    :alt: Documentation in Russian
    :target: /README_ru.rst
 
