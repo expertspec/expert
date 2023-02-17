@@ -1,0 +1,9 @@
+torch>=1.13.1
+torchaudio>=0.13.1
+decord>=0.6.0
+gdown>=4.6.3
+pandas>=1.5.3
+numpy>=1.23.5
+transformers>=4.26.1
+torchvision>=0.14.1
+opencv-python>=4.7.0.68
