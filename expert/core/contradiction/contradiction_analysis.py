@@ -151,24 +151,26 @@ class ContradictionDetector:
                 texts = self.get_sentences(interval_words)
                 intervals[interval] = texts
             
-            results = []
+            contr_data = []
 
             for ind in intervals:
                 if intervals[ind]:
                     analysis_results = self.analysis(entered_text, texts, ind=ind)
-                    results.append(analysis_results)
+                    contr_data.append(analysis_results)
             
             # Unpacking of the list of lists
-            results = [item for sublist in results for item in sublist]
+            contr_data = [item for sublist in contr_data for item in sublist]
         
         else:
             texts = self.get_sentences(words)
-            results = self.analysis(entered_text, texts)
+            contr_data = self.analysis(entered_text, texts)
 
         temp_path = os.path.splitext(os.path.basename(video))[0]
         if not os.path.exists(os.path.join(save_to, temp_path)):
             os.makedirs(os.path.join(save_to, temp_path))
             
         with open(os.path.join(save_to, temp_path, 'contradiction_report.json'), 'w') as filename:
-            json.dump(results, filename)
+            json.dump(contr_data, filename)
+        
+        return contr_data
 
