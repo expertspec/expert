@@ -1,0 +1,14 @@
+opencv-python-headless==4.5.5.62
+decord==0.6.0
+einops==0.4.0
+librosa==0.9.0
+pydub==0.25.1
+soundfile==0.10.3.post1
+noisereduce==2.0.0
+moviepy==1.0.3
+pandas==1.4.0
+Signal_Analysis==0.1.26
+av==8.1.0
+mediapipe==0.8.9.1
+vg==2.0.0
+catalyst==22.2.1

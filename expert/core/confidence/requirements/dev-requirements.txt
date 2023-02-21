@@ -1,0 +1,9 @@
+wemake-python-styleguide==0.16.1
+bandit==1.7.2
+black==22.1.0
+isort==5.10.1
+mypy==0.942
+colorama==0.4.4
+types-PyYAML==6.0.5
+
+jupyter==1.0.0

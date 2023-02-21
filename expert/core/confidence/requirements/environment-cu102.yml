@@ -1,0 +1,20 @@
+name: env
+
+channels:
+  - defaults
+  - conda-forge
+  - trenta3
+
+dependencies:
+  - python=3.9
+  - pip
+  - wget
+
+  - cudatoolkit-dev=10.2.89
+
+  - pip:
+      - --find-links https://download.pytorch.org/whl/cu102/torch_stable.html
+      - --find-links https://download.openmmlab.com/mmcv/dist/cu102/torch1.10.0/index.html
+      - -r requirements-cu102.txt
+      - -r requirements.txt
+      - -r dev-requirements.txt
