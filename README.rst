@@ -1,4 +1,4 @@
-.. image:: /docs/en/logo_en.png
+.. image:: docs/en/logo_en.png
    :width: 500px
    :align: center
    :alt: Expert Logo in English
@@ -20,7 +20,7 @@
 Expert Features
 ==========================================================
 
-.. image:: /docs/en/diagram_en.png
+.. image:: docs/en/diagram_en.png
     :width: 700px
     :align: center
     :alt: Expert Diagram in English
@@ -54,9 +54,31 @@ Publications About Expert
 Acknowledgments
 ==========================================================
 
+Supported by
+==========================================================
+
+.. image:: docs/en/itmo_logo.png
+    :width: 300px
+    :align: center
+    :alt: ITMO university logo
+
+Funding research project No. 622279 "Development of a service for assessing the validity of expert opinion based on dynamic intelligent analysis of video content".
+
 Contacts
 ==========================================================
 
+- Anatoly Medvedev - ML-engineer
+- Ivan Smirnov - ML-engineer 
+- Samigulin Timur - ML-engineer
+- Artyom Bondar - ML-engineer 
+- Alena Komarova - ML-engineer
+- Andrei Laptev - Backend Developer
+- Nikita Nosov - Backend Developer
+- Artyom Chemezov - Frontend Develop
+- Olga Hoffman - Scientist
+- Nika Kraynovskikh - Researcher
+- Anastasia Laushkina - Project Manager, Researcher
+ 
 Citation
 ==========================================================
 
