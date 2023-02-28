@@ -9,7 +9,7 @@ from transformers import logging
 from transformers import AutoModel, AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 
-from expert.core.utils import get_torch_home
+from expert.core.functional_tools import get_torch_home
 from expert.core.contradiction.contr_tools import NLIModel
 
 
@@ -44,7 +44,7 @@ def create_model(lang='en', device='cpu'):
 
         model = NLIModel.BERTNLIModel(model).to(device)
         model.load_state_dict(
-            torch.load(cached_file, map_location=torch.device('cpu'))
+            torch.load(cached_file, map_location=device)
         )
 
     elif lang == 'ru':

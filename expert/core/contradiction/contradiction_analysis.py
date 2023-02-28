@@ -13,15 +13,26 @@ class ContradictionDetector:
     """Class for working with detector of contradiction"""
     def __init__(
         self,
+        transcription_path: str,
+        path_to_video: str,
         lang: str = 'en',
-        device: torch.device | None = None
+        device: torch.device | None = None,
+        save_to: str = "app\\temp",
+        chosen_intervals: list[int] = [],
+        interval_duration: int = 60,
     ) -> None:
         """Object initialization.
          Creates instance with information about language and device
 
         Args:
+            transcription_path (str): path to json file with words from transcribation
+            path_to_video (str): path to the video
             lang (str, optional): flag of the language can be 'en'|'ru'. Defaults to 'en'.
             device (str, optional): setting of computational device 'cpu'|'cuda'. Defaults to 'cpu'.
+            save_to (str): Path to save JSON with information about contradiction.
+            chosen_intervals (list[int], optional): flags for intervals for analyzis. Defaults to [].
+            For default settings will be analyzed full text
+            interval_duration (int, optional): the length of intervals (value in seconds). Defaults to 60.
         """
         self.lang = lang
 
@@ -32,6 +43,12 @@ class ContradictionDetector:
             self._device = device
             self.model.to(self._device)
 
+        self.transcription_path = transcription_path
+        self.path_to_video = path_to_video
+        self.save_to = save_to
+        self.chosen_intervals = chosen_intervals
+        self.interval_duration = interval_duration
+    
     def get_sentences(self, all_words):
         sentences = []
         if all_words:
@@ -119,31 +136,20 @@ class ContradictionDetector:
 
     def get_contradiction(self,
                         entered_text: str,
-                        words_path: str,
-                        video: str,
-                        save_to: str = "app\\temp",
-                        chosen_intervals: list[int] = [],
-                        interval_duration: int = 60,
                         ) -> None:
         """Function for text analyzing.
         Creates json file with predictions
 
         Args:
             entered_text (str): utterance for analyzis
-            words_path (str): path to json file with words from transcribation
-            video (str): path to the video
-            save_to (str, optional): path to folder where should be saved results. Defaults to "app\temp".
-            chosen_intervals (list[int], optional): flags for intervals for analyzis. Defaults to [].
-            For default settings will be analyzed full text
-            interval_duration (int, optional): the length of intervals (value in seconds). Defaults to 60.
         """        
-        with open(words_path, 'r') as f:
+        with open(self.transcription_path, 'r') as f:
             words = json.load(f)
         
-        if len(chosen_intervals):
-            fragments = self.get_phrases(words[:], duration=interval_duration)
+        if len(self.chosen_intervals):
+            fragments = self.get_phrases(words[:], duration=self.interval_duration)
             intervals = dict.fromkeys(range(len(fragments)))
-            for interval in chosen_intervals:
+            for interval in self.chosen_intervals:
                 interval_words = []
                 for word in words:
                     if fragments[interval]["time"][0] <= word['start'] and word['end'] <= fragments[interval]["time"][1]:
@@ -165,11 +171,11 @@ class ContradictionDetector:
             texts = self.get_sentences(words)
             contr_data = self.analysis(entered_text, texts)
 
-        temp_path = os.path.splitext(os.path.basename(video))[0]
-        if not os.path.exists(os.path.join(save_to, temp_path)):
-            os.makedirs(os.path.join(save_to, temp_path))
+        temp_path = os.path.splitext(os.path.basename(self.path_to_video))[0]
+        if not os.path.exists(os.path.join(self.save_to, temp_path)):
+            os.makedirs(os.path.join(self.save_to, temp_path))
             
-        with open(os.path.join(save_to, temp_path, 'contradiction_report.json'), 'w') as filename:
+        with open(os.path.join(self.save_to, temp_path, 'contradiction_report.json'), 'w') as filename:
             json.dump(contr_data, filename)
         
         return contr_data
