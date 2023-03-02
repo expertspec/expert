@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import os
-import gdown
-
-import re
-import pymorphy2
-
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
-from expert.core.utils import get_torch_home
+from typing import Tuple, List
+import pymorphy2
+import gdown
+import os
+import re
+
+from expert.core.functional_tools import get_model_folder
 
 
 class Porter:
@@ -30,59 +30,61 @@ class Porter:
     P = re.compile(u"ь$")
     NN = re.compile(u"нн$")
 
+    @staticmethod
     def stem(word):
         word = word.lower()
-        word = word.replace(u'ё', u'е')
+        word = word.replace(u"ё", u"е")
         m = re.match(Porter.RVRE, word)
         if m and m.groups():
             pre = m.group(1)
             rv = m.group(2)
-            temp = Porter.PERFECTIVEGROUND.sub('', rv, 1)
+            temp = Porter.PERFECTIVEGROUND.sub("", rv, 1)
             if temp == rv:
-                rv = Porter.REFLEXIVE.sub('', rv, 1)
-                temp = Porter.ADJECTIVE.sub('', rv, 1)
+                rv = Porter.REFLEXIVE.sub("", rv, 1)
+                temp = Porter.ADJECTIVE.sub("", rv, 1)
                 if temp != rv:
                     rv = temp
-                    rv = Porter.PARTICIPLE.sub('', rv, 1)
+                    rv = Porter.PARTICIPLE.sub("", rv, 1)
                 else:
-                    temp = Porter.VERB.sub('', rv, 1)
+                    temp = Porter.VERB.sub("", rv, 1)
                     if temp == rv:
-                        rv = Porter.NOUN.sub('', rv, 1)
+                        rv = Porter.NOUN.sub("", rv, 1)
                     else:
                         rv = temp
             else:
                 rv = temp
 
-            rv = Porter.I.sub('', rv, 1)
-
+            rv = Porter.I.sub("", rv, 1)
             if re.match(Porter.DERIVATIONAL, rv):
-                rv = Porter.DER.sub('', rv, 1)
+                rv = Porter.DER.sub("", rv, 1)
 
-            temp = Porter.P.sub('', rv, 1)
+            temp = Porter.P.sub("", rv, 1)
             if temp == rv:
-                rv = Porter.SUPERLATIVE.sub('', rv, 1)
-                rv = Porter.NN.sub(u'н', rv, 1)
+                rv = Porter.SUPERLATIVE.sub("", rv, 1)
+                rv = Porter.NN.sub(u"н", rv, 1)
             else:
                 rv = temp
             word = pre+rv
+
         return word
-    stem = staticmethod(stem)
 
 
-class Imperative:
+class ImperativeRU:
 
     def __init__(self) -> None:
         self.morph = pymorphy2.MorphAnalyzer()
 
     def is_imperative(self, sentence: str, excl: bool = False) -> bool:
         """
-            На вход строка
-            Если есть слово в повелительном наклонение, возвращает True
-            При excl = True, вернет True, только если говорящие не включен
-            в действие (иди, идите), при идем будет False
+        Args:
+            sentence (str): Target text sentence.
+            excl (bool, optional): When True will return True only if speakers are not enabled
+                in action ('иди', 'идите'), when 'идем' will return False.
+
+        Returns:
+            bool: If there are imperative words, returns True.
         """
         sentence = sentence.split()
-
         for word in sentence:
             if self.is_word_imperative(word, excl):
                 return True
@@ -91,29 +93,31 @@ class Imperative:
 
     def is_word_imperative(self, word: str, excl: bool = False) -> bool:
         """
-            Если слово в повелительном наклонение, возвращает True
-            При excl = True, вернет True, только если говорящие не включен
-             в действие (иди, идите), при идем будет False
+        Args:
+            word (str): Target sentence word.
+            excl (bool, optional): When True will return True only if speakers are not enabled
+                in action ('иди', 'идите'), when 'идем' will return False.
+
+        Returns:
+            bool: If the word is in the imperative mood, returns True. 
         """
         word_morph = self.morph.parse(word)
         for w_morph in word_morph:
             if w_morph.score >= 0.4:
-                if 'impr' in w_morph.tag:
+                if "impr" in w_morph.tag:
                     if excl:
-                        if 'excl' in w_morph.tag:
+                        if "excl" in w_morph.tag:
                             return True
                         else:
                             continue
-
                     return True
-
                 return False
-
         return False
 
 
-class Depreciation:
-    """Depreciation detector"""
+class DepreciationRU:
+    """Depreciation detector."""
+
     def __init__(self) -> None:
         self.morph = pymorphy2.MorphAnalyzer()
         self.stemmer = Porter()
@@ -121,9 +125,10 @@ class Depreciation:
         self.AFFECT = re.compile(
             u"(ик|ек|к|ец|иц|оск|ечк|оньк|еньк|ышк|инш|ушк|юшк)$")
 
-    def is_depreciation(self, sentence: str) -> tuple:
+    def is_depreciation(self, sentence: str) -> Tuple[bool, List]:
         """
-            Returns a tuple(bool, list) whether there are depreciation and list of such words
+        Returns:
+            Tuple[bool, List]: Whether there are depreciations and a list of these words.
         """
         words = sentence.split()
         words_affect = []
@@ -143,9 +148,8 @@ class Depreciation:
         words_form = self.morph.parse(word)
         for word_form in words_form:
             if word_form.score >= 0.4:
-                if 'NOUN' in word_form.tag:
+                if "NOUN" in word_form.tag:
                     return True
-
         return False
 
     def list_stemming(self, word_list: list) -> list:
@@ -160,26 +164,21 @@ class Depreciation:
         return self.stemmer.stem(word)
 
 
-class Toxic:
+class ToxicRU:
 
     def __init__(self, device) -> None:
         self._device = torch.device("cpu")
-        
         if device is not None:
             self._device = device
         self.max_len = 512
 
-        model_path = "https://drive.google.com/drive/folders/1406TFOJC-knQmbich3czzh4lF04Q2gxe?usp=sharing"
-        model_dir = os.path.join(get_torch_home(), 'checkpoints', 'rubert-toxic-detection')
-        os.makedirs(model_dir, exist_ok=True)
-
-        cached_file = os.path.join(model_dir)
-        if not os.path.exists(cached_file):
-            gdown.download(model_path, cached_file, quiet=False)
-        self.tokenizer = BertTokenizer.from_pretrained(model_dir)
-        self.model = BertForSequenceClassification.from_pretrained(model_dir)
-        self.model.to(self._device)
-        self.model.eval()
+        # Download weights for selected model if missing.
+        url = "https://drive.google.com/drive/folders/1406TFOJC-knQmbich3czzh4lF04Q2gxe"
+        model_name = "rubert-toxic-detection"
+        cached_dir = get_model_folder(model_name=model_name, url=url)
+        self.tokenizer = BertTokenizer.from_pretrained(cached_dir)
+        self.model = BertForSequenceClassification.from_pretrained(cached_dir)
+        self.model = self.model.to(self._device).eval()
 
     def is_toxic(self, text) -> int:
         encoding = self.tokenizer.encode_plus(
@@ -188,20 +187,19 @@ class Toxic:
             max_length=self.max_len,
             return_token_type_ids=False,
             truncation=True,
-            padding='max_length',
+            padding="max_length",
             return_attention_mask=True,
-            return_tensors='pt',
+            return_tensors="pt",
         )
 
         out = {
-            'text': text,
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten()
+            "text": text,
+            "input_ids": encoding["input_ids"].flatten(),
+            "attention_mask": encoding["attention_mask"].flatten()
         }
 
         input_ids = out["input_ids"].to(self._device)
         attention_mask = out["attention_mask"].to(self._device)
-
         outputs = self.model(
             input_ids=input_ids.unsqueeze(0),
             attention_mask=attention_mask.unsqueeze(0)

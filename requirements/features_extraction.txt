@@ -1,5 +1,5 @@
 torch>=1.13.1
-vosk>=0.3.45
+whisper-openai>=1.0.0
 transformers>=4.26.1
 sumy>=0.11.0
 text_preprocessing>=0.1.1
@@ -15,3 +15,4 @@ scikit-learn>=1.2.1
 tqdm>=4.64.1
 pandas>=1.5.3
 numpy>=1.23.5
+dtw-python>=1.3.0
