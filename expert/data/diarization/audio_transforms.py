@@ -11,7 +11,7 @@ def rttm_to_timestamps(path: str | PathLike) -> List:
         lines = []
         for line in file:
             lines.append(line)
-    
+
     timestamps = []
     for line in lines:
         line = line.split(" ")
@@ -22,7 +22,7 @@ def rttm_to_timestamps(path: str | PathLike) -> List:
                 "finish": round(float(line[3]) + float(line[4]), 3),
             }
         )
-    
+
     return timestamps
 
 
@@ -36,7 +36,7 @@ def json_to_timestamps(annot: Dict) -> List:
                 "finish": round(line["segment"]["end"], 3),
             }
         )
-    
+
     return timestamps
 
 
@@ -50,26 +50,26 @@ def separate_marks_for_speakers(dict_with_marks: List) -> Dict:
         for mark in dict_with_marks:
             if mark["speaker"] == speaker:
                 speakers[speaker].append([mark["start"], mark["finish"]])
-    
+
     return speakers
 
 
 def create_separated_signals(signal: List, speakers_info: Dict, name: str, sr: int = 16000) -> Tensor:
     first = signal[0][
-        int(speakers_info[name][0][0] * sr) : int(speakers_info[name][0][1] * sr)
+        int(speakers_info[name][0][0] * sr): int(speakers_info[name][0][1] * sr)
     ]
     for num in range(1, len(speakers_info[name])):
         first = torch.concat(
             (
                 first,
                 signal[0][
-                    int(speakers_info[name][num][0] * sr) : int(
+                    int(speakers_info[name][num][0] * sr): int(
                         speakers_info[name][num][1] * sr
                     )
                 ],
             )
         )
-    
+
     return first
 
 
@@ -78,7 +78,7 @@ def get_rounded_intervals(stamps: Dict) -> Dict:
         for interval in stamps[speaker]:
             interval[0] = int(interval[0])
             interval[1] = int(-(-interval[1] // 1))
-    
+
     return stamps
 
 
@@ -96,5 +96,5 @@ def merge_intervals(stamps: Dict) -> Dict:
             else:
                 stack.append(i)
         stamps[speaker] = stack
-    
+
     return stamps
