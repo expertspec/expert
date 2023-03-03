@@ -11,12 +11,12 @@ import json
 import cv2
 import os
 
-from expert.core.functional_tools import Rescale
-from expert.data.video_reader import VideoReader
-from expert.data.detection.face_detector import FaceDetector
-from expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
-from expert.data.diarization.speaker_diarization import SpeakerDiarization
-from expert.data.annotation.summarization import SummarizationRU, SummarizationEN
+from app.libs.expert.expert.core.functional_tools import Rescale
+from app.libs.expert.expert.data.video_reader import VideoReader
+from app.libs.expert.expert.data.detection.face_detector import FaceDetector
+from app.libs.expert.expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
+from app.libs.expert.expert.data.diarization.speaker_diarization import SpeakerDiarization
+from app.libs.expert.expert.data.annotation.summarization import SummarizationRU, SummarizationEN
 
 
 class FeatureExtractor:

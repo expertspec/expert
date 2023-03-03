@@ -6,7 +6,7 @@ from typing import List, Union
 
 import torch
 
-from expert.core.contradiction.contr_tools import model_tools
+from app.libs.expert.expert.core.contradiction.contr_tools import model_tools
 
 
 class ContradictionDetector:

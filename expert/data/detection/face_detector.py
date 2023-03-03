@@ -8,7 +8,7 @@ from typing import List, Tuple
 import mediapipe
 import cv2
 
-from expert.data.detection.inception_resnet_v1 import InceptionResnetV1
+from app.libs.expert.expert.data.detection.inception_resnet_v1 import InceptionResnetV1
 
 
 class FaceDetector:

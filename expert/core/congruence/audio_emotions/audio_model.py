@@ -5,7 +5,7 @@ from torch import nn
 import gdown
 import os
 
-from expert.core.utils import get_torch_home
+from app.libs.expert.expert.core.utils import get_torch_home
 
 
 class AudioModel(nn.Module):

@@ -7,9 +7,9 @@ import pandas as pd
 import cv2
 import os
 
-from expert.data.detection.face_detector import Rescale, Normalize, ToTensor
-from expert.data.video_reader import VideoReader
-from expert.core.congruence.video_emotions.video_model import DAN
+from app.libs.expert.expert.data.detection.face_detector import Rescale, Normalize, ToTensor
+from app.libs.expert.expert.data.video_reader import VideoReader
+from app.libs.expert.expert.core.congruence.video_emotions.video_model import DAN
 
 
 def get_video_emotions(
