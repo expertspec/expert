@@ -90,3 +90,46 @@ def get_phrases(all_words: List, duration: int = 10) -> List:
                 {"time": [init_elem["start"], elem["end"]], "text": phrase})
 
     return phrases
+
+
+def between_timestamps(all_words: List, start: float, end: float) -> str:
+    """Get phrase between specific timestamps (start, finish) in seconds.
+    Find closest left index for start stamp and closest right index for end.
+
+    Args:
+        all_words (List): All stamps with words from the transcribed text.
+        start (float): start timestamp of the interval (in seconds)
+        end (float): end timestamp of the interval (in seconds)
+
+    Returns:
+        str: phrase between timestamps
+    """
+    def _binary_search(stamps: List, val: float):
+        """Inner function to obtain clossest indexes"""
+        lowIdx, highIdx = 0, len(stamps) - 1
+        while highIdx > lowIdx:
+            idx = (highIdx + lowIdx) // 2
+            elem = stamps[idx]
+            if stamps[lowIdx] == val:
+                return [lowIdx, lowIdx]
+            elif elem == val:
+                return [idx, idx]
+            elif elem == val:
+                return [highIdx, highIdx]
+            elif elem > val:
+                if highIdx == idx:
+                    return [lowIdx, highIdx]
+                highIdx = idx
+            else:
+                if lowIdx == idx:
+                    return [lowIdx, highIdx]
+                lowIdx = idx
+        return [lowIdx, highIdx]
+    assert start >= 0, "Innapropriate start stamp (negative value)"
+    assert end <= all_words[-1]['end'], "Innapropriate end stamp (out of video)"
+    starts = [elem['start'] for elem in all_words]
+    ends = [elem['end'] for elem in all_words]
+    start_idx = min(_binary_search(starts, start))
+    end_idx = max(_binary_search(ends, end))
+    words = [elem['text'] for elem in all_words[start_idx:end_idx]]
+    return ' '.join(words)
