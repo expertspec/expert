@@ -20,25 +20,45 @@
 Expert Features
 ==========================================================
 
+Service "EXPERT" is designed to assess the consistency of expert opinion based on various parameters obtained by multimodal analysis of audio, video and text data. This development can be applied in the field of education and online learning, HR processes, issues related to the analysis of information of social and political nature.
+
 .. image:: docs/en/diagram_en.png
-    :width: 700px
+    :width: 750px
     :align: center
     :alt: Expert Diagram in English
 
 Expert Applications
 ==========================================================
 
+- **Authenticity** - is a characteristic that allows us to evaluate the level of consistency of information simultaneously transmitted by a person verbally and non-verbally (audio, video and textual channels).
+- **Aggression** - is a qualitative characteristic of a person's attitude toward someone or something, expressed in a state of hostility, ill-will, aggression, anger toward the object of hostility.
+- **Confidence** - is a characteristic that allows us to evaluate a property of personality, the core of which is a positive assessment of an individual's own skills and abilities as sufficient to achieve goals meaningful to him and meet his needs.
+- **Contradiction** - is a characteristic that allows us to evaluate two statements of which one is the negation of the other. If two statements are in a contradictory relation, then one of them is equivalent to the negation of the other.
+- **Transcribe**
+- **Summarize**
+
 Installation
 ==========================================================
+
+Describe how users can install your project.
+
+<Name of your project> can be installed with ``pip``:
+
+.. code-block:: python
+
+    $ pip install <projectname>
 
 How to Use
 ==========================================================
 
+Describe examples how it should work and should be used.
+Images, GIFs and code cells are welcome.
 Examples & Tutorials
-==========================================================
 
 Documentation
 ==========================================================
+
+Link to the documentation
 
 Publications About Expert
 ==========================================================
@@ -53,6 +73,8 @@ Publications About Expert
 
 Acknowledgments
 ==========================================================
+
+We acknowledge the contributors for their important impact and the participants of numerous scientific conferences and workshops for their valuable advice and suggestions.
 
 Supported by
 ==========================================================
@@ -81,12 +103,20 @@ Contacts
  
 Citation
 ==========================================================
+@article{"name",
+  title = {},
+  author = {},
+  journal = {},
+  year = {},
+  issn = {},
+  doi = {}}
 
-.. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
+
+.. |eng| image:: https://img.shields.io/badge/lang-en-red.svg
    :alt: Documentation in English
    :target: /README.rst
 
-.. |rus| image:: https://img.shields.io/badge/lang-ru-red.svg
+.. |rus| image:: https://img.shields.io/badge/lang-ru-yellow.svg
    :alt: Documentation in Russian
    :target: /README_ru.rst
 
