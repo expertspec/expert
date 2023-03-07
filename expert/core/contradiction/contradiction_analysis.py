@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from os import PathLike
 from typing import List, Union
 
 import torch
@@ -13,8 +14,8 @@ class ContradictionDetector:
     """Class for working with detector of contradiction"""
     def __init__(
         self,
-        transcription_path: str,
-        path_to_video: str,
+        transcription_path: str | PathLike,
+        path_to_video: str | PathLike,
         lang: str = 'en',
         device: torch.device | None = None,
         save_to: str = "app\\temp",
@@ -175,8 +176,8 @@ class ContradictionDetector:
         if not os.path.exists(os.path.join(self.save_to, temp_path)):
             os.makedirs(os.path.join(self.save_to, temp_path))
             
-        with open(os.path.join(self.save_to, temp_path, 'contradiction_report.json'), 'w') as filename:
+        with open(os.path.join(self.save_to, temp_path, 'contradiction.json'), 'w') as filename:
             json.dump(contr_data, filename)
         
-        return contr_data
+        return os.path.join(self.save_to, temp_path, "contradiction.json")
 
