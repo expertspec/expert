@@ -14,7 +14,7 @@ from mmcv.cnn.builder import build_from_cfg
 from mmcv.runner.base_module import BaseModule
 from mmcv.utils import digit_version
 
-from ..registry import registry
+from expert.core.confidence.liedet.models.registry import registry
 
 
 @registry.register_module(force=True)

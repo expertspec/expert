@@ -109,7 +109,7 @@ def build(
 
         # The MMCV logger is too verbose during initialization
         # We suppress it by default during initialization,
-        #   but it can be un-suppresed by setting print_init_info=True
+        # but it can be un-suppresed by setting print_init_info=True
         if not print_init_info:
             prev_level = logger.level
             if prev_level < 30:

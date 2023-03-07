@@ -5,7 +5,7 @@ from torch import Tensor
 
 from mmcv.cnn import trunc_normal_init
 
-from ..registry import registry
+from expert.core.confidence.liedet.models.registry import registry
 
 
 class TimeSformerHead(nn.Module):

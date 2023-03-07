@@ -7,7 +7,7 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule, bias_init_with_prob, constant_init, normal_init
 from mmdet.models.dense_heads import AnchorHead
 
-from ..registry import registry
+from expert.core.confidence.liedet.models.registry import registry
 
 
 @registry.register_module()

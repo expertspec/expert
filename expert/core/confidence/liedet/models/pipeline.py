@@ -4,8 +4,8 @@ from typing import OrderedDict
 
 import torch.nn as nn
 
-from .builder import BaseModule
-from .registry import build, registry
+from expert.core.confidence.liedet.models.builder import BaseModule
+from expert.core.confidence.liedet.models.registry import build, registry
 
 
 @registry.register_module()

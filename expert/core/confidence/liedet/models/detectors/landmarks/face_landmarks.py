@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from einops import rearrange
-from liedet.models.base_module import BaseModule
+from expert.core.confidence.liedet.models.base_module import BaseModule
 from mediapipe.python.solutions import face_mesh
 
 import torch
 from torch import Tensor
 
-from ...registry import registry
-from .rotate_regressor import Regressor
+from expert.core.confidence.liedet.models.registry import registry
+from expert.core.confidence.liedet.models.detectors.landmarks.rotate_regressor import Regressor
 
 
 @registry.register_module()

@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from liedet.data import VideoFolder
-from liedet.datasets.builder import datasets
+from expert.core.confidence.liedet.data import VideoFolder
+from expert.core.confidence.liedet.datasets.builder import datasets
 
 
 @datasets.register_module()

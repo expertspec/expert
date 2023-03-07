@@ -13,7 +13,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 from torchvision import transforms as V
 
-from liedet.data.video_reader import VideoReader
+from expert.core.confidence.liedet.data.video_reader import VideoReader
 
 
 class VideoFolder(Dataset):

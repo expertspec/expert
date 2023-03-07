@@ -38,7 +38,7 @@ model = dict(
         type="FaceLandmarks",
         window=window,
         init=True,
-        init_cfg=dict(type="PretrainedInit", checkpoint="/home/ismirnov/workspace/mm-lie-detector-master/weights/angles_regressor.pth"),
+        init_cfg=dict(type="PretrainedInit", checkpoint="./weights/angles_regressor.pth"),
     ),
     # model to extract features from audio
     audio_model=dict(type="AudioFeatures", fps=window_secs, chunk_length=1, sr=audio_fps, normalization=True),
@@ -64,7 +64,7 @@ model = dict(
         in_features=embed_dims,
         out_features=num_classes,
     ),
-    init_cfg=dict(type="PretrainedInit", checkpoint="/home/ismirnov/workspace/mm-lie-detector-master/weights/landmarks_audio_transformer.pth"),
+    init_cfg=dict(type="PretrainedInit", checkpoint="./weights/landmarks_audio_transformer.pth"),
 )
 
 runner = dict(

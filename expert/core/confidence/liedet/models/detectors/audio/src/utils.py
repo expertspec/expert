@@ -7,7 +7,7 @@ import math
 import json
 import soundfile as sf
 import noisereduce as nr
-from pydub import AudioSegment, effects
+from pydub import AudioSegment
 from moviepy.editor import VideoFileClip
 
 import warnings
@@ -116,25 +116,6 @@ def prepare_audio_from_video(video_path):
     normalized.export(audio_path, format='mp3')
 
     return audio_path
-
-# Эффекты
-def stretch(data, rate=0.75):
-    return librosa.effects.time_stretch(data, rate)
-
-
-def pitch(data, sampling_rate, n_steps):
-    return librosa.effects.pitch_shift(data, sampling_rate, n_steps=n_steps, bins_per_octave=12)
-
-# Создает дополнительные экземляры аудио с небольшими изменеиями
-def augmentation(folder_name, audio_name):
-    audio, sr = librosa.load(folder_name + '/' + audio_name)
-    pitch_up = pitch(audio, sr, 3)
-    pitch_down = pitch(audio, sr, -2)
-    stretched = stretch(audio)
-
-    sf.write(folder_name + '/' + 'up_' + audio_name[:-4] + '.wav', pitch_up, sr)
-    sf.write(folder_name + '/' + 'down_' + audio_name[:-4] + '.wav', pitch_down, sr)
-    sf.write(folder_name + '/' + 'str_' + audio_name[:-4] + '.wav', stretched, sr)
 
 # Выравнивает громкость к заданному среднему значению
 def normalization(signal, target_dBFS):

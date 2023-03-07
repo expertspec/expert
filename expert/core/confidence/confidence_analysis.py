@@ -4,10 +4,12 @@ import json
 import os
 import ffmpeg
 
+import torch
 import pandas as pd
-from liedet.data import VideoReader
-from liedet.models.e2e import LieDetectorRunner
-from liedet.models.registry import build
+
+from expert.core.confidence.liedet.data import VideoReader
+from expert.core.confidence.liedet.models.e2e import LieDetectorRunner
+from expert.core.confidence.liedet.models.registry import build
 
 from mmcv.utils import Config
 
@@ -19,6 +21,7 @@ class ConfidenceDetector:
         path_to_report: str,
         path_to_image: str,
         path_to_diarization: str,
+        device: torch.device | None = None,
         save_to: str = "app\\temp"
     ) -> None:
         """Determination of expert's confidence
@@ -33,6 +36,10 @@ class ConfidenceDetector:
         Returns:
             str: Path to JSON file with information about confidence
         """
+        self._device = torch.device("cpu")
+        if device is not None:
+            self._device = device
+            
         self.path_to_video = path_to_video
         self.path_to_report = path_to_report
         self.path_to_image = path_to_image
@@ -67,7 +74,7 @@ class ConfidenceDetector:
             return self.path_to_video
         
     def get_confidence(self):
-        cfg = "./configs/landmarks_audio_transformer.py"
+        cfg = "./expert/core/confidence/configs/landmarks_audio_transformer.py"
         video_path = self.path_to_video
 
         face_report = pd.read_json(self.path_to_report)
@@ -93,6 +100,7 @@ class ConfidenceDetector:
         length = len(vr)
 
         model = build(cfg.model)
+        model = model.to(self._device)
         runner = LieDetectorRunner(model=model)
 
         report = []
@@ -100,17 +108,22 @@ class ConfidenceDetector:
             for stamp in stamps:
                 current_time = stamp[0]  # Initial time
                 for start in range(
-                    stamp[0] * cfg.video_fps, stamp[1] * cfg.video_fps, 3*cfg.window
+                    stamp[0] * 3 * cfg.video_fps, stamp[1] * 3 * cfg.video_fps, 3 * cfg.window
                 ):
-                    sample = vr[start : start + cfg.window]
-                    # To fix bag with overdrawing
+                    try:
+                        sample = vr[start : start + 3 * cfg.window]
+                    except:
+                        sample = vr[start:]
+                    # To fix overdrawing bag
                     if sample["video_frames"].size()[0] != cfg.window:
-                        sample["video_frames"] = sample["video_frames"][: cfg.window]
+                        sample["video_frames"] = sample["video_frames"][: cfg.window].to(self._device)
                         temporary = sample["audio_frames"][0][
                             : cfg["window_secs"] * cfg["audio_fps"]
                         ]
                         temporary.unsqueeze_(dim=0)
-                        sample["audio_frames"] = temporary
+                        sample["audio_frames"] = temporary.to('cuda')
+                    sample['video_frames'] = sample["video_frames"].to(self._device)
+                    sample["audio_frames"] = sample["audio_frames"].to(self._device)
                     predict = runner.predict_sample(sample)
                     if isinstance(predict, str):
                         report.append({"time_sec": current_time, "confidence": predict})
@@ -118,22 +131,27 @@ class ConfidenceDetector:
                         report.append(
                             {
                                 "time_sec": current_time,
-                                "confidence": float(predict.detach().numpy()[0][0]),
+                                "confidence": float(predict.to("cpu").detach().numpy()[0][0]),
                             }
-                        )  # sigmoid
+                        )  
                     current_time += cfg.window / cfg.video_fps
 
         # If information about timestamps is empty
         else:
-            for start in range(0, length, 3*cfg.window):
-                sample = vr[start : start + cfg.window]
+            for start in range(0, length, 3 * cfg.window):
+                try:
+                    sample = vr[start : start + 3 * cfg.window]
+                except:
+                    sample = vr[start:]
                 if sample["video_frames"].size()[0] != cfg.window:
-                    sample["video_frames"] = sample["video_frames"][: cfg.window]
+                    sample["video_frames"] = sample["video_frames"][: cfg.window].to(self._device)
                     temporary = sample["audio_frames"][0][
                         : cfg["window_secs"] * cfg["audio_fps"]
-                    ]
+                    ].to(self._device)
                     temporary.unsqueeze_(dim=0)
                     sample["audio_frames"] = temporary
+                sample['video_frames'] = sample["video_frames"].to(self._device)
+                sample["audio_frames"] = sample["audio_frames"].to(self._device)
                 predict = runner.predict_sample(sample)
                 current_time = 0
                 if isinstance(predict, str):
@@ -142,9 +160,9 @@ class ConfidenceDetector:
                     report.append(
                         {
                             "time_sec": current_time,
-                            "confidence": float(predict.detach().numpy()[0][0]),
+                            "confidence": float(predict.to("cpu").detach().numpy()[0][0]),
                         }
-                    )  # sigmoid
+                    )  
                 current_time += cfg.window / cfg.video_fps
 
         # Save results to temporary path.

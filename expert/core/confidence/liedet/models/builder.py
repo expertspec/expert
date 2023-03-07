@@ -9,7 +9,7 @@ import torch.nn as nn
 
 from mmcv.utils import Registry, build_from_cfg
 
-from .base_module import BaseModule
+from expert.core.confidence.liedet.models.base_module import BaseModule
 
 
 def recursive_build(

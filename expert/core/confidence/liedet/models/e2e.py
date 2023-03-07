@@ -11,8 +11,8 @@ from torch import Tensor
 from mmcv.cnn.utils.weight_init import kaiming_init, trunc_normal_
 from mmcv.utils import ConfigDict
 
-from .base_module import BaseModule
-from .registry import build, registry
+from expert.core.confidence.liedet.models.base_module import BaseModule
+from expert.core.confidence.liedet.models.registry import build, registry
 
 
 @registry.register_module()
@@ -170,7 +170,6 @@ class LieDetector(BaseModule):
 
 class LieDetectorRunner(dl.Runner):
     """Base Lie Detector Runner."""
-
     @torch.no_grad()
     def predict_batch(self, batch: dict[str, Tensor]) -> Tensor:
         """Predicts indexes of target classes over batch.

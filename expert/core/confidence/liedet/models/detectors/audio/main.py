@@ -9,12 +9,12 @@ from sklearn.preprocessing import OneHotEncoder
 import torch
 from torch import load
 
-from .src.AudioModel import AudioModel
-from .src.TempsAnalyzer import TempsAnalyzer
-from .src.ToneAnalyzer import ToneAnalyzer
-from .src.Torch_emotion import Torch_emotion
-from .src.utils import normalization, prepare_audio_from_video
-from .src.VolumeAnalyzer import VolumeAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import AudioModel
+from expert.core.confidence.liedet.models.detectors.audio.src.TempsAnalyzer import TempsAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.ToneAnalyzer import ToneAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.Torch_emotion import Torch_emotion
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import normalization, prepare_audio_from_video
+from expert.core.confidence.liedet.models.detectors.audio.src.VolumeAnalyzer import VolumeAnalyzer
 
 
 def features_to_timeseries(

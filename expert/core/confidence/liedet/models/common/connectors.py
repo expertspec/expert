@@ -7,7 +7,7 @@ from einops import rearrange
 import torch.nn as nn
 from torch import Tensor
 
-from ..registry import registry
+from expert.core.confidence.liedet.models.registry import registry
 
 
 def select(x, index=None, key=None):

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from ..models.registry import registry
+from expert.core.confidence.liedet.models.registry import registry
 
 
 @registry.register_module()
