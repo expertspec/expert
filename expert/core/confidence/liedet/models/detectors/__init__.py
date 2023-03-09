@@ -1,3 +1,3 @@
-from .audio import AudioFeatures
-from .bbox import ExtractBBoxes, Frames2Results
-from .landmarks import FaceLandmarks
+from expert.core.confidence.liedet.models.detectors.audio import AudioFeatures
+from expert.core.confidence.liedet.models.detectors.bbox import ExtractBBoxes, Frames2Results
+from expert.core.confidence.liedet.models.detectors.landmarks import FaceLandmarks

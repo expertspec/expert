@@ -1,2 +1,2 @@
-from .connectors import Select
-from .transformer import TransformerEncoder
+from expert.core.confidence.liedet.models.common.connectors import Select
+from expert.core.confidence.liedet.models.common.transformer import TransformerEncoder

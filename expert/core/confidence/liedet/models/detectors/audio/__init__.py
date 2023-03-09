@@ -6,8 +6,8 @@ import torch.nn as nn
 import torchaudio
 from torch import Tensor
 
-from ...registry import registry
-from .main import main
+from expert.core.confidence.liedet.models.registry import registry
+from expert.core.confidence.liedet.models.detectors.audio.main import main
 
 
 @registry.register_module()
