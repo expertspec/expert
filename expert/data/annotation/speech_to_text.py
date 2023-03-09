@@ -80,6 +80,11 @@ def get_phrases(all_words: List, duration: int = 10) -> List:
         phrase = init_elem["text"]
         time_left = duration - (init_elem["end"] - init_elem["start"])
         end_time = init_elem["end"]
+        if time_left < 0:
+            phrases.append({"time": [init_elem["start"], init_elem["end"]], "text": phrase})
+            time_left -= init_elem["end"] - end_time
+            end_time = init_elem["end"]
+            continue
         while time_left > 0 and all_words:
             elem = all_words.pop(0)
             phrase = phrase + " " + elem["text"]
