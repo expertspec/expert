@@ -1,1 +1,1 @@
-from .iou_aware import IoUAwareRetinaHead
+from expert.core.confidence.liedet.models.heads.iou_aware import IoUAwareRetinaHead

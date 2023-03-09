@@ -9,7 +9,7 @@ from mmcv.utils import ConfigDict
 from mmdet.core.bbox import bbox2result
 from mmdet.core.post_processing import multiclass_nms
 
-from ...registry import build, registry
+from expert.core.confidence.liedet.models.registry import build, registry
 
 
 @registry.register_module()

@@ -1,1 +1,1 @@
-from .inception import Inception
+from expert.core.confidence.liedet.models.necks.inception import Inception
