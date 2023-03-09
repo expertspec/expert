@@ -5,8 +5,8 @@ import torch
 import torchaudio
 from torch.utils.data import Dataset
 
-from .AudioModel import AudioModel
-from .utils import chunkizer
+from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import AudioModel
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import chunkizer
 
 
 class Torch_emotion:
