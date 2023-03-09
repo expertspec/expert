@@ -77,7 +77,7 @@ def get_phrases(all_words: list, duration: int = 10) -> list:
     
     while all_words:
         init_elem = all_words.pop(0)
-        phrase = init_elem["word"]
+        phrase = init_elem["text"]
         time_left = duration - (init_elem["end"] - init_elem["start"])
         end_time = init_elem["end"]
         if time_left < 0:
@@ -87,7 +87,7 @@ def get_phrases(all_words: list, duration: int = 10) -> list:
             continue
         while time_left > 0 and all_words:
             elem = all_words.pop(0)
-            phrase = phrase + " " + elem["word"]
+            phrase = phrase + " " + elem["text"]
             time_left -= elem["end"] - end_time
             end_time = elem["end"]
         else:
