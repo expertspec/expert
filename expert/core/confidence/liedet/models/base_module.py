@@ -5,7 +5,7 @@ from abc import ABCMeta
 
 import torch.nn as nn
 
-from liedet.models.utils.weights_init import BaseInit, PretrainedInit, initialize
+from app.libs.expert.expert.core.confidence.liedet.models.utils.weights_init import BaseInit, PretrainedInit, initialize
 
 
 class BaseModule(nn.Module, metaclass=ABCMeta):

@@ -6,8 +6,8 @@ from torch import Tensor
 
 from mmcv.parallel import collate
 
-from ..registry import build, registry
-from .bbox import SingleStageDetector
+from app.libs.expert.expert.core.confidence.liedet.models.registry import build, registry
+from app.libs.expert.expert.core.confidence.liedet.models.detectors.bbox import SingleStageDetector
 
 
 @registry.register_module()

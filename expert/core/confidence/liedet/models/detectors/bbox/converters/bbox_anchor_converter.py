@@ -2,8 +2,8 @@ import torch
 
 from mmdet.core.bbox import bbox_flip, build_bbox_coder
 
-from ....registry import registry
-from .base_converter import BaseConverter
+from app.libs.expert.expert.core.confidence.liedet.models.registry import registry
+from app.libs.expert.expert.core.confidence.liedet.models.detectors.bbox.converters.base_converter import BaseConverter
 
 
 @registry.register_module()

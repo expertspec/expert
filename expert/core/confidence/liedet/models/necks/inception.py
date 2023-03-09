@@ -8,7 +8,7 @@ from torch import Tensor, nn
 
 from mmcv.cnn import ConvModule, xavier_init
 
-from ..registry import registry
+from app.libs.expert.expert.core.confidence.liedet.models.registry import registry
 
 
 @registry.register_module()

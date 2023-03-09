@@ -5,9 +5,9 @@ import os
 import ffmpeg
 
 import pandas as pd
-from liedet.data import VideoReader
-from liedet.models.e2e import LieDetectorRunner
-from liedet.models.registry import build
+from app.libs.expert.expert.core.confidence.liedet.data import VideoReader
+from app.libs.expert.expert.core.confidence.liedet.models.e2e import LieDetectorRunner
+from app.libs.expert.expert.core.confidence.liedet.models.registry import build
 
 from mmcv.utils import Config
 

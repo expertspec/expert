@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from einops import rearrange
-from liedet.models.base_module import BaseModule
+from app.libs.expert.expert.core.confidence.liedet.models.base_module import BaseModule
 from mediapipe.python.solutions import face_mesh
 
 import torch

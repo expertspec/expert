@@ -2,9 +2,9 @@ import numpy as np
 
 import torch
 
-from ....registry import registry
-from .base_anchors import BBoxBaseAnchor
-from .base_meshgrid import BaseMeshGrid
+from app.libs.expert.expert.core.confidence.liedet.models.registry import registry
+from app.libs.expert.expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_anchors import BBoxBaseAnchor
+from app.libs.expert.expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_meshgrid import BaseMeshGrid
 
 
 @registry.register_module()

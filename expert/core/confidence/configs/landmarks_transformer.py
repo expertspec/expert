@@ -34,7 +34,8 @@ model = dict(
         type="FaceLandmarks",
         window=window,
         init=True,
-        init_cfg=dict(type="PretrainedInit", checkpoint="weights/angles_regressor.pth"),
+        # init_cfg=dict(type="PretrainedInit", checkpoint="weights/angles_regressor.pth"),
+        init_cfg=dict(type="PretrainedInit", checkpoint="D:\\Python\\MVP\\MVP_solvency\\ml-server\\app\\libs\\expert\\expert\\core\\confidence\\weights\\angles_regressor.pth"),
     ),
     features_dims=features_dims,
     embed_dims=embed_dims,
@@ -55,7 +56,8 @@ model = dict(
     # classifier
     cls_head=dict(type="Linear", in_features=embed_dims, out_features=num_classes),
     init=True,
-    init_cfg=dict(type="PretrainedInit", checkpoint="weights/landmarks_transformer.pth"),
+    # init_cfg=dict(type="PretrainedInit", checkpoint="weights/landmarks_transformer.pth"),
+    init_cfg=dict(type="PretrainedInit", checkpoint="D:\\Python\\MVP\\MVP_solvency\\ml-server\\app\\libs\\expert\\expert\\core\\confidence\\weights\\landmarks_transformer.pth"),
 )
 
 runner = dict(type="LieDetectorRunner")
