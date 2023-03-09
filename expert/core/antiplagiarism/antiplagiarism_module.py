@@ -10,8 +10,8 @@ import httpx
 import time
 import os
 
-from expert.core.antiplagiarism.plagiarism_tools.schemas import SimpleCheckResult, Service, Source, Author, LoanBlock
-from expert.core.antiplagiarism.plagiarism_tools.logger import logger
+from app.libs.expert.expert.core.antiplagiarism.plagiarism_tools.schemas import SimpleCheckResult, Service, Source, Author, LoanBlock
+from app.libs.expert.expert.core.antiplagiarism.plagiarism_tools.logger import logger
 
 
 class AntiplagiatClient:

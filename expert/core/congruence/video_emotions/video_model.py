@@ -9,7 +9,9 @@ from typing import Tuple
 import gdown
 import os
 
-from expert.core.functional_tools import get_model_weights
+
+from app.libs.expert.expert.core.utils import get_torch_home
+
 
 
 class DAN(nn.Module):

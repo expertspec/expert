@@ -6,7 +6,7 @@ from torch.nn import functional as F
 import gdown
 import os
 
-from expert.core.functional_tools import get_model_weights
+from app.libs.expert.expert.core.functional_tools import get_model_weights
 
 
 class BasicConv2d(nn.Module):

@@ -12,7 +12,7 @@ from typing import List, Tuple
 import gdown
 import os
 
-from expert.core.functional_tools import get_model_folder
+from app.libs.expert.expert.core.functional_tools import get_model_folder
 
 
 class SummarizationEN:

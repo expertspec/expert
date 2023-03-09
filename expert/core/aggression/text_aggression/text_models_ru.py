@@ -8,7 +8,7 @@ import gdown
 import os
 import re
 
-from expert.core.functional_tools import get_model_folder
+from app.libs.expert.expert.core.functional_tools import get_model_folder
 
 
 class Porter:

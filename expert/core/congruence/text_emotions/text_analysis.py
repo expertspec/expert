@@ -6,8 +6,8 @@ from typing import List, Dict
 import pandas as pd
 import json
 
-from expert.data.annotation.speech_to_text import get_phrases
-from expert.core.congruence.text_emotions.text_model import TextModel
+from app.libs.expert.expert.data.annotation.speech_to_text import get_phrases
+from app.libs.expert.expert.core.congruence.text_emotions.text_model import TextModel
 
 
 def get_text_fragments(

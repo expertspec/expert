@@ -9,8 +9,8 @@ from transformers import logging
 from transformers import AutoModel, AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 
-from expert.core.functional_tools import get_torch_home
-from expert.core.contradiction.contr_tools import NLIModel
+from app.libs.expert.expert.core.functional_tools import get_torch_home
+from app.libs.expert.expert.core.contradiction.contr_tools import NLIModel
 
 
 logging.set_verbosity_error()

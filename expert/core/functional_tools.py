@@ -1,3 +1,4 @@
+from __future__ import annotations
 import torch
 from torch import Tensor
 import torchvision.transforms as transforms
@@ -6,6 +7,7 @@ import numpy as np
 import gdown
 import cv2
 import os
+
 
 
 def get_torch_home() -> str:
