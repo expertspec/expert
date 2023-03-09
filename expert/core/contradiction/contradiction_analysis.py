@@ -54,16 +54,16 @@ class ContradictionDetector:
         sentences = []
         if all_words:
             end = all_words[0]['end']
-            sentence = all_words[0]['word']
+            sentence = all_words[0]['text']
             
             for idx in range(len(all_words[:-1])):
                 if all_words[idx+1]['start'] - end < 1.0:
-                    sentence += ' ' + all_words[idx+1]['word']
+                    sentence += ' ' + all_words[idx+1]['text']
                     end = all_words[idx+1]['end']
                 else:
                     sentences.append(sentence)
                     end = all_words[idx+1]['end']
-                    sentence = all_words[idx+1]['word']
+                    sentence = all_words[idx+1]['text']
             sentences.append(sentence)
         else:
             raise 'No words'
@@ -76,12 +76,12 @@ class ContradictionDetector:
 
         while all_words:
             init_elem = all_words.pop(0)
-            phrase = init_elem["word"]
+            phrase = init_elem["text"]
             time_left = duration - (init_elem["end"] - init_elem["start"])
             end_time = init_elem["end"]
             while time_left > 0 and all_words:
                 elem = all_words.pop(0)
-                phrase = phrase + " " + elem["word"]
+                phrase = phrase + " " + elem["text"]
                 time_left -= elem["end"] - end_time
                 end_time = elem["end"]
             else:
