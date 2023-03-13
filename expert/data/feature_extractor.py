@@ -64,10 +64,10 @@ class FeatureExtractor:
         get_summary: bool = True,
         summary_max_length: int = 25,
         summary_percent: int = 25,
-        rusum_sentences_count: int = 2,
-        rusum_max_length: int = 300,
-        rusum_over_chared_postfix: str = "...",
-        rusum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
+        sum_sentences_count: int = 2,
+        sum_max_length: int = 300,
+        sum_over_chared_postfix: str = "...",
+        sum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
                                            "(", ")", "–", "%", "&", "@", '"', "'", ],
         output_dir: str | PathLike | None = None,
         output_img_size: int | Tuple = 512,
@@ -96,14 +96,13 @@ class FeatureExtractor:
             get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
             summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
             summary_percent (int, optional): Maximum annotation percentage of original text size. Defaults to 25.
-            rusum_sentences_count (int, optional): Sentences count in output annotation
-                in Russian. Defaults to 2.
-            rusum_max_length (int, optional): Maximum number of symbols for annotation in Russian
+            sum_sentences_count (int, optional): Sentences count in output annotation. Defaults to 2.
+            sum_max_length (int, optional): Maximum number of symbols for annotation
                 in output annotation. Defaults to 300.
-            rusum_over_chared_postfix (str, optional): End of line character for annotation in Russian
+            sum_over_chared_postfix (str, optional): End of line character for annotation
                 when truncated. Defaults to "...".
-            rusum_allowed_punctuation (List, optional): Allowed punctuation for annotation in Russian.
-            output_dir (str | PathLike | None, optional): Path to the folder for saving results. Defaults to None.
+            sum_allowed_punctuation (List, optional): Allowed punctuation for annotation.
+            output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
             output_img_size (int | Tuple, optional): Size of faces extracted from video. Defaults to 512.
             drop_extra (bool, optional): Remove intermediate features from the final results. Defaults to True.
         """
@@ -141,10 +140,10 @@ class FeatureExtractor:
         self.phrase_duration = phrase_duration
         self.summary_max_length = summary_max_length
         self.summary_percent = summary_percent
-        self.rusum_sentences_count = rusum_sentences_count
-        self.rusum_max_length = rusum_max_length
-        self.rusum_over_chared_postfix = rusum_over_chared_postfix
-        self.rusum_allowed_punctuation = rusum_allowed_punctuation
+        self.sum_sentences_count = sum_sentences_count
+        self.sum_max_length = sum_max_length
+        self.sum_over_chared_postfix = sum_over_chared_postfix
+        self.sum_allowed_punctuation = sum_allowed_punctuation
         self.drop_extra = drop_extra
 
         if output_dir is not None:
@@ -193,15 +192,19 @@ class FeatureExtractor:
 
         if self.get_summary:
             if self.lang == "en":
-                summarizer = SummarizationEN(device=self._device, max_length=self.summary_max_length,
-                                             summary_percent=self.summary_percent)
+                summarizer = SummarizationEN()
                 phrases = get_phrases(
                     self.transcribed_text, duration=self.phrase_duration)
                 annotations = []
                 for phrase in phrases:
                     annotations.append(
                         {"time": phrase["time"], "annotation": summarizer.get_summary(
-                            phrase["text"])}
+                            phrase["text"],
+                            sentences_count=self.sum_sentences_count,
+                            max_length=self.sum_max_length,
+                            over_chared_postfix=self.sum_over_chared_postfix,
+                            allowed_punctuation=self.sum_allowed_punctuation
+                        )}
                     )
 
             if self.lang == "ru":
@@ -213,10 +216,10 @@ class FeatureExtractor:
                     annotations.append(
                         {"time": phrase["time"], "annotation": summarizer.get_summary(
                             text=phrase["text"],
-                            sentences_count=self.rusum_sentences_count,
-                            max_length=self.rusum_max_length,
-                            over_chared_postfix=self.rusum_over_chared_postfix,
-                            allowed_punctuation=self.rusum_allowed_punctuation
+                            sentences_count=self.sum_sentences_count,
+                            max_length=self.sum_max_length,
+                            over_chared_postfix=self.sum_over_chared_postfix,
+                            allowed_punctuation=self.sum_allowed_punctuation
                         )})
             self.annotations = annotations
             with open(os.path.join(self.temp_path, "summarization.json"), "w") as filename:
