@@ -4,7 +4,7 @@ import torch
 from torch import nn, Tensor
 from torch.nn import functional as F
 
-from app.libs.expert.expert.core.functional_tools import get_model_weights
+from expert.core.functional_tools import get_model_weights
 
 
 class BasicConv2d(nn.Module):

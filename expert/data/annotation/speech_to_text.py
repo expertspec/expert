@@ -5,7 +5,7 @@ import whisper
 from typing import List, Dict
 from os import PathLike
 
-import app.libs.expert.expert.data.annotation.transcribe as transcribe
+import expert.data.annotation.transcribe as transcribe
 
 
 def transcribe_video(

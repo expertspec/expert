@@ -9,7 +9,7 @@ from text_preprocessing import remove_url
 from typing import List, Tuple
 from razdel import sentenize
 
-from app.libs.expert.expert.core.functional_tools import get_model_folder
+from expert.core.functional_tools import get_model_folder
 
 
 class SummarizationEN:
