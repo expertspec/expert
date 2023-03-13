@@ -8,7 +8,7 @@ from typing import Dict
 from os import PathLike
 import numpy as np
 
-from expert.core.congruence.audio_emotions.audio_model import AudioModel
+from app.libs.expert.expert.core.congruence.audio_emotions.audio_model import AudioModel
 
 bridge.set_bridge(new_bridge="torch")
 

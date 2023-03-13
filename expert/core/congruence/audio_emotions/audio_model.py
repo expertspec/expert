@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import torch
 from torch import nn
-import gdown
-import os
 
 from expert.core.utils import get_model_weights
 
