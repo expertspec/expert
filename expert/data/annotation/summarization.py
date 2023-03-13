@@ -9,7 +9,7 @@ from sumy.utils import get_stop_words
 from text_preprocessing import remove_url
 from typing import List, Tuple
 
-from app.libs.expert.expert.core.functional_tools import get_model_folder
+from expert.core.functional_tools import get_model_folder
 
 
 class Summarization(ABC):
