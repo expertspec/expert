@@ -10,9 +10,6 @@ from text_preprocessing import remove_url
 from typing import List, Tuple
 
 
-from expert.core.functional_tools import get_model_folder
-
-
 class Summarization(ABC):
     """Abstract class for Annotating input text to a given size. 
     Contains implementation of preprocessing and postprocessing methods.
