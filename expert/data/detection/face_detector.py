@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
-from typing import List, Tuple
+from typing import List
 import mediapipe
 import cv2
 

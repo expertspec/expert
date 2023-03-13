@@ -4,8 +4,6 @@ import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 from typing import Tuple, List
 import pymorphy2
-import gdown
-import os
 import re
 
 from app.libs.expert.expert.core.functional_tools import get_model_folder
