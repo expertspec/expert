@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import os
 import torch
 from torch import nn, Tensor
 import numpy as np
 
-from app.libs.expert.expert.core.functional_tools import get_model_weights
+from expert.core.functional_tools import get_model_weights
 
 
 class AngleNet(nn.Module):

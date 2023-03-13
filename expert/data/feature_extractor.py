@@ -11,12 +11,12 @@ import json
 import cv2
 import os
 
-from app.libs.expert.expert.core.functional_tools import Rescale
-from app.libs.expert.expert.data.video_reader import VideoReader
-from app.libs.expert.expert.data.detection.face_detector import FaceDetector
-from app.libs.expert.expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
-from app.libs.expert.expert.data.diarization.speaker_diarization import SpeakerDiarization
-from app.libs.expert.expert.data.annotation.summarization import SummarizationRU, SummarizationEN
+from expert.core.functional_tools import Rescale
+from expert.data.video_reader import VideoReader
+from expert.data.detection.face_detector import FaceDetector
+from expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
+from expert.data.diarization.speaker_diarization import SpeakerDiarization
+from expert.data.annotation.summarization import SummarizationRU, SummarizationEN
 
 
 class FeatureExtractor:
@@ -48,7 +48,7 @@ class FeatureExtractor:
 
     def __init__(
         self,
-        video_path: str | Pathlike,
+        video_path: str | PathLike,
         cache_capacity: int = 10,
         device: torch.device | None = None,
         stt_mode: str = "server",
@@ -59,7 +59,7 @@ class FeatureExtractor:
         min_cluster_samples: int = 25,
         max_eps: int = 2,
         sr: int = 16000,
-        phrase_duration: int = 10,
+        phrase_duration: int = 60,
         lang: str = "en",
         get_summary: bool = True,
         summary_max_length: int = 25,
@@ -69,7 +69,7 @@ class FeatureExtractor:
         sum_over_chared_postfix: str = "...",
         sum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
                                            "(", ")", "–", "%", "&", "@", '"', "'", ],
-        output_dir: str | Pathlike | None = None,
+        output_dir: str | PathLike | None = None,
         output_img_size: int | Tuple = 512,
         drop_extra: bool = True
     ) -> None:
@@ -77,7 +77,7 @@ class FeatureExtractor:
         Initialization of audio, text and video models parameters.
 
         Args:
-            video_path (str | Pathlike): Path to local video file.
+            video_path (str | PathLike): Path to local video file.
             cache_capacity (int, optional): Buffer size for storing frames. Defaults to 10.
             device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
             stt_mode (str, optional): Model configuration for speech recognition ['server', 'local']. Defaults to 'server'.
@@ -91,7 +91,7 @@ class FeatureExtractor:
             min_cluster_samples (int, optional): Minimum number of samples for clustering. Defaults to 25.
             max_eps (int, optional): The maximum distance between two faces. Defaults to 2.
             sr (int, optional): Sample rate. Defaults to 16000.
-            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
+            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 60.
             lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
             get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
             summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.

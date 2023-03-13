@@ -3,13 +3,13 @@ from __future__ import annotations
 import json
 import torch
 import pandas as pd
-from typing import Dict, Tuple
+from typing import Tuple
 from os import PathLike
 import os
 
-from app.libs.expert.expert.core.congruence.video_emotions.video_analysis import get_video_emotions
-from app.libs.expert.expert.core.congruence.text_emotions.text_analysis import get_text_emotions
-from app.libs.expert.expert.core.congruence.audio_emotions.audio_analysis import AudioAnalysis
+from expert.core.congruence.video_emotions.video_analysis import get_video_emotions
+from expert.core.congruence.text_emotions.text_analysis import get_text_emotions
+from expert.core.congruence.audio_emotions.audio_analysis import AudioAnalysis
 
 
 def align_timestamps(time_sec):

@@ -7,7 +7,7 @@ from decord import AudioReader, bridge
 from typing import Dict
 from os import PathLike
 
-from app.libs.expert.expert.data.diarization.audio_transforms import (
+from expert.data.diarization.audio_transforms import (
     rttm_to_timestamps, json_to_timestamps, merge_intervals,
     separate_marks_for_speakers, get_rounded_intervals
 )

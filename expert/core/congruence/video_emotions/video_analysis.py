@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import torch
 from torch import nn
 import albumentations as A
@@ -8,11 +10,8 @@ import pandas as pd
 import cv2
 import os
 
-
-from app.libs.expert.expert.data.detection.face_detector import Rescale, Normalize, ToTensor
-from app.libs.expert.expert.data.video_reader import VideoReader
-from app.libs.expert.expert.core.congruence.video_emotions.video_model import DAN
-
+from expert.data.video_reader import VideoReader
+from expert.core.congruence.video_emotions.video_model import DAN
 
 
 def get_video_emotions(

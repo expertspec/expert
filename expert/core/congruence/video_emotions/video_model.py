@@ -6,12 +6,8 @@ import torch.nn.init as init
 from torch import nn, Tensor
 from torchvision import models
 from typing import Tuple
-import gdown
-import os
 
-
-from app.libs.expert.expert.core.utils import get_torch_home
-
+from expert.core.utils import get_model_weights
 
 
 class DAN(nn.Module):

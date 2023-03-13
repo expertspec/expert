@@ -9,6 +9,7 @@ from sumy.utils import get_stop_words
 from text_preprocessing import remove_url
 from typing import List, Tuple
 
+
 from expert.core.functional_tools import get_model_folder
 
 
