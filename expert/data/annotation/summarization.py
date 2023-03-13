@@ -5,12 +5,9 @@ from transformers import pipeline
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.lex_rank import LexRankSummarizer
-from text_preprocessing import remove_email, remove_url
-from nltk.tokenize import word_tokenize
-from razdel import sentenize
+from text_preprocessing import remove_url
 from typing import List, Tuple
-import gdown
-import os
+from razdel import sentenize
 
 from expert.core.functional_tools import get_model_folder
 
@@ -69,9 +66,6 @@ class SummarizationEN:
         text = text.strip()
         text_percent = int(len(text.split()) / 100 * self.summary_percent)
         max_length = self.max_length if text_percent < self.max_length else text_percent
-        # Length with special tokens.
-        tokens_count = len(word_tokenize(text)) + 2
-        max_length = tokens_count if max_length > tokens_count else max_length
         generated_text = self.summarizer_bart(
             text,
             min_length=5,

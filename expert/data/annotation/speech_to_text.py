@@ -64,31 +64,35 @@ def get_all_words(transcribation: Dict) -> Tuple[List, str]:
     return all_words, full_text
 
 
-def get_phrases(all_words: List, duration: int = 10) -> List:
+def get_phrases(all_words: list, duration: int = 10) -> list:
     """Split transcribed text into segments of a fixed length.
-
+    
     Args:
         all_words (List): All stamps with words from the transcribed text.
         duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
     """
     phrases = []
-
+    
     assert len(all_words) > 1, "Not enough words in text."
-
+    
     while all_words:
         init_elem = all_words.pop(0)
         phrase = init_elem["text"]
         time_left = duration - (init_elem["end"] - init_elem["start"])
         end_time = init_elem["end"]
+        if time_left < 0:
+            phrases.append({"time": [init_elem["start"], init_elem["end"]], "text": phrase})
+            time_left -= init_elem["end"] - end_time
+            end_time = init_elem["end"]
+            continue
         while time_left > 0 and all_words:
             elem = all_words.pop(0)
             phrase = phrase + " " + elem["text"]
             time_left -= elem["end"] - end_time
             end_time = elem["end"]
         else:
-            phrases.append(
-                {"time": [init_elem["start"], elem["end"]], "text": phrase})
-
+            phrases.append({"time": [init_elem["start"], elem["end"]], "text": phrase})
+    
     return phrases
 
 
@@ -98,14 +102,14 @@ def between_timestamps(all_words: List, start: float, end: float) -> str:
 
     Args:
         all_words (List): All stamps with words from the transcribed text.
-        start (float): start timestamp of the interval (in seconds)
-        end (float): end timestamp of the interval (in seconds)
+        start (float): Start timestamp of the interval (in seconds).
+        end (float): End timestamp of the interval (in seconds).
 
     Returns:
-        str: phrase between timestamps
+        str: Phrase between timestamps.
     """
     def _binary_search(stamps: List, val: float):
-        """Inner function to obtain clossest indexes"""
+        """Inner function to obtain clossest indexes."""
         lowIdx, highIdx = 0, len(stamps) - 1
         while highIdx > lowIdx:
             idx = (highIdx + lowIdx) // 2
@@ -126,10 +130,10 @@ def between_timestamps(all_words: List, start: float, end: float) -> str:
                 lowIdx = idx
         return [lowIdx, highIdx]
     assert start >= 0, "Innapropriate start stamp (negative value)"
-    assert end <= all_words[-1]['end'], "Innapropriate end stamp (out of video)"
-    starts = [elem['start'] for elem in all_words]
-    ends = [elem['end'] for elem in all_words]
+    assert end <= all_words[-1]["end"], "Innapropriate end stamp (out of video)"
+    starts = [elem["start"] for elem in all_words]
+    ends = [elem["end"] for elem in all_words]
     start_idx = min(_binary_search(starts, start))
     end_idx = max(_binary_search(ends, end))
-    words = [elem['text'] for elem in all_words[start_idx:end_idx]]
-    return ' '.join(words)
+    words = [elem["text"] for elem in all_words[start_idx:end_idx]]
+    return " ".join(words)

@@ -3,8 +3,6 @@ from __future__ import annotations
 import torch
 from torch import nn, Tensor
 from torch.nn import functional as F
-import gdown
-import os
 
 from expert.core.functional_tools import get_model_weights
 

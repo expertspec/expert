@@ -48,7 +48,7 @@ class FeatureExtractor:
 
     def __init__(
         self,
-        video_path: str | Pathlike,
+        video_path: str | PathLike,
         cache_capacity: int = 10,
         device: torch.device | None = None,
         stt_mode: str = "server",
@@ -59,7 +59,7 @@ class FeatureExtractor:
         min_cluster_samples: int = 25,
         max_eps: int = 2,
         sr: int = 16000,
-        phrase_duration: int = 10,
+        phrase_duration: int = 60,
         lang: str = "en",
         get_summary: bool = True,
         summary_max_length: int = 25,
@@ -69,7 +69,7 @@ class FeatureExtractor:
         rusum_over_chared_postfix: str = "...",
         rusum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
                                            "(", ")", "–", "%", "&", "@", '"', "'", ],
-        output_dir: str | Pathlike | None = None,
+        output_dir: str | PathLike | None = None,
         output_img_size: int | Tuple = 512,
         drop_extra: bool = True
     ) -> None:
@@ -77,7 +77,7 @@ class FeatureExtractor:
         Initialization of audio, text and video models parameters.
 
         Args:
-            video_path (str | Pathlike): Path to local video file.
+            video_path (str | PathLike): Path to local video file.
             cache_capacity (int, optional): Buffer size for storing frames. Defaults to 10.
             device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
             stt_mode (str, optional): Model configuration for speech recognition ['server', 'local']. Defaults to 'server'.
@@ -91,7 +91,7 @@ class FeatureExtractor:
             min_cluster_samples (int, optional): Minimum number of samples for clustering. Defaults to 25.
             max_eps (int, optional): The maximum distance between two faces. Defaults to 2.
             sr (int, optional): Sample rate. Defaults to 16000.
-            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 10.
+            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 60.
             lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
             get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
             summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
@@ -103,7 +103,7 @@ class FeatureExtractor:
             rusum_over_chared_postfix (str, optional): End of line character for annotation in Russian
                 when truncated. Defaults to "...".
             rusum_allowed_punctuation (List, optional): Allowed punctuation for annotation in Russian.
-            output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
+            output_dir (str | PathLike | None, optional): Path to the folder for saving results. Defaults to None.
             output_img_size (int | Tuple, optional): Size of faces extracted from video. Defaults to 512.
             drop_extra (bool, optional): Remove intermediate features from the final results. Defaults to True.
         """
