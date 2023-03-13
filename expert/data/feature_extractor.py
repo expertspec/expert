@@ -193,15 +193,19 @@ class FeatureExtractor:
 
         if self.get_summary:
             if self.lang == "en":
-                summarizer = SummarizationEN(device=self._device, max_length=self.summary_max_length,
-                                             summary_percent=self.summary_percent)
+                summarizer = SummarizationEN()
                 phrases = get_phrases(
                     self.transcribed_text, duration=self.phrase_duration)
                 annotations = []
                 for phrase in phrases:
                     annotations.append(
                         {"time": phrase["time"], "annotation": summarizer.get_summary(
-                            phrase["text"])}
+                            phrase["text"],
+                            sentences_count=self.rusum_sentences_count,
+                            max_length=self.rusum_max_length,
+                            over_chared_postfix=self.rusum_over_chared_postfix,
+                            allowed_punctuation=self.rusum_allowed_punctuation
+                        )}
                     )
 
             if self.lang == "ru":
