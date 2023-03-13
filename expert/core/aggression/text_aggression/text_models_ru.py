@@ -6,7 +6,7 @@ from typing import Tuple, List
 import pymorphy2
 import re
 
-from app.libs.expert.expert.core.functional_tools import get_model_folder
+from expert.core.functional_tools import get_model_folder
 
 
 class Porter:

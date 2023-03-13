@@ -6,9 +6,9 @@ import pandas as pd
 from typing import List, Tuple
 import os
 
-from app.libs.expert.expert.data.video_reader import VideoReader
-from app.libs.expert.expert.core.aggression.video_aggression.anglenet import AngleNet, classify_rotation
-from app.libs.expert.expert.core.aggression.video_aggression.face_mesh import (
+from expert.data.video_reader import VideoReader
+from expert.core.aggression.video_aggression.anglenet import AngleNet, classify_rotation
+from expert.core.aggression.video_aggression.face_mesh import (
     FaceMesh, preprocess_face_vector, HEAD_INDEXES, LOW_PART, UPP_PART
 )
 

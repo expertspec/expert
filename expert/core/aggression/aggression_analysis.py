@@ -6,10 +6,10 @@ from typing import List, Tuple
 import json
 import os
 
-from app.libs.expert.expert.core.aggression.video_aggression.video_analysis import VideoAggression
-from app.libs.expert.expert.core.aggression.audio_aggression.audio_analysis import AudioAggression
-from app.libs.expert.expert.core.aggression.text_aggression.text_analysis import TextAggression
-from app.libs.expert.expert.data.annotation.speech_to_text import get_phrases
+from expert.core.aggression.video_aggression.video_analysis import VideoAggression
+from expert.core.aggression.audio_aggression.audio_analysis import AudioAggression
+from expert.core.aggression.text_aggression.text_analysis import TextAggression
+from expert.data.annotation.speech_to_text import get_phrases
 
 
 class AggressionDetector:

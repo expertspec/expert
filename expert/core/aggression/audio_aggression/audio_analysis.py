@@ -8,7 +8,7 @@ from typing import List, Tuple
 from os import PathLike
 import librosa
 
-from app.libs.expert.expert.core.aggression.audio_aggression import audio_tools
+from expert.core.aggression.audio_aggression import audio_tools
 
 bridge.set_bridge(new_bridge="torch")
 

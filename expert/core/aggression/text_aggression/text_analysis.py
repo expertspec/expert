@@ -3,13 +3,13 @@ from __future__ import annotations
 import torch
 from typing import List, Tuple, Dict
 
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_en import DepreciationEN
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_en import ImperativeEN
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_en import ToxicEN
+from expert.core.aggression.text_aggression.text_models_en import DepreciationEN
+from expert.core.aggression.text_aggression.text_models_en import ImperativeEN
+from expert.core.aggression.text_aggression.text_models_en import ToxicEN
 
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_ru import DepreciationRU
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_ru import ImperativeRU
-from app.libs.expert.expert.core.aggression.text_aggression.text_models_ru import ToxicRU
+from expert.core.aggression.text_aggression.text_models_ru import DepreciationRU
+from expert.core.aggression.text_aggression.text_models_ru import ImperativeRU
+from expert.core.aggression.text_aggression.text_models_ru import ToxicRU
 
 
 class TextAggression:
