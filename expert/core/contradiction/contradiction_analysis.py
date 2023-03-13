@@ -1,40 +1,42 @@
 from __future__ import annotations
 
-import json
-import os
+import torch
 from os import PathLike
 from typing import List, Union
-
-import torch
+import json
+import os
 
 from expert.core.contradiction.contr_tools import model_tools
 
 
 class ContradictionDetector:
-    """Class for working with detector of contradiction"""
+    """Class for working with detector of contradiction."""
+
     def __init__(
         self,
         transcription_path: str | PathLike,
-        path_to_video: str | PathLike,
-        lang: str = 'en',
+        video_path: str | PathLike,
+        lang: str = "en",
         device: torch.device | None = None,
-        save_to: str = "app\\temp",
+        output_dir: str | PathLike = None,
         chosen_intervals: list[int] = [],
         interval_duration: int = 60,
     ) -> None:
         """Object initialization.
-         Creates instance with information about language and device
+         Creates instance with information about language and device.
 
         Args:
-            transcription_path (str): path to json file with words from transcribation
-            path_to_video (str): path to the video
-            lang (str, optional): flag of the language can be 'en'|'ru'. Defaults to 'en'.
-            device (str, optional): setting of computational device 'cpu'|'cuda'. Defaults to 'cpu'.
-            save_to (str): Path to save JSON with information about contradiction.
-            chosen_intervals (list[int], optional): flags for intervals for analyzis. Defaults to [].
-            For default settings will be analyzed full text
-            interval_duration (int, optional): the length of intervals (value in seconds). Defaults to 60.
+            transcription_path (str | PathLike): Path to JSON file with words from transcribation.
+            video_path (str | PathLike): Path to local video file.
+            lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
+            device (str, optional): Device type on local machine (GPU recommended). Defaults to None.
+            output_dir (str | PathLike): Path to save JSON with information about contradictions.
+            chosen_intervals (list[int], optional): Flags for intervals for analyzis. Defaults to [].
+                For default settings will be analyzed full text.
+            interval_duration (int, optional): The length of intervals (value in seconds). Defaults to 60.
         """
+        if lang not in ["en", "ru"]:
+            raise NotImplementedError("'lang' must be 'en' or 'ru'.")
         self.lang = lang
 
         self._device = torch.device("cpu")
@@ -45,54 +47,61 @@ class ContradictionDetector:
             self.model.to(self._device)
 
         self.transcription_path = transcription_path
-        self.path_to_video = path_to_video
-        self.save_to = save_to
         self.chosen_intervals = chosen_intervals
         self.interval_duration = interval_duration
-    
+
+        if output_dir is not None:
+            self.temp_path = output_dir
+        else:
+            basename = os.path.splitext(os.path.basename(video_path))[0]
+            self.temp_path = os.path.join("temp", basename)
+        if not os.path.exists(self.temp_path):
+            os.makedirs(self.temp_path)
+
     def get_sentences(self, all_words):
         sentences = []
         if all_words:
-            end = all_words[0]['end']
-            sentence = all_words[0]['word']
-            
+            end = all_words[0]["end"]
+            sentence = all_words[0]["text"]
+
             for idx in range(len(all_words[:-1])):
-                if all_words[idx+1]['start'] - end < 1.0:
-                    sentence += ' ' + all_words[idx+1]['word']
-                    end = all_words[idx+1]['end']
+                if all_words[idx+1]["start"] - end < 1.0:
+                    sentence += " " + all_words[idx+1]["text"]
+                    end = all_words[idx+1]["end"]
                 else:
                     sentences.append(sentence)
-                    end = all_words[idx+1]['end']
-                    sentence = all_words[idx+1]['word']
+                    end = all_words[idx+1]["end"]
+                    sentence = all_words[idx+1]["text"]
             sentences.append(sentence)
         else:
-            raise 'No words'
+            raise "No words."
         return sentences
-        
+
     def get_phrases(self, all_words, duration=60) -> List[dict]:
         phrases = []
 
-        assert len(all_words) > 1, "not enough words"
+        assert len(all_words) > 1, "Not enough words."
 
         while all_words:
             init_elem = all_words.pop(0)
-            phrase = init_elem["word"]
+            phrase = init_elem["text"]
             time_left = duration - (init_elem["end"] - init_elem["start"])
             end_time = init_elem["end"]
             while time_left > 0 and all_words:
                 elem = all_words.pop(0)
-                phrase = phrase + " " + elem["word"]
+                phrase = phrase + " " + elem["text"]
                 time_left -= elem["end"] - end_time
                 end_time = elem["end"]
             else:
-                phrases.append({"time": [init_elem["start"], elem["end"]], "text": phrase})
+                phrases.append(
+                    {"time": [init_elem["start"], elem["end"]], "text": phrase})
         return phrases
 
     def analysis(self,
-                entered_text: str,
-                texts: Union[str, List[str]],
-                ind=0
-                ) -> List[dict]:
+                 entered_text: str,
+                 texts: Union[str, List[str]],
+                 ind=0
+                 ) -> List[dict]:
         analysis_results = []
         if isinstance(texts, str):
             part, predict = model_tools.predict_inference(
@@ -108,8 +117,8 @@ class ContradictionDetector:
         elif isinstance(texts, list):
             for text in texts:
                 part, predict = model_tools.predict_inference(
-                entered_text, text, self.model, lang=self.lang, device=self._device
-            )
+                    entered_text, text, self.model, lang=self.lang, device=self._device
+                )
                 try:
                     analysis_results.append(
                         {
@@ -132,52 +141,53 @@ class ContradictionDetector:
 
     @property
     def device(self) -> torch.device:
-        """Check the device type."""
+        """Check the device type.
+
+        Returns:
+            torch.device: Device type on local machine.
+        """
         return self._device
 
     def get_contradiction(self,
-                        entered_text: str,
-                        ) -> None:
+                          entered_text: str,
+                          ) -> None:
         """Function for text analyzing.
-        Creates json file with predictions
+        Creates json file with predictions.
 
         Args:
-            entered_text (str): utterance for analyzis
-        """        
-        with open(self.transcription_path, 'r') as f:
+            entered_text (str): Utterance for analysis.
+        """
+        with open(self.transcription_path, "r") as f:
             words = json.load(f)
-        
+
         if len(self.chosen_intervals):
-            fragments = self.get_phrases(words[:], duration=self.interval_duration)
+            fragments = self.get_phrases(
+                words[:], duration=self.interval_duration)
             intervals = dict.fromkeys(range(len(fragments)))
             for interval in self.chosen_intervals:
                 interval_words = []
                 for word in words:
-                    if fragments[interval]["time"][0] <= word['start'] and word['end'] <= fragments[interval]["time"][1]:
+                    if fragments[interval]["time"][0] <= word["start"] and word["end"] <= fragments[interval]["time"][1]:
                         interval_words.append(word)
                 texts = self.get_sentences(interval_words)
                 intervals[interval] = texts
-            
+
             contr_data = []
 
             for ind in intervals:
                 if intervals[ind]:
-                    analysis_results = self.analysis(entered_text, texts, ind=ind)
+                    analysis_results = self.analysis(
+                        entered_text, texts, ind=ind)
                     contr_data.append(analysis_results)
-            
-            # Unpacking of the list of lists
+
+            # Unpacking of the list of lists.
             contr_data = [item for sublist in contr_data for item in sublist]
-        
+
         else:
             texts = self.get_sentences(words)
             contr_data = self.analysis(entered_text, texts)
 
-        temp_path = os.path.splitext(os.path.basename(self.path_to_video))[0]
-        if not os.path.exists(os.path.join(self.save_to, temp_path)):
-            os.makedirs(os.path.join(self.save_to, temp_path))
-            
-        with open(os.path.join(self.save_to, temp_path, 'contradiction.json'), 'w') as filename:
+        with open(os.path.join(self.temp_path, "contradiction.json"), "w") as filename:
             json.dump(contr_data, filename)
-        
-        return os.path.join(self.save_to, temp_path, "contradiction.json")
 
+        return os.path.join(self.temp_path, "contradiction.json")

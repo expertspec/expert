@@ -16,10 +16,10 @@ class AggressionDetector:
     """AggressionDetector.
 
     Args:
-        video_path (str | Pathlike): Path to the local video file.
-        features_path (str | Pathlike): Path to the result of feature extraction module.
-        diarization_path (str | Pathlike): Path to the result of diarization module.
-        transcription_path (str | Pathlike): Path to the result of speech recognition module.
+        video_path (str | PathLike): Path to the local video file.
+        features_path (str | PathLike): Path to the result of feature extraction module.
+        diarization_path (str | PathLike): Path to the result of diarization module.
+        transcription_path (str | PathLike): Path to the result of speech recognition module.
         face_image (str | PathLike): Path to the face image selected by user.
         lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
         device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
@@ -59,11 +59,11 @@ class AggressionDetector:
 
     def __init__(
         self,
-        video_path: str | Pathlike,
-        features_path: str | Pathlike,
-        diarization_path: str | Pathlike,
-        transcription_path: str | Pathlike,
-        face_image: str | Pathlike,
+        video_path: str | PathLike,
+        features_path: str | PathLike,
+        diarization_path: str | PathLike,
+        transcription_path: str | PathLike,
+        face_image: str | PathLike,
         lang: str = "en",
         device: torch.device | None = None,
         duration: int = 10,
@@ -73,7 +73,7 @@ class AggressionDetector:
         refine_landmarks: bool = True,
         min_detection_confidence: float = 0.5,
         min_tracking_confidence: float = 0.5,
-        output_dir: str | Pathlike | None = None
+        output_dir: str | PathLike | None = None
     ) -> None:
         if lang not in ["en", "ru"]:
             raise NotImplementedError("'lang' must be 'en' or 'ru'.")

@@ -1,4 +1,5 @@
-from .common import Select, TransformerEncoder
-from .detectors import AudioFeatures, ExtractBBoxes, FaceLandmarks, Frames2Results
-from .heads import IoUAwareRetinaHead
-from .necks import Inception
+from expert.core.confidence.liedet.models.common.connectors import Select
+from expert.core.confidence.liedet.models.common.transformer import TransformerEncoder
+from expert.core.confidence.liedet.models.detectors import AudioFeatures, ExtractBBoxes, FaceLandmarks, Frames2Results
+from expert.core.confidence.liedet.models.heads import IoUAwareRetinaHead
+from expert.core.confidence.liedet.models.necks import Inception

@@ -29,7 +29,7 @@ from mmcv.utils import ConfigDict, Registry
 from mmcv.utils.logging import get_logger, logger_initialized
 from mmdet.models.builder import MODELS as MMDET_MODELS
 
-from .builder import recursive_build
+from expert.core.confidence.liedet.models.builder import recursive_build
 
 registry = Registry(name="registry", parent=MODELS)
 

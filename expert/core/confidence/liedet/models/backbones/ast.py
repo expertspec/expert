@@ -15,8 +15,8 @@ from mmcv.cnn.utils.weight_init import trunc_normal_
 from mmcv.runner import _load_checkpoint, load_state_dict
 from mmdet.utils.logger import get_root_logger
 
-from ..registry import registry
-from .timesformer import PatchEmbed as PE
+from expert.core.confidence.liedet.models.registry import registry
+from expert.core.confidence.liedet.models.backbones.timesformer import PatchEmbed as PE
 
 
 class PatchEmbed(PE):

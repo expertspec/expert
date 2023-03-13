@@ -17,7 +17,7 @@ class AudioAggression:
     """Extraction of aggression markers by audio channel.
 
     Args:
-        audio (str | Pathlike | Tensor): Path to the local video/audio file or Tensor object.
+        audio (str | PathLike | Tensor): Path to the local video/audio file or Tensor object.
         stamps (List[List], optional): Specific speaker speech timestamps. Defaults to None.
         duration (int, optional): Length of intervals for extracting features. Defaults to 10.
         sr (int, optional): Sample rate. Defaults to 16000.
@@ -28,7 +28,7 @@ class AudioAggression:
 
     def __init__(
         self,
-        audio: str | Pathlike | Tensor,
+        audio: str | PathLike | Tensor,
         stamps: List[List] = None,
         duration: int = 10,
         sr: int = 16000

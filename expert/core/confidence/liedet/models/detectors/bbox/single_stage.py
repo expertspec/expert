@@ -4,7 +4,7 @@ import torch.nn as nn
 
 from mmcv.utils import ConfigDict
 
-from ...registry import build, registry
+from expert.core.confidence.liedet.models.registry import build, registry
 
 
 @registry.register_module(force=True)

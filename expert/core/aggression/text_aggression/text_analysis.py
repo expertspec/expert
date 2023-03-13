@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import torch
 from typing import List, Tuple, Dict
-import pandas as pd
-import json
 
 from expert.core.aggression.text_aggression.text_models_en import DepreciationEN
 from expert.core.aggression.text_aggression.text_models_en import ImperativeEN
