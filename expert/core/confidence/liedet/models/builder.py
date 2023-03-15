@@ -1,15 +1,9 @@
 from __future__ import annotations
 
-import copy
-from abc import ABCMeta
 from collections import OrderedDict
-from typing import Iterable, Optional
-
-import torch.nn as nn
+from typing import Optional
 
 from mmcv.utils import Registry, build_from_cfg
-
-from expert.core.confidence.liedet.models.base_module import BaseModule
 
 
 def recursive_build(
@@ -25,13 +19,14 @@ def recursive_build(
     elif isinstance(cfg, dict):
         cfg_dict = cfg
     else:
-        raise ValueError(f"Config should be dict, list or tuple, but got {type(cfg)}")
+        raise ValueError(
+            "Config should be dict, list or tuple, but got {type(cfg)}"
+        )
 
     init_cfg = cfg_dict.pop("init_cfg", init_cfg)
 
     input_key = cfg_dict.pop("input_key", input_key)
     target_key = cfg_dict.pop("target_key", target_key)
-    del_keys = cfg_dict.pop("del_keys", ())
     module_name = cfg_dict.pop("module_name", module_name)
 
     if "type" in cfg_dict:

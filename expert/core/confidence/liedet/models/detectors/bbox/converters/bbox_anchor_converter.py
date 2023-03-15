@@ -1,14 +1,17 @@
 import torch
-
 from mmdet.core.bbox import bbox_flip, build_bbox_coder
 
+from expert.core.confidence.liedet.models.detectors.bbox.converters.base_converter import (
+    BaseConverter,
+)
 from expert.core.confidence.liedet.models.registry import registry
-from expert.core.confidence.liedet.models.detectors.bbox.converters.base_converter import BaseConverter
 
 
 @registry.register_module()
 class BBoxAnchorConverter(BaseConverter):
-    def __init__(self, num_classes, nms_pre, bbox_coder, revert=True, use_sigmoid=True):
+    def __init__(
+        self, num_classes, nms_pre, bbox_coder, revert=True, use_sigmoid=True
+    ):
         super().__init__()
         self.bbox_coder = build_bbox_coder(bbox_coder)
         self.use_sigmoid_cls = use_sigmoid
@@ -70,17 +73,34 @@ class BBoxAnchorConverter(BaseConverter):
 
         result_list = []
         for img_id in range(len(img_metas)):
-            cls_score_list = [cls_scores[i][img_id].detach() for i in range(num_levels)]
-            bbox_pred_list = [bbox_preds[i][img_id].detach() for i in range(num_levels)]
+            cls_score_list = [
+                cls_scores[i][img_id].detach() for i in range(num_levels)
+            ]
+            bbox_pred_list = [
+                bbox_preds[i][img_id].detach() for i in range(num_levels)
+            ]
             # TODO: hard code. 0 for anchor_list, 1 for valid_flag_list
             anchors = mlvl_anchors[0][img_id]
             proposals = self._get_bboxes_single(
-                cls_score_list, bbox_pred_list, anchors, img_metas[img_id], self.nms_pre, self.revert
+                cls_score_list,
+                bbox_pred_list,
+                anchors,
+                img_metas[img_id],
+                self.nms_pre,
+                self.revert,
             )
             result_list.append(proposals)
         return result_list
 
-    def _get_bboxes_single(self, cls_score_list, bbox_pred_list, mlvl_anchors, img_metas, nms_pre, revert=True):
+    def _get_bboxes_single(
+        self,
+        cls_score_list,
+        bbox_pred_list,
+        mlvl_anchors,
+        img_metas,
+        nms_pre,
+        revert=True,
+    ):
         """Transform outputs for a single batch item into bbox predictions.
         Aapted from https://github.com/open-mmlab/mmdetection
         Args:
@@ -109,9 +129,13 @@ class BBoxAnchorConverter(BaseConverter):
         assert len(cls_score_list) == len(bbox_pred_list) == len(mlvl_anchors)
         mlvl_bboxes = []
         mlvl_scores = []
-        for cls_score, bbox_pred, anchors in zip(cls_score_list, bbox_pred_list, mlvl_anchors):
+        for cls_score, bbox_pred, anchors in zip(
+            cls_score_list, bbox_pred_list, mlvl_anchors
+        ):
             assert cls_score.size()[-2:] == bbox_pred.size()[-2:]
-            cls_score = cls_score.permute(1, 2, 0).reshape(-1, self.cls_out_channels)
+            cls_score = cls_score.permute(1, 2, 0).reshape(
+                -1, self.cls_out_channels
+            )
             if self.use_sigmoid_cls:
                 scores = cls_score.sigmoid()
             else:
@@ -130,7 +154,9 @@ class BBoxAnchorConverter(BaseConverter):
                 anchors = anchors[topk_inds, :]
                 bbox_pred = bbox_pred[topk_inds, :]
                 scores = scores[topk_inds, :]
-            bboxes = self.bbox_coder.decode(anchors, bbox_pred, max_shape=img_shape)
+            bboxes = self.bbox_coder.decode(
+                anchors, bbox_pred, max_shape=img_shape
+            )
             mlvl_bboxes.append(bboxes)
             mlvl_scores.append(scores)
         mlvl_bboxes = torch.cat(mlvl_bboxes)
@@ -145,12 +171,18 @@ class BBoxAnchorConverter(BaseConverter):
         if revert:
             flip = img_metas["flip"]
             flip_direction = img_metas["flip_direction"]
-            mlvl_bboxes = bbox_revert(mlvl_bboxes, img_shape, scale_factor, flip, flip_direction)
+            mlvl_bboxes = bbox_revert(
+                mlvl_bboxes, img_shape, scale_factor, flip, flip_direction
+            )
         return mlvl_bboxes, mlvl_scores, mlvl_centerness
 
 
-def bbox_revert(bboxes, img_shape, scale_factor, flip, flip_direction="horizontal"):
+def bbox_revert(
+    bboxes, img_shape, scale_factor, flip, flip_direction="horizontal"
+):
     """Map bboxes from testing scale to original image scale."""
-    new_bboxes = bbox_flip(bboxes, img_shape, flip_direction) if flip else bboxes
+    new_bboxes = (
+        bbox_flip(bboxes, img_shape, flip_direction) if flip else bboxes
+    )
     new_bboxes = new_bboxes.view(-1, 4) / new_bboxes.new_tensor(scale_factor)
     return new_bboxes.view(bboxes.shape)

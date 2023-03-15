@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+from typing import Dict, Tuple
+
+import numpy as np
 import torch
 from torch import Tensor
-from typing import Dict, Tuple
-import numpy as np
 
 
 def amplitude_envelope(signal, frame_size: int = 512) -> Tensor:
     amplitude_envelope = []
     for frame in range(0, len(signal), frame_size):
-        current = max(signal[frame: frame + frame_size].numpy())
+        current = max(signal[frame : frame + frame_size].numpy())
         amplitude_envelope.append(current)
 
     return torch.tensor(amplitude_envelope)
@@ -21,7 +22,9 @@ def chunkizer(chunk_length: int, audio: Tensor, sr: int) -> Tensor:
     num_chunks = int(-(-duration // chunk_length))
     chunks = []
     for i in range(num_chunks):
-        chunks.append(audio[i * chunk_length * sr:(i + 1) * chunk_length * sr])
+        chunks.append(
+            audio[i * chunk_length * sr : (i + 1) * chunk_length * sr]
+        )
 
     return chunks
 
@@ -54,17 +57,23 @@ def get_rapidness(sequence: Dict, envelope: Tensor) -> int:
     sharp_angles = {}
     for timestamp, angle in sequence.items():
         if angle > 0:
-            if angle >= np.mean(list(sequence.values())) + 2 * np.std(list(sequence.values())):
+            if angle >= np.mean(list(sequence.values())) + 2 * np.std(
+                list(sequence.values())
+            ):
                 sharp_angles.update({timestamp: angle})
         else:
-            if angle <= np.mean(list(sequence.values())) - 2 * np.std(list(sequence.values())):
+            if angle <= np.mean(list(sequence.values())) - 2 * np.std(
+                list(sequence.values())
+            ):
                 sharp_angles.update({timestamp: angle})
 
     timestamps = []
     # Loudness detection.
     for timestamp in sharp_angles.keys():
         try:
-            if 1 - np.abs(envelope[timestamp]) < np.abs(envelope[timestamp]) - np.abs(np.mean(envelope)):
+            if 1 - np.abs(envelope[timestamp]) < np.abs(
+                envelope[timestamp]
+            ) - np.abs(np.mean(envelope)):
                 timestamps.append(timestamp)
         except IndexError:
             continue

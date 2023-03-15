@@ -1,10 +1,13 @@
 import numpy as np
-
 import torch
 
+from expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_anchors import (
+    BBoxBaseAnchor,
+)
+from expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_meshgrid import (
+    BaseMeshGrid,
+)
 from expert.core.confidence.liedet.models.registry import registry
-from expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_anchors import BBoxBaseAnchor
-from expert.core.confidence.liedet.models.detectors.bbox.meshgrids.base_meshgrid import BaseMeshGrid
 
 
 @registry.register_module()
@@ -13,7 +16,9 @@ class BBoxAnchorMeshGrid(BaseMeshGrid):
         super().__init__(strides=strides)
         self.base_anchors = BBoxBaseAnchor(**base_anchor).generate()
 
-    def gen_anchor_mesh(self, featmap_sizes, img_metas, dtype=torch.float, device="cuda"):
+    def gen_anchor_mesh(
+        self, featmap_sizes, img_metas, dtype=torch.float, device="cuda"
+    ):
         """Get anchors according to feature map sizes.
         Args:
             featmap_sizes (list[tuple]): Multi-level feature map sizes.
@@ -28,13 +33,17 @@ class BBoxAnchorMeshGrid(BaseMeshGrid):
 
         # since feature map sizes of all images are the same, we only compute
         # anchors for one time
-        multi_level_anchors = self._gen_anchor_mesh(featmap_sizes, dtype, device)
+        multi_level_anchors = self._gen_anchor_mesh(
+            featmap_sizes, dtype, device
+        )
         anchor_list = [multi_level_anchors for _ in range(num_imgs)]
 
         # for each image, we compute valid flags of multi level anchors
         valid_flag_list = []
         for img_id, img_meta in enumerate(img_metas):
-            multi_level_flags = self.valid_flags(featmap_sizes, img_meta["pad_shape"], device)
+            multi_level_flags = self.valid_flags(
+                featmap_sizes, img_meta["pad_shape"], device
+            )
             valid_flag_list.append(multi_level_flags)
 
         return anchor_list, valid_flag_list
@@ -52,12 +61,17 @@ class BBoxAnchorMeshGrid(BaseMeshGrid):
         multi_level_anchors = []
         for i in range(self.num_levels):
             anchors = self._single_level_anchor_mesh(
-                self.base_anchors[i].to(device).to(dtype), featmap_sizes[i], self.strides[i], device=device
+                self.base_anchors[i].to(device).to(dtype),
+                featmap_sizes[i],
+                self.strides[i],
+                device=device,
             )
             multi_level_anchors.append(anchors)
         return multi_level_anchors
 
-    def _single_level_anchor_mesh(self, base_anchors, featmap_size, stride, device):
+    def _single_level_anchor_mesh(
+        self, base_anchors, featmap_size, stride, device
+    ):
         """Generate grid anchors of a single level.
         Note:
             This function is usually called by method ``self.grid_anchors``.
@@ -127,12 +141,17 @@ class BBoxAnchorMeshGrid(BaseMeshGrid):
             valid_feat_h = min(int(np.ceil(h / anchor_stride)), feat_h)
             valid_feat_w = min(int(np.ceil(w / anchor_stride)), feat_w)
             flags = self._single_level_valid_flags(
-                (feat_h, feat_w), (valid_feat_h, valid_feat_w), self.num_base_anchors[i], device=device
+                (feat_h, feat_w),
+                (valid_feat_h, valid_feat_w),
+                self.num_base_anchors[i],
+                device=device,
             )
             multi_level_flags.append(flags)
         return multi_level_flags
 
-    def _single_level_valid_flags(self, featmap_size, valid_size, num_base_anchors, device="cuda"):
+    def _single_level_valid_flags(
+        self, featmap_size, valid_size, num_base_anchors, device="cuda"
+    ):
         """Generate the valid flags of anchor in a single feature map.
         Args:
             featmap_size (tuple[int]): The size of feature maps.
@@ -153,7 +172,12 @@ class BBoxAnchorMeshGrid(BaseMeshGrid):
         valid_y[:valid_h] = 1
         valid_xx, valid_yy = self._meshgrid(valid_x, valid_y)
         valid = valid_xx & valid_yy
-        valid = valid[:, None].expand(valid.size(0), num_base_anchors).contiguous().view(-1)
+        valid = (
+            valid[:, None]
+            .expand(valid.size(0), num_base_anchors)
+            .contiguous()
+            .view(-1)
+        )
         return valid
 
     @property

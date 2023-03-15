@@ -9,19 +9,19 @@ class CustomFormatter(logging.Formatter):
     reset = "\033[31m"
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
     datefmt = "%Y-%m-%d %H:%M:%S"
-    
+
     FORMATS = {
         logging.DEBUG: yellow + format + reset,
         logging.INFO: green + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.CRITICAL: bold_red + format + reset,
     }
-    
+
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, datefmt="%Y-%m-%d %H:%M:%S")
-        
+
         return formatter.format(record)
 
 

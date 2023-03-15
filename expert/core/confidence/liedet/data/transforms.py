@@ -16,7 +16,9 @@ class Concat(nn.Module):
         ...  # noqa: WPS428
 
     @overload
-    def __init__(self, dim: Union[str, None], *, out: Optional[Tensor] = None) -> None:
+    def __init__(
+        self, dim: Union[str, None], *, out: Optional[Tensor] = None
+    ) -> None:
         ...  # noqa: WPS428
 
     def __init__(self, **kwargs) -> None:

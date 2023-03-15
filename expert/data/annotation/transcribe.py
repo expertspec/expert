@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-import torch
-import whisper
-import torch.nn.functional as F
-from whisper.audio import N_FRAMES, HOP_LENGTH, SAMPLE_RATE  # 3000, 160, 16000
-from scipy.ndimage import median_filter
-from typing import List
-import numpy as np
-import logging
-import string
 import base64
 import gzip
-import sys
+import logging
 import os
+import string
+import sys
+from typing import List
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+import whisper
+from scipy.ndimage import median_filter
+from whisper.audio import HOP_LENGTH, N_FRAMES, SAMPLE_RATE  # 3000, 160, 16000
 
 
 class HiddenPrints:
@@ -40,7 +41,6 @@ def transcribe_timestamped(
     audio,
     language=None,
     task="transcribe",
-
     # Additional options for word alignment.
     remove_punctuation_from_words=False,
     compute_word_confidence=True,
@@ -48,14 +48,13 @@ def transcribe_timestamped(
     refine_whisper_precision=0.5,
     min_word_duration=0.04,
     plot_word_alignment=False,
-    word_alignement_most_top_layers=None, 
-
+    word_alignement_most_top_layers=None,
     # Reproducibility.
     seed=1234,
-    
     # Other Whisper options.
-    temperature=0.0 if USE_EFFICIENT_BY_DEFAULT else (
-        0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
+    temperature=0.0
+    if USE_EFFICIENT_BY_DEFAULT
+    else (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
     best_of=None,
     patience=None,
     length_penalty=None,
@@ -119,12 +118,19 @@ def transcribe_timestamped(
         torch.cuda.manual_seed_all(seed)
 
     # Check input options.naive_approach
-    assert refine_whisper_precision >= 0 and refine_whisper_precision / AUDIO_TIME_PER_TOKEN == round(
-        refine_whisper_precision / AUDIO_TIME_PER_TOKEN), f"refine_whisper_precision must be a positive multiple of {AUDIO_TIME_PER_TOKEN}"
+    assert (
+        refine_whisper_precision >= 0
+        and refine_whisper_precision / AUDIO_TIME_PER_TOKEN
+        == round(refine_whisper_precision / AUDIO_TIME_PER_TOKEN)
+    ), f"refine_whisper_precision must be a positive multiple of {AUDIO_TIME_PER_TOKEN}"
     refine_whisper_precision_nframes = round(
-        refine_whisper_precision / AUDIO_TIME_PER_TOKEN)
-    assert min_word_duration >= 0, f"min_word_duration must be a positive number"
-    assert word_alignement_most_top_layers is None or word_alignement_most_top_layers > 0, f"word_alignement_most_top_layers must be a strictly positive number"
+        refine_whisper_precision / AUDIO_TIME_PER_TOKEN
+    )
+    assert min_word_duration >= 0, "min_word_duration must be a positive number"
+    assert (
+        word_alignement_most_top_layers is None
+        or word_alignement_most_top_layers > 0
+    ), "word_alignement_most_top_layers must be a strictly positive number"
 
     if isinstance(temperature, (list, tuple)) and len(temperature) == 1:
         temperature = temperature[0]
@@ -145,8 +151,9 @@ def transcribe_timestamped(
         refine_whisper_precision_nframes=refine_whisper_precision_nframes,
         plot_word_alignment=plot_word_alignment,
         word_alignement_most_top_layers=word_alignement_most_top_layers,
-        alignment_heads=get_alignment_heads(
-            model) if word_alignement_most_top_layers is None else None,
+        alignment_heads=get_alignment_heads(model)
+        if word_alignement_most_top_layers is None
+        else None,
     )
     whisper_options = dict(
         language=language,
@@ -167,7 +174,8 @@ def transcribe_timestamped(
         compression_ratio_threshold=compression_ratio_threshold,
     )
     (transcription, words) = _transcribe_timestamped_efficient(
-        model, audio, **alignment_options, **whisper_options, **other_options)
+        model, audio, **alignment_options, **whisper_options, **other_options
+    )
 
     # Refine word positions.
     ensure_increasing_positions(words, min_duration=min_word_duration)
@@ -205,7 +213,6 @@ def _transcribe_timestamped_efficient(
     # Whisper specific options.
     **whisper_options,
 ):
-
     # Get options.
     sample_len = whisper_options["sample_len"]
     temperature = whisper_options["temperature"]
@@ -215,22 +222,30 @@ def _transcribe_timestamped_efficient(
     logit_filters = get_logit_filters(model, whisper_options)
     language = whisper_options["language"]
     tokenizer = whisper.tokenizer.get_tokenizer(
-        model.is_multilingual, task=whisper_options["task"], language=language)
+        model.is_multilingual, task=whisper_options["task"], language=language
+    )
 
     max_sample_len = sample_len or model.dims.n_text_ctx // 2
 
     debug = logger.getEffectiveLevel() >= logging.DEBUG
 
-    word_alignement_most_top_layers = float(
-        "inf") if word_alignement_most_top_layers is None else word_alignement_most_top_layers
+    word_alignement_most_top_layers = (
+        float("inf")
+        if word_alignement_most_top_layers is None
+        else word_alignement_most_top_layers
+    )
 
     timestamped_word_segments = []
     segment_tokens = [[]]
-    segment_attweights = [[] for _ in range(
-        min(word_alignement_most_top_layers, len(model.decoder.blocks)))]
+    segment_attweights = [
+        []
+        for _ in range(
+            min(word_alignement_most_top_layers, len(model.decoder.blocks))
+        )
+    ]
 
     segment_avglogprobs = []
-    segment_logprobs = []           # Token log probabilities for each segment.
+    segment_logprobs = []  # Token log probabilities for each segment.
     # Variables related to options that can skip some segments.
     # Index of the SOT token in the current set of processed tokens.
     sot_index = None
@@ -244,7 +259,7 @@ def _transcribe_timestamped_efficient(
     chunk_tokens_nosot = []
     # Last token to use as a fallback if the model gets stuck.
     last_token_fallback = None
-    has_started = False             # Whether we have started decoding.
+    has_started = False  # Whether we have started decoding.
     # MFCC features for the current 30 sec chunk.
     mfcc = None
     new_mfcc = None
@@ -252,10 +267,14 @@ def _transcribe_timestamped_efficient(
     num_inference_steps = 0
 
     def is_sot(curr_tokens):
-        return curr_tokens is None or len(curr_tokens) > 1 or curr_tokens[0] == tokenizer.sot
+        return (
+            curr_tokens is None
+            or len(curr_tokens) > 1
+            or curr_tokens[0] == tokenizer.sot
+        )
 
     def reset(add_segment, keep_last_token):
-        """ Reset the list of tokens for the current speech segment, and corresponding cross-attention weights """
+        """Reset the list of tokens for the current speech segment, and corresponding cross-attention weights"""
         nonlocal segment_tokens, segment_attweights
         if add_segment:
             if keep_last_token:
@@ -267,13 +286,15 @@ def _transcribe_timestamped_efficient(
             segment_tokens[-2].pop(0)
             if debug:
                 logger.debug(
-                    f"Added new segment: {tokenizer.decode_with_timestamps(segment_tokens[-2])}")
+                    f"Added new segment: {tokenizer.decode_with_timestamps(segment_tokens[-2])}"
+                )
         elif len(segment_tokens[-1]) > 0:
             segment_tokens[-1] = []
             segment_attweights = [[] for w in segment_attweights]
         if debug:
             logger.debug(
-                f"Reset last segment to: {tokenizer.decode_with_timestamps(segment_tokens[-1])}")
+                f"Reset last segment to: {tokenizer.decode_with_timestamps(segment_tokens[-1])}"
+            )
 
     saw_consecutive_timestamps = False
 
@@ -283,8 +304,11 @@ def _transcribe_timestamped_efficient(
         nonlocal segment_tokens, saw_consecutive_timestamps, chunk_tokens_nosot
         if not is_sot(curr_tokens):
             is_timestamp = curr_tokens[0] >= tokenizer.timestamp_begin
-            is_previous_timestamp = segment_tokens[-1][-1] >= tokenizer.timestamp_begin if len(
-                segment_tokens[-1]) > 0 else False
+            is_previous_timestamp = (
+                segment_tokens[-1][-1] >= tokenizer.timestamp_begin
+                if len(segment_tokens[-1]) > 0
+                else False
+            )
             consecutive_timestamps = is_timestamp and is_previous_timestamp
             if consecutive_timestamps:
                 saw_consecutive_timestamps = True
@@ -292,8 +316,9 @@ def _transcribe_timestamped_efficient(
                 consecutive_timestamps = True
             return consecutive_timestamps
         else:  # Several tokens as a prompt or must flush last segments
-            must_flush = not saw_consecutive_timestamps and len(
-                segment_tokens[-1]) > 1
+            must_flush = (
+                not saw_consecutive_timestamps and len(segment_tokens[-1]) > 1
+            )
             logger.debug(f"New prompt: flushing = {must_flush}")
             if not must_flush:
                 # Discard the end of the last transcription.
@@ -308,7 +333,7 @@ def _transcribe_timestamped_efficient(
 
         if is_sot(curr_tokens):
             res = index_begin_30sec_chunck
-            index_begin_30sec_chunck = len(segment_tokens)-1
+            index_begin_30sec_chunck = len(segment_tokens) - 1
             return res
 
     def may_flush_segment(curr_tokens=None):
@@ -321,53 +346,65 @@ def _transcribe_timestamped_efficient(
         # Check if a new segment should be added.
         unfinished_decoding = False
         if must_flush_segment(curr_tokens):
-
             if mfcc is None:
                 mfcc = new_mfcc
 
             if debug:
                 logger.debug(
-                    f"Adding segment {len(timestamped_word_segments)+1} at step {num_inference_steps}:\n\t{tokenizer.decode_with_timestamps(segment_tokens[-1])}")
+                    f"Adding segment {len(timestamped_word_segments)+1} at step {num_inference_steps}:\n\t{tokenizer.decode_with_timestamps(segment_tokens[-1])}"
+                )
 
             tokens = segment_tokens[-1][1:]
             # When the decoding hit the max limit (number of tokens) -- usually when the language model gets stuck --
             # then we have to recover the last token from what is send to the decoder.
-            unfinished_decoding = len(
-                tokens) and tokens[-1] < tokenizer.timestamp_begin
+            unfinished_decoding = (
+                len(tokens) and tokens[-1] < tokenizer.timestamp_begin
+            )
             last_token_reliable = True
 
             if unfinished_decoding:
                 logger.debug(
-                    f"WARNING: decoding hit the max limit for segment {segment_tokens} (It usually happens when the language model gets stuck)")
+                    f"WARNING: decoding hit the max limit for segment {segment_tokens} (It usually happens when the language model gets stuck)"
+                )
                 # The last token chosen is in the prompt for the new chunk.
-                if curr_tokens is not None and curr_tokens[0] == tokenizer.sot_prev:
+                if (
+                    curr_tokens is not None
+                    and curr_tokens[0] == tokenizer.sot_prev
+                ):
                     index_sot = (curr_tokens == tokenizer.sot).nonzero(
-                        as_tuple=True)
+                        as_tuple=True
+                    )
                     assert len(index_sot) == 1
                     index_sot = index_sot[0].item()
                     assert index_sot > 0
-                    last_token_fallback = curr_tokens[index_sot-1].item()
+                    last_token_fallback = curr_tokens[index_sot - 1].item()
                     logger.debug(
-                        f"         Guessed last token from the prompt for the new chunk: {last_token_fallback}")
+                        f"         Guessed last token from the prompt for the new chunk: {last_token_fallback}"
+                    )
                 # Fallback for the last segment, or without prompt: Assume greedy decoding.
                 else:
                     last_token_fallback = torch.argmax(
-                        chunk_logprobs[-1]).item()
-                    last_token_reliable = (temperature == 0)
+                        chunk_logprobs[-1]
+                    ).item()
+                    last_token_reliable = temperature == 0
                     logger.debug(
-                        f"         Guess last token using probas (assuming greedy decoding): {last_token_fallback}")
+                        f"         Guess last token using probas (assuming greedy decoding): {last_token_fallback}"
+                    )
                 if debug:
                     logger.debug(
-                        f"WARNING: also add last token: {tokenizer.decode_with_timestamps([last_token_fallback])}")
+                        f"WARNING: also add last token: {tokenizer.decode_with_timestamps([last_token_fallback])}"
+                    )
 
                 tokens.append(last_token_fallback)
                 segment_tokens[-1].append(last_token_fallback)
-                attention_weights = [torch.cat(w, dim=-2)
-                                     for w in segment_attweights]
+                attention_weights = [
+                    torch.cat(w, dim=-2) for w in segment_attweights
+                ]
                 last_logprobs = chunk_logprobs[-1]
             else:
                 attention_weights = [
-                    torch.cat(w[:-1], dim=-2) for w in segment_attweights]
+                    torch.cat(w[:-1], dim=-2) for w in segment_attweights
+                ]
                 last_logprobs = chunk_logprobs[-2]
 
             # Check prediction of last token.
@@ -377,8 +414,11 @@ def _transcribe_timestamped_efficient(
                 assert start_token >= tokenizer.timestamp_begin
                 # If Whisper prediction of the end is obviously wrong, we predict it again (constrained).
                 if end_token <= start_token:
-                    new_end_token = last_logprobs[start_token +
-                                                  1:].argmax() + start_token + 1
+                    new_end_token = (
+                        last_logprobs[start_token + 1 :].argmax()
+                        + start_token
+                        + 1
+                    )
                     tokens[-1] = new_end_token.item()
                     if debug:
                         logger.debug(
@@ -406,82 +446,107 @@ def _transcribe_timestamped_efficient(
             if add_segment:
                 timestamped_word_segments.append(ws)
             else:
-                logger.debug(f"Not added!")
+                logger.debug("Not added!")
             reset(add_segment, not is_sot(curr_tokens))
 
         i_start = get_index_begin_30sec_chunck(curr_tokens)
 
         # All segments from previous 30sec chunck have been collected.
-        if (i_start is not None and has_started):
-
+        if i_start is not None and has_started:
             mfcc = new_mfcc
 
             # Get word confidence and/or check if previous segments shoud have been skipped.
             should_skip = False
             if compute_word_confidence or no_speech_threshold is not None:
-
                 # No voice activity check.
-                should_skip = (no_speech_prob > no_speech_threshold) if (
-                    no_speech_threshold is not None) else False
-                if compute_word_confidence or (should_skip and logprob_threshold is not None):
+                should_skip = (
+                    (no_speech_prob > no_speech_threshold)
+                    if (no_speech_threshold is not None)
+                    else False
+                )
+                if compute_word_confidence or (
+                    should_skip and logprob_threshold is not None
+                ):
                     n = len(chunk_logprobs)
                     if n == len(chunk_tokens_nosot):
                         chunk_tokens_nosot = chunk_tokens_nosot[1:]
                     if unfinished_decoding:
                         assert last_token_fallback is not None
                         last_tokens = [last_token_fallback]
-                        timestamped_word_segments[-1][-1]["avg_logprob_reliable"] = last_token_reliable
+                        timestamped_word_segments[-1][-1][
+                            "avg_logprob_reliable"
+                        ] = last_token_reliable
                         n += 1
                     elif len(chunk_tokens_nosot) >= max_sample_len - 3:
                         # There were segments in the 30sec chunck, and then the LM got stuck.
                         last_tokens = [torch.argmax(chunk_logprobs[-1]).item()]
-                        timestamped_word_segments[-1][-1]["avg_logprob_reliable"] = (
-                            temperature == 0)
+                        timestamped_word_segments[-1][-1][
+                            "avg_logprob_reliable"
+                        ] = (temperature == 0)
                     else:
                         last_tokens = [tokenizer.eot]
                     chunck_indices = chunk_tokens_nosot + last_tokens
                     assert len(chunk_logprobs) == len(
-                        chunck_indices), f"{len(chunk_logprobs)} != {len(chunck_indices)}"
-                    logprobs = torch.cat([logprob[i].unsqueeze(0) for (
-                        logprob, i) in zip(chunk_logprobs, chunck_indices)])
-                    assert min([p.isfinite().item() for p in logprobs]), \
-                        f"Got infinite logprob among ({len(logprobs)}) {[(i, tokenizer.decode_with_timestamps([i]), v.item()) for (i,v) in zip(chunck_indices, logprobs)]}"
+                        chunck_indices
+                    ), f"{len(chunk_logprobs)} != {len(chunck_indices)}"
+                    logprobs = torch.cat(
+                        [
+                            logprob[i].unsqueeze(0)
+                            for (logprob, i) in zip(
+                                chunk_logprobs, chunck_indices
+                            )
+                        ]
+                    )
+                    assert min(
+                        [p.isfinite().item() for p in logprobs]
+                    ), f"Got infinite logprob among ({len(logprobs)}) {[(i, tokenizer.decode_with_timestamps([i]), v.item()) for (i,v) in zip(chunck_indices, logprobs)]}"
                     sum_logprob = sum(logprobs)
                     avg_logprob = sum_logprob / n
                     # Don't skip if the logprob is high enough, whatever the no_speech_prob is.
-                    if logprob_threshold is not None and avg_logprob > logprob_threshold:
+                    if (
+                        logprob_threshold is not None
+                        and avg_logprob > logprob_threshold
+                    ):
                         should_skip = False
 
                 if should_skip:
                     logger.debug(
-                        f"Skipping last {len(segment_tokens)-1-i_start} segments (no_speech_prob {no_speech_prob} > {no_speech_threshold} and avg_logprob {avg_logprob} < {logprob_threshold})")
-                    index_begin_30sec_chunck -= len(segment_tokens)-1-i_start
-                    segment_tokens = segment_tokens[:i_start] + \
-                        [segment_tokens[-1]]
-                    timestamped_word_segments = timestamped_word_segments[:i_start]
+                        f"Skipping last {len(segment_tokens)-1-i_start} segments (no_speech_prob {no_speech_prob} > {no_speech_threshold} and avg_logprob {avg_logprob} < {logprob_threshold})"
+                    )
+                    index_begin_30sec_chunck -= (
+                        len(segment_tokens) - 1 - i_start
+                    )
+                    segment_tokens = segment_tokens[:i_start] + [
+                        segment_tokens[-1]
+                    ]
+                    timestamped_word_segments = timestamped_word_segments[
+                        :i_start
+                    ]
                 elif compute_word_confidence:
                     avg_logprob = avg_logprob.item()
                     i_token_end = -1
-                    for i in range(i_start, len(segment_tokens)-1):
+                    for i in range(i_start, len(segment_tokens) - 1):
                         tokens = segment_tokens[i]
                         i_token_start = i_token_end + 1
                         i_token_end = i_token_start + len(tokens)
-                        assert chunck_indices[i_token_start:
-                                              i_token_end] == tokens, f"""
+                        assert (
+                            chunck_indices[i_token_start:i_token_end] == tokens
+                        ), f"""
                         Inconsistent token list {tokenizer.decode_with_timestamps(chunck_indices[i_token_start:i_token_end])} != {tokenizer.decode_with_timestamps(tokens)}
                         """
                         i_token_start += 1  # skip sos (start time)
                         if not unfinished_decoding:
                             i_token_end -= 1  # skip eos (end time)
                         segment_logprobs.append(
-                            logprobs[i_token_start:i_token_end])
+                            logprobs[i_token_start:i_token_end]
+                        )
                         segment_avglogprobs.append(avg_logprob)
                 else:
-                    for i in range(i_start, len(segment_tokens)-1):
+                    for i in range(i_start, len(segment_tokens) - 1):
                         segment_logprobs.append(None)
                         segment_avglogprobs.append(None)
             else:
-                for i in range(i_start, len(segment_tokens)-1):
+                for i in range(i_start, len(segment_tokens) - 1):
                     segment_logprobs.append(None)
                     segment_avglogprobs.append(None)
 
@@ -519,7 +584,10 @@ def _transcribe_timestamped_efficient(
                     whisper_options["language"] = language
 
             logit_filters = get_logit_filters(
-                model, whisper_options, prompt=chunk_prompt[1:-len(tokenizer.sot_sequence)])
+                model,
+                whisper_options,
+                prompt=chunk_prompt[1 : -len(tokenizer.sot_sequence)],
+            )
 
         may_flush_segment(curr_tokens)
 
@@ -547,7 +615,8 @@ def _transcribe_timestamped_efficient(
 
         if embedding_weights is None:
             embedding_weights = torch.transpose(
-                model.decoder.token_embedding.weight, 0, 1).to(outs[0].dtype)
+                model.decoder.token_embedding.weight, 0, 1
+            ).to(outs[0].dtype)
 
         # Get the probability of silence.
         if sot_index is not None:
@@ -565,12 +634,14 @@ def _transcribe_timestamped_efficient(
             chunk_logprobs.append(logits)
 
     try:
-
         # Add hooks to the model, to get tokens and attention weights on the fly.
         all_hooks = []
         all_hooks.append(model.encoder.conv1.register_forward_hook(hook_mfcc))
         all_hooks.append(
-            model.decoder.token_embedding.register_forward_hook(hook_input_tokens))
+            model.decoder.token_embedding.register_forward_hook(
+                hook_input_tokens
+            )
+        )
         nblocks = len(model.decoder.blocks)
         j = 0
         for i, block in enumerate(model.decoder.blocks):
@@ -578,7 +649,10 @@ def _transcribe_timestamped_efficient(
                 continue
             all_hooks.append(
                 block.cross_attn.register_forward_hook(
-                    lambda layer, ins, outs, index=j: hook_attention_weights(layer, ins, outs, index))
+                    lambda layer, ins, outs, index=j: hook_attention_weights(
+                        layer, ins, outs, index
+                    )
+                )
             )
             j += 1
         if compute_word_confidence or no_speech_threshold is not None:
@@ -589,7 +663,6 @@ def _transcribe_timestamped_efficient(
         transcription = model.transcribe(audio, **whisper_options)
 
     finally:
-
         # Remove hooks.
         for hook in all_hooks:
             hook.remove()
@@ -608,25 +681,42 @@ def _transcribe_timestamped_efficient(
         return tokens
 
     assert len(segment_tokens) == len(
-        timestamped_word_segments), f"Inconsistent number of segments: tokens ({len(segment_tokens)}) != timestamped_word_segments ({len(timestamped_word_segments)})"
+        timestamped_word_segments
+    ), f"Inconsistent number of segments: tokens ({len(segment_tokens)}) != timestamped_word_segments ({len(timestamped_word_segments)})"
     assert len(segment_avglogprobs) == len(
-        segment_tokens), f"Inconsistent number of segments: avg logprobs ({len(segment_avglogprobs)}) != tokens ({len(segment_tokens)})"
+        segment_tokens
+    ), f"Inconsistent number of segments: avg logprobs ({len(segment_avglogprobs)}) != tokens ({len(segment_tokens)})"
     assert len(segment_logprobs) == len(
-        segment_tokens), f"Inconsistent number of segments: logprobs ({len(segment_logprobs)}) != tokens ({len(segment_tokens)})"
+        segment_tokens
+    ), f"Inconsistent number of segments: logprobs ({len(segment_logprobs)}) != tokens ({len(segment_tokens)})"
 
     whisper_segments = transcription["segments"]
     l1 = len(whisper_segments)
     l2 = len(timestamped_word_segments)
     if l1 != l2 and l1 != 0:
         logger.warning(
-            f"Inconsistent number of segments: whisper_segments ({l1}) != timestamped_word_segments ({l2})")
-    assert l1 == l2 or l1 == 0, f"Inconsistent number of segments: whisper_segments ({l1}) != timestamped_word_segments ({l2})"
+            f"Inconsistent number of segments: whisper_segments ({l1}) != timestamped_word_segments ({l2})"
+        )
+    assert (
+        l1 == l2 or l1 == 0
+    ), f"Inconsistent number of segments: whisper_segments ({l1}) != timestamped_word_segments ({l2})"
 
     logger.debug("Compile results")
     words = []
-    for i, (segment, timestamped_words, token, avglogprob, logprobs) in enumerate(
-        zip(whisper_segments, timestamped_word_segments,
-            segment_tokens, segment_avglogprobs, segment_logprobs)
+    for i, (
+        segment,
+        timestamped_words,
+        token,
+        avglogprob,
+        logprobs,
+    ) in enumerate(
+        zip(
+            whisper_segments,
+            timestamped_word_segments,
+            segment_tokens,
+            segment_avglogprobs,
+            segment_logprobs,
+        )
     ):
         timestamped_tokens = filter_tokens(token)
         whisper_tokens = filter_tokens(segment["tokens"])
@@ -634,13 +724,17 @@ def _transcribe_timestamped_efficient(
             if len(timestamped_tokens) == len(whisper_tokens) + 1:
                 logger.warn(f"An additional token was added on segment {i}")
             else:
-                assert len(timestamped_tokens) < len(whisper_tokens) and timestamped_tokens == whisper_tokens[:len(timestamped_tokens)], \
-                    f"""Fatal Error: Got inconsistent text for segment {i}:
+                assert (
+                    len(timestamped_tokens) < len(whisper_tokens)
+                    and timestamped_tokens
+                    == whisper_tokens[: len(timestamped_tokens)]
+                ), f"""Fatal Error: Got inconsistent text for segment {i}:
                     \n({len(timestamped_tokens)})\n{tokenizer.decode_with_timestamps(timestamped_tokens)}
                     \n{timestamped_tokens}\n!=\n({len(whisper_tokens)})\
                     n{tokenizer.decode_with_timestamps(whisper_tokens)}\n{whisper_tokens[:len(timestamped_tokens)]}"""
                 logger.warn(
-                    f"Text had to be shortned on segment {i}:\n{tokenizer.decode(timestamped_tokens)}\n!=\n{tokenizer.decode(whisper_tokens)}")
+                    f"Text had to be shortned on segment {i}:\n{tokenizer.decode(timestamped_tokens)}\n!=\n{tokenizer.decode(whisper_tokens)}"
+                )
             timestamped_words[-1]["avg_logprob_reliable"] = False
 
         offset = segment["seek"] * HOP_LENGTH / SAMPLE_RATE
@@ -650,13 +744,16 @@ def _transcribe_timestamped_efficient(
             timestamped_word["idx_segment"] = i
 
         if compute_word_confidence:
-            if "avg_logprob_reliable" not in timestamped_words[-1] or timestamped_words[-1]["avg_logprob_reliable"]:
+            if (
+                "avg_logprob_reliable" not in timestamped_words[-1]
+                or timestamped_words[-1]["avg_logprob_reliable"]
+            ):
                 if abs(segment["avg_logprob"] - avglogprob) >= 1e-2:
                     logger.warn(
-                        f"Recomputed different logprob for segment {i}: {avglogprob} != {segment['avg_logprob']}")
+                        f"Recomputed different logprob for segment {i}: {avglogprob} != {segment['avg_logprob']}"
+                    )
             if include_punctuation_in_confidence:
-                segment["confidence"] = round(
-                    logprobs.mean().exp().item(), 3)
+                segment["confidence"] = round(logprobs.mean().exp().item(), 3)
             else:
                 logprobs_nopunc = []
             i_end = 0
@@ -666,26 +763,30 @@ def _transcribe_timestamped_efficient(
                 i_end += len(tokens)
 
                 assert i_end <= len(
-                    logprobs), f"Fatal Error: Got out-of-bound index for segment {i}: {i_end} > {len(logprobs)}"
+                    logprobs
+                ), f"Fatal Error: Got out-of-bound index for segment {i}: {i_end} > {len(logprobs)}"
                 if include_punctuation_in_confidence:
                     word_logprobs = logprobs[i_start:i_end]
                 else:
                     # Note: look at the last character of token, to take into account "...", "!!", etc.
                     while len(tokens) > 1 and tokens[-1][-1] in _punctuation:
                         tokens = tokens[:-1]
-                    word_logprobs = logprobs[i_start:i_start + len(tokens)]
+                    word_logprobs = logprobs[i_start : i_start + len(tokens)]
                     logprobs_nopunc.append(word_logprobs)
 
                 timestamped_word["confidence"] = round(
-                    word_logprobs.mean().exp().item(), 3)
+                    word_logprobs.mean().exp().item(), 3
+                )
 
             if i_end != len(logprobs):
                 logger.warn(
-                    f"Got inconsistent length for segment {i} ({len(logprobs)} != {i_end}). Some words have been ignored.")
+                    f"Got inconsistent length for segment {i} ({len(logprobs)} != {i_end}). Some words have been ignored."
+                )
             if not include_punctuation_in_confidence:
                 logprobs_nopunc = torch.cat(logprobs_nopunc)
                 segment["confidence"] = round(
-                    logprobs_nopunc.mean().exp().item(), 3)
+                    logprobs_nopunc.mean().exp().item(), 3
+                )
 
         words.extend(timestamped_words)
 
@@ -721,7 +822,7 @@ def get_logit_filters(model, whisper_options, prompt=None):
         max_initial_timestamp=1.0,
         prefix=None,
         suppress_blank=True,
-        **decoding_options
+        **decoding_options,
     )
 
     # This performs some checks on the options.
@@ -730,14 +831,19 @@ def get_logit_filters(model, whisper_options, prompt=None):
 
 
 def get_decoding_options(whisper_options):
-    return dict([(k, v) for (k, v) in whisper_options.items()
-                 if k not in [
-        "no_speech_threshold",
-        "logprob_threshold",
-        "compression_ratio_threshold",
-        "condition_on_previous_text"
-    ]
-    ])
+    return dict(
+        [
+            (k, v)
+            for (k, v) in whisper_options.items()
+            if k
+            not in [
+                "no_speech_threshold",
+                "logprob_threshold",
+                "compression_ratio_threshold",
+                "condition_on_previous_text",
+            ]
+        ]
+    )
 
 
 def perform_word_alignment(
@@ -779,32 +885,37 @@ def perform_word_alignment(
          List: List of (word, start_time, end_time) tuples.
     """
 
-    assert len(
-        tokens) > 1, f"Got unexpected sequence of tokens of length {len(tokens)} {tokenizer.decode_with_timestamps(tokens)}"
+    assert (
+        len(tokens) > 1
+    ), f"Got unexpected sequence of tokens of length {len(tokens)} {tokenizer.decode_with_timestamps(tokens)}"
     start_token = tokens[0] - tokenizer.timestamp_begin
     end_token = tokens[-1] - tokenizer.timestamp_begin
 
     # Check start / end tokens.
     if start_token < 0:
         raise RuntimeError(
-            f"Missing start token in: {tokenizer.decode_with_timestamps(tokens)}")
+            f"Missing start token in: {tokenizer.decode_with_timestamps(tokens)}"
+        )
     if len(tokens) == 1 or end_token < 0:
         # This can happens when Whisper is stucked as a Language Model.
         if debug:
             logger.debug(
-                f"Missing end token in {tokenizer.decode_with_timestamps(tokens)}")
+                f"Missing end token in {tokenizer.decode_with_timestamps(tokens)}"
+            )
         end_token = N_FRAMES // 2
     if end_token == start_token and refine_whisper_precision_nframes == 0:
         if debug:
             logger.debug(
-                f"Got empty segment in {tokenizer.decode_with_timestamps(tokens)}")
+                f"Got empty segment in {tokenizer.decode_with_timestamps(tokens)}"
+            )
         return []
 
     # Put some margin around the segment.
     if refine_whisper_precision_nframes > 0:
         start_token = max(start_token - refine_whisper_precision_nframes, 0)
         end_token = min(
-            end_token + refine_whisper_precision_nframes, N_FRAMES // 2)
+            end_token + refine_whisper_precision_nframes, N_FRAMES // 2
+        )
 
     if end_token <= start_token:
         raise RuntimeError(
@@ -814,9 +925,14 @@ def perform_word_alignment(
     start_time = start_token * AUDIO_TIME_PER_TOKEN
     end_time = end_token * AUDIO_TIME_PER_TOKEN
 
-    split_tokens = split_tokens_on_spaces if use_space else split_tokens_on_unicode
-    words, word_tokens, word_tokens_indices = split_tokens(tokens, tokenizer,
-                                                           remove_punctuation_from_words=remove_punctuation_from_words)
+    split_tokens = (
+        split_tokens_on_spaces if use_space else split_tokens_on_unicode
+    )
+    words, word_tokens, word_tokens_indices = split_tokens(
+        tokens,
+        tokenizer,
+        remove_punctuation_from_words=remove_punctuation_from_words,
+    )
 
     # If the last token is a punctuation that comes after a word
     # group this final punctuation with the final timestamp.
@@ -826,12 +942,14 @@ def perform_word_alignment(
         for w in word_tokens
     ]
     if include_punctuation_in_timing:
-        num_punctuations_per_tokens[:-2] = [0] * \
-            (len(num_punctuations_per_tokens)-2)
+        num_punctuations_per_tokens[:-2] = [0] * (
+            len(num_punctuations_per_tokens) - 2
+        )
 
     for i, w in enumerate(attention_weights):
         assert w.shape[-2] == len(
-            tokens), f"Attention weights have wrong shape: {w.shape[-2]} (expected {len(tokens)})."
+            tokens
+        ), f"Attention weights have wrong shape: {w.shape[-2]} (expected {len(tokens)})."
     weights = torch.cat(attention_weights)  # layers * heads * tokens * frames
 
     num_tokens = weights.shape[-2]
@@ -842,9 +960,13 @@ def perform_word_alignment(
               {tokenizer.decode_with_timestamps(tokens)}\n The end of the text will be removed."""
         )
         return perform_word_alignment(
-            tokens[:num_frames-1] + [tokens[-1]],
-            [torch.cat([w[:, :, :num_frames-1, :], w[:, :, -1:, :]], dim=-2)
-                for w in attention_weights],
+            tokens[: num_frames - 1] + [tokens[-1]],
+            [
+                torch.cat(
+                    [w[:, :, : num_frames - 1, :], w[:, :, -1:, :]], dim=-2
+                )
+                for w in attention_weights
+            ],
             tokenizer,
             use_space=use_space,
             refine_whisper_precision_nframes=refine_whisper_precision_nframes,
@@ -862,14 +984,15 @@ def perform_word_alignment(
     assert len(tokens) == num_tokens
 
     # layers * heads * tokens * frames
-    weights = weights[:, :, :, start_token: end_token].cpu()
+    weights = weights[:, :, :, start_token:end_token].cpu()
 
     if alignment_heads is None:
         # N * tokens * frames
         weights = weights.reshape(-1, *weights.shape[-2:])
     else:
-        weights = torch.stack([weights[l][h]
-                              for l, h in alignment_heads.indices().T])
+        weights = torch.stack(
+            [weights[l_][h] for l_, h in alignment_heads.indices().T]
+        )
     weights = median_filter(weights, (1, 1, medfilt_width))
     weights = torch.tensor(weights * qk_scale).softmax(dim=-1)
     weights = weights.mean(axis=(0))  # Average over layers and heads.
@@ -888,21 +1011,35 @@ def perform_word_alignment(
     # Enforce the max duration.
     if max_duration:
         if start_token >= max_duration:
-            logger.warn(f"Got start time outside of audio boundary")
+            logger.warn("Got start time outside of audio boundary")
         else:
             weights[:-1, max_duration:] = worse_weight
 
     # Encourage to start early.
     weights[0, 0] = weights.min()
-    weights[0, refine_whisper_precision_nframes*2:] = worse_weight
+    weights[0, refine_whisper_precision_nframes * 2 :] = worse_weight
 
     # Similar as "symmetric1" but without the possibility to have the same timestamp for two tokens.
-    step_pattern = dtw.stepPattern.StepPattern(dtw.stepPattern._c(
-        1, 1, 1, -1,
-        1, 0, 0, 1,
-        2, 0, 1, -1,
-        2, 0, 0, 1,
-    ))
+    step_pattern = dtw.stepPattern.StepPattern(
+        dtw.stepPattern._c(
+            1,
+            1,
+            1,
+            -1,
+            1,
+            0,
+            0,
+            1,
+            2,
+            0,
+            1,
+            -1,
+            2,
+            0,
+            0,
+            1,
+        )
+    )
     alignment = dtw.dtw(weights, step_pattern=step_pattern)
 
     jumps = np.diff(alignment.index1s)
@@ -910,8 +1047,9 @@ def perform_word_alignment(
     jumps = jumps.astype(bool)
     jumps = alignment.index2s[jumps]
     jump_times = jumps * AUDIO_TIME_PER_TOKEN
-    jump_times = np.pad(jump_times, (0, 1),
-                        constant_values=end_time - start_time)
+    jump_times = np.pad(
+        jump_times, (0, 1), constant_values=end_time - start_time
+    )
 
     # Display the word-level timestamps in a table.
     word_boundaries = np.cumsum([len(t) for t in word_tokens])
@@ -945,7 +1083,9 @@ def perform_word_alignment(
             tokens=tokens,
             tokens_indices=tokens_indices,
         )
-        for word, begin, end, tokens, tokens_indices in zip(words, begin_times, end_times, word_tokens, word_tokens_indices)
+        for word, begin, end, tokens, tokens_indices in zip(
+            words, begin_times, end_times, word_tokens, word_tokens_indices
+        )
         if not word.startswith("<|")
     ]
 
@@ -963,14 +1103,17 @@ def find_start_padding(mfcc):
         return 0
 
 
-_punctuation = "".join(c for c in string.punctuation if c not in [
-                       "-", "'"]) + "。，！？：”、…"
+_punctuation = (
+    "".join(c for c in string.punctuation if c not in ["-", "'"]) + "。，！？：”、…"
+)
 
 
-def split_tokens_on_unicode(tokens: List,
-                            tokenizer,
-                            remove_punctuation_from_words: bool = False,
-                            isolate_punctuations: bool = False):
+def split_tokens_on_unicode(
+    tokens: List,
+    tokenizer,
+    remove_punctuation_from_words: bool = False,
+    isolate_punctuations: bool = False,
+):
     words = []
     word_tokens = []
     word_tokens_indices = []
@@ -981,9 +1124,11 @@ def split_tokens_on_unicode(tokens: List,
         decoded = tokenizer.decode_with_timestamps(current_tokens)
         if "\ufffd" not in decoded:
             punctuation = not isolate_punctuations and (
-                decoded.strip() and decoded.strip() in _punctuation)
+                decoded.strip() and decoded.strip() in _punctuation
+            )
             previous_special = len(word_tokens_indices) > 0 and (
-                word_tokens_indices[-1][-1] >= tokenizer.eot)
+                word_tokens_indices[-1][-1] >= tokenizer.eot
+            )
             if punctuation and not previous_special:
                 if len(words) == 0:
                     words = [""]
@@ -1001,19 +1146,29 @@ def split_tokens_on_unicode(tokens: List,
     return words, word_tokens, word_tokens_indices
 
 
-def split_tokens_on_spaces(tokens: torch.Tensor,
-                           tokenizer,
-                           remove_punctuation_from_words: bool = False):
-    subwords, subword_tokens_list, subword_tokens_indices_list = split_tokens_on_unicode(
-        tokens, tokenizer, remove_punctuation_from_words=remove_punctuation_from_words)
+def split_tokens_on_spaces(
+    tokens: torch.Tensor, tokenizer, remove_punctuation_from_words: bool = False
+):
+    (
+        subwords,
+        subword_tokens_list,
+        subword_tokens_indices_list,
+    ) = split_tokens_on_unicode(
+        tokens,
+        tokenizer,
+        remove_punctuation_from_words=remove_punctuation_from_words,
+    )
     words = []
     word_tokens = []
     word_tokens_indices = []
 
-    for i, (subword, subword_tokens, subword_tokens_indices) in enumerate(zip(subwords, subword_tokens_list, subword_tokens_indices_list)):
-        special = (subword_tokens_indices[0] >= tokenizer.eot)
+    for i, (subword, subword_tokens, subword_tokens_indices) in enumerate(
+        zip(subwords, subword_tokens_list, subword_tokens_indices_list)
+    ):
+        special = subword_tokens_indices[0] >= tokenizer.eot
         previous_special = (i > 0) and (
-            subword_tokens_indices_list[i-1][0] >= tokenizer.eot)
+            subword_tokens_indices_list[i - 1][0] >= tokenizer.eot
+        )
         with_space = subword.startswith(" ")
         punctuation = (subword.strip() and subword.strip()) in _punctuation
         if special or (with_space and not punctuation) or previous_special:
@@ -1036,10 +1191,10 @@ def ensure_increasing_positions(segments, min_duration: int = 0):
         if seg["start"] < previous_end:
             assert i > 0
             new_start = round((previous_end + seg["start"]) / 2, 2)
-            if new_start < segments[i-1]["start"] + min_duration:
+            if new_start < segments[i - 1]["start"] + min_duration:
                 new_start = previous_end
             else:
-                segments[i-1]["end"] = new_start
+                segments[i - 1]["end"] = new_start
                 has_modified_backward = True
             seg["start"] = new_start
         if seg["end"] <= seg["start"] + min_duration:
@@ -1052,8 +1207,9 @@ def ensure_increasing_positions(segments, min_duration: int = 0):
     for seg in segments:
         seg["start"] = round(seg["start"], 2)
         seg["end"] = round(seg["end"], 2)
-        assert seg[
-            "start"] >= previous_end, f"Got segment {seg} coming before the previous finishes ({previous_end})"
+        assert (
+            seg["start"] >= previous_end
+        ), f"Got segment {seg} coming before the previous finishes ({previous_end})"
         assert seg["end"] > seg["start"], f"Got segment {seg} with end <= start"
         previous_end = seg["end"]
 
@@ -1069,8 +1225,10 @@ def flatten(list_of_lists, key: str | None = None):
 def force_cudnn_initialization(device: torch.device | None = None, s: int = 32):
     if device is None:
         device = torch.device("cuda")
-    torch.nn.functional.conv2d(torch.zeros(
-        s, s, s, s, device=device), torch.zeros(s, s, s, s, device=device))
+    torch.nn.functional.conv2d(
+        torch.zeros(s, s, s, s, device=device),
+        torch.zeros(s, s, s, s, device=device),
+    )
 
 
 """
@@ -1092,7 +1250,7 @@ _PARAMETERS_TO_MODEL_NAME = {
     240582144: "small.en",
     240582912: "small",
     762320896: "medium.en",
-    762321920: "medium"
+    762321920: "medium",
 }
 
 
@@ -1105,8 +1263,9 @@ def get_alignment_heads(model):
 
 def _get_alignment_heads(model_name, num_layers, num_heads):
     dump = _ALIGNMENT_HEADS[model_name]
-    array = np.frombuffer(gzip.decompress(
-        base64.b85decode(dump)), dtype=bool).copy()
+    array = np.frombuffer(
+        gzip.decompress(base64.b85decode(dump)), dtype=bool
+    ).copy()
     mask = torch.from_numpy(array).reshape(num_layers, num_heads)
     return mask.to_sparse()
 
@@ -1115,16 +1274,22 @@ def _get_number_of_parameters(model):
     return sum(p.numel() for p in model.parameters())
 
 
-def filtered_keys(result, keys: List = [
-    "word",
-    "segments", "words",
-    "language",
-    "start",
-    "end",
-    "confidence"
-]):
+def filtered_keys(
+    result,
+    keys: List = [
+        "word",
+        "segments",
+        "words",
+        "language",
+        "start",
+        "end",
+        "confidence",
+    ],
+):
     if isinstance(result, dict):
-        return {k: filtered_keys(v, keys) for k, v in result.items() if k in keys}
+        return {
+            k: filtered_keys(v, keys) for k, v in result.items() if k in keys
+        }
     if isinstance(result, list):
         return [filtered_keys(v, keys) for v in result]
     if isinstance(result, float):

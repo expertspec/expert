@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+import re
+from typing import List, Optional
+
+import nltk
 import torch
-from nltk.tree import Tree
 from detoxify import Detoxify
-from nltk import RegexpParser, pos_tag
-from nltk.tokenize import word_tokenize
-from nltk.stem.porter import PorterStemmer
 from flair.data import Sentence
 from flair.models import SequenceTagger
-from typing import Optional, List
-import nltk
-import re
+from nltk import RegexpParser, pos_tag
+from nltk.stem.porter import PorterStemmer
+from nltk.tokenize import word_tokenize
+from nltk.tree import Tree
+
 
 try:
     nltk.data.find("taggers/averaged_perceptron_tagger")
@@ -19,7 +21,6 @@ except LookupError:
 
 
 class DepreciationEN:
-
     def __init__(self) -> None:
         self.pstemmer = PorterStemmer()
         self.tagger = SequenceTagger.load("flair/pos-english-fast")
@@ -63,7 +64,6 @@ class DepreciationEN:
 
 
 class ToxicEN:
-
     def __init__(self, device: torch.device | None = None) -> None:
         self._device = torch.device("cpu")
         if device is not None:
@@ -80,7 +80,6 @@ class ToxicEN:
 
 
 class ImperativeEN:
-
     def _get_chunks(self, tagged_sent: List) -> Tree:
         # Chunk the sentence into grammatical phrases based on its POS-tags.
         chunkgram = r"""VB-Phrase: {<DT><,>*<VB>}
@@ -107,8 +106,9 @@ class ImperativeEN:
         # Сatches imperatives ending with a Question Tag and
         # starting with a verb in base form, e.g. "Stop it, will you?".
         if type(chunk[-1]) is Tree and chunk[-1].label() == "Q-Tag":
-            if (chunk[0][1] == "VB" or
-                    (type(chunk[0]) is Tree and chunk[0].label() == "VB-Phrase")):
+            if chunk[0][1] == "VB" or (
+                type(chunk[0]) is Tree and chunk[0].label() == "VB-Phrase"
+            ):
                 return True
         return False
 

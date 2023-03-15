@@ -7,7 +7,6 @@ from typing import Any
 
 import cv2
 import numpy as np
-
 import torch
 from torch import Tensor
 from torch.utils.data import Dataset
@@ -193,7 +192,9 @@ class VideoFolder(Dataset):
         self.balanced_valid_set = balanced_valid_set
         if self.valid_size is not None:
             self._train_set, self._valid_set = self.split(
-                valid_size=self.valid_size, by_file=split_by_file, balanced_valid_set=balanced_valid_set
+                valid_size=self.valid_size,
+                by_file=split_by_file,
+                balanced_valid_set=balanced_valid_set,
             )
 
     def get_files(self) -> list[str]:
@@ -232,7 +233,9 @@ class VideoFolder(Dataset):
         Returns:
             Tensor: tensor of target labels.
         """
-        return torch.tensor([int(meta[self.label_key]) for meta in self.metas], dtype=torch.long)
+        return torch.tensor(
+            [int(meta[self.label_key]) for meta in self.metas], dtype=torch.long
+        )
 
     def get_order(self) -> Tensor:
         """Building order of windowses depending on window size and number of video file frames.
@@ -403,9 +406,13 @@ class VideoFolder(Dataset):
         frames = video_reader[start_frame_idx : start_frame_idx + self.window]
 
         if self.video_transforms is not None:
-            frames["video_frames"] = self.video_transforms(frames["video_frames"])
+            frames["video_frames"] = self.video_transforms(
+                frames["video_frames"]
+            )
         if self.audio_transforms is not None:
-            frames["audio_frames"] = self.audio_transforms(frames["audio_frames"])
+            frames["audio_frames"] = self.audio_transforms(
+                frames["audio_frames"]
+            )
 
         label = self.labels[file_idx]
 

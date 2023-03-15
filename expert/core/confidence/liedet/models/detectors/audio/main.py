@@ -3,29 +3,51 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import torch
 from Signal_Analysis.features import signal as sig
 from sklearn.preprocessing import OneHotEncoder
-
-import torch
 from torch import load
 
-from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import AudioModel
-from expert.core.confidence.liedet.models.detectors.audio.src.TempsAnalyzer import TempsAnalyzer
-from expert.core.confidence.liedet.models.detectors.audio.src.ToneAnalyzer import ToneAnalyzer
-from expert.core.confidence.liedet.models.detectors.audio.src.Torch_emotion import Torch_emotion
-from expert.core.confidence.liedet.models.detectors.audio.src.utils import normalization, prepare_audio_from_video
-from expert.core.confidence.liedet.models.detectors.audio.src.VolumeAnalyzer import VolumeAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import (
+    AudioModel,
+)
+from expert.core.confidence.liedet.models.detectors.audio.src.TempsAnalyzer import (
+    TempsAnalyzer,
+)
+from expert.core.confidence.liedet.models.detectors.audio.src.ToneAnalyzer import (
+    ToneAnalyzer,
+)
+from expert.core.confidence.liedet.models.detectors.audio.src.Torch_emotion import (
+    Torch_emotion,
+)
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import (
+    prepare_audio_from_video,
+)
+from expert.core.confidence.liedet.models.detectors.audio.src.VolumeAnalyzer import (
+    VolumeAnalyzer,
+)
 
 
 def features_to_timeseries(
-    model_path, device, chunk_length=1, signal=None, video_path=None, sr=22050, audio_path=None, normalization=True
+    model_path,
+    device,
+    chunk_length=1,
+    signal=None,
+    video_path=None,
+    sr=22050,
+    audio_path=None,
+    normalization=True,
 ):
     results = {}
     if video_path:
         audio_path = prepare_audio_from_video(video_path)
     # Выделение параметров громкости
     volume = VolumeAnalyzer(
-        normalization=normalization, chunk_length=chunk_length, sr=sr, signal=signal, path_to_audio=audio_path
+        normalization=normalization,
+        chunk_length=chunk_length,
+        sr=sr,
+        signal=signal,
+        path_to_audio=audio_path,
     )
     signal, sr, silence, duration, chunks, voice = (
         volume.y,
@@ -40,10 +62,18 @@ def features_to_timeseries(
     volume.count_changes()
     results.update(volume.get_results())
     # Выделение параметров темпа
-    temp = TempsAnalyzer(signal=signal, sr=sr, voice=voice, duration=duration, chunks=chunks)
+    temp = TempsAnalyzer(
+        signal=signal, sr=sr, voice=voice, duration=duration, chunks=chunks
+    )
     results.update(temp.get_analyze())
     # Выделение параметров тона
-    tone = ToneAnalyzer(chunk_length=chunk_length, chunks=chunks, voice=voice, signal=signal, duration=duration)
+    tone = ToneAnalyzer(
+        chunk_length=chunk_length,
+        chunks=chunks,
+        voice=voice,
+        signal=signal,
+        duration=duration,
+    )
     tone.analyze_fragment()
     tone.count_changes()
     results.update(tone.get_results())
@@ -58,7 +88,7 @@ def features_to_timeseries(
             jitters["jitter_local"].append(round(params["local"], 4))
             jitters["jitter_rap"].append(round(params["rap"], 4))
         # Ошибка может возникать при ненахождении интервалов речи
-        except:
+        except Exception:
             jitters["jitter_local"].append(0)
             jitters["jitter_rap"].append(0)
         sys.stdout = stdout
@@ -66,7 +96,9 @@ def features_to_timeseries(
     # Детекция эмоций
     model = AudioModel().to(device)
     model.load_state_dict(load(model_path, map_location=device))
-    emotion = Torch_emotion(model, chunks=chunks, silence=silence, device=device)
+    emotion = Torch_emotion(
+        model, chunks=chunks, silence=silence, device=device
+    )
     results.update({"predicts": emotion.audio_pipeline()})
     for num, val in enumerate(results["predicts"]):
         if val == "silence":
@@ -77,8 +109,15 @@ def features_to_timeseries(
 
 
 # Дублирование парамтеров в зависимости от числа кадров в секунду
-def to_fps(fps, results, output_path=False, audio_path=False, duration=1, name=False, csv=True):
-
+def to_fps(
+    fps,
+    results,
+    output_path=False,
+    audio_path=False,
+    duration=1,
+    name=False,
+    csv=True,
+):
     for feat in results.keys():
         suited_param = []  # Значения переведенные в соответствии с fps
         for i in results[feat]:
@@ -97,7 +136,16 @@ def to_fps(fps, results, output_path=False, audio_path=False, duration=1, name=F
 # one-hot encoding для эмоций
 def dummies(col, data, audio_path=False, name=False):
     ohe = OneHotEncoder()
-    emos = ["anxiety", "disgust", "happiness", "boredom", "neutral", "sadness", "anger", "silence"]
+    emos = [
+        "anxiety",
+        "disgust",
+        "happiness",
+        "boredom",
+        "neutral",
+        "sadness",
+        "anger",
+        "silence",
+    ]
     ohe.fit(pd.DataFrame(emos))
     transform = pd.DataFrame(ohe.transform(pd.DataFrame(data[col])).toarray())
     data = data.drop(col, axis=1)
@@ -115,7 +163,7 @@ def dummies(col, data, audio_path=False, name=False):
         }
     )
     # Запись имени файла
-    if name == True:
+    if name:
         data["name"] = audio_path
     return data
 
@@ -157,6 +205,13 @@ def main(
             sr=sr,
             normalization=normalization,
         )
-    out = to_fps(fps=fps, results=results, audio_path=audio_path, csv=csv, output_path=output_path, name=name)
+    out = to_fps(
+        fps=fps,
+        results=results,
+        audio_path=audio_path,
+        csv=csv,
+        output_path=output_path,
+        name=name,
+    )
 
     return torch.tensor(out.to_numpy()).float()

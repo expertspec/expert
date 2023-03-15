@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
-from transformers import logging
-from transformers import AutoModel, AutoTokenizer
-from transformers import AutoModelForSequenceClassification
+from transformers import (
+    AutoModel,
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    logging,
+)
 
-from expert.core.functional_tools import get_model_weights
 from expert.core.contradiction.contr_tools import NLIModel
+from expert.core.functional_tools import get_model_weights
+
 
 logging.set_verbosity_error()
 
@@ -34,14 +38,13 @@ def create_model(lang: str = "en", device: str = "cpu"):
         cached_file = get_model_weights(model_name=model_name, url=url)
 
         model = NLIModel.BERTNLIModel(model).to(device)
-        model.load_state_dict(
-            torch.load(cached_file, map_location=device)
-        )
+        model.load_state_dict(torch.load(cached_file, map_location=device))
 
     elif lang == "ru":
         model_checkpoint = "cointegrated/rubert-base-cased-nli-threeway"
         model = AutoModelForSequenceClassification.from_pretrained(
-            model_checkpoint)
+            model_checkpoint
+        )
         model = model.to(device)
 
     else:
@@ -55,7 +58,8 @@ def choose_toketizer(lang):
         tokenizer = AutoTokenizer.from_pretrained("prajjwal1/bert-medium")
     elif lang == "ru":
         tokenizer = AutoTokenizer.from_pretrained(
-            "cointegrated/rubert-base-cased-nli-threeway")
+            "cointegrated/rubert-base-cased-nli-threeway"
+        )
     else:
         raise NameError
     return tokenizer
@@ -88,7 +92,7 @@ def averaging(prem_type, prem_t, hypo_t, model, tokenizer, device="cpu"):
     predictions = []
 
     for i in range(0, len(hypo_t), hypo_size):
-        parts.append(hypo_t[i:i+hypo_size])
+        parts.append(hypo_t[i : i + hypo_size])
 
     for part in parts:
         hypo_t = part
@@ -110,7 +114,11 @@ def averaging(prem_type, prem_t, hypo_t, model, tokenizer, device="cpu"):
     # Averaging.
     predictions = torch.tensor(predictions) / len(predictions)
     prediction = torch.tensor(
-        [predictions[:, 0].sum(), predictions[:, 1].sum(), predictions[:, 2].sum()]
+        [
+            predictions[:, 0].sum(),
+            predictions[:, 1].sum(),
+            predictions[:, 2].sum(),
+        ]
     )
     prediction.unsqueeze_(0)
 
@@ -118,7 +126,7 @@ def averaging(prem_type, prem_t, hypo_t, model, tokenizer, device="cpu"):
 
 
 def predict_inference(
-    premise: str, hypothesis: str, model, lang='en', device='cpu'
+    premise: str, hypothesis: str, model, lang="en", device="cpu"
 ):
     """Function for prediction, returns labels:
             0 - entailment;
@@ -193,8 +201,9 @@ def predict_inference(
                 attn_mask = get_sent2_token_type(indexes)
 
                 indexes = torch.LongTensor(indexes).unsqueeze(0).to(device)
-                indexes_type = torch.LongTensor(
-                    indexes_type).unsqueeze(0).to(device)
+                indexes_type = (
+                    torch.LongTensor(indexes_type).unsqueeze(0).to(device)
+                )
                 attn_mask = torch.LongTensor(attn_mask).unsqueeze(0).to(device)
 
                 prediction = model(indexes, attn_mask, indexes_type)

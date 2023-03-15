@@ -1,57 +1,56 @@
-import torch
 from torch import nn
-import numpy as np
+
 
 class AudioModel(nn.Module):
     def __init__(self):
         super(AudioModel, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(
-              in_channels=3,
-              out_channels=16,
-              kernel_size=3,
-              stride=1,
-              padding=2
+                in_channels=3,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(16)
+            nn.BatchNorm2d(16),
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(
-              in_channels=16,
-              out_channels=32,
-              kernel_size=3,
-              stride=1,
-              padding=2
+                in_channels=16,
+                out_channels=32,
+                kernel_size=3,
+                stride=1,
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(32)
+            nn.BatchNorm2d(32),
         )
         self.conv3 = nn.Sequential(
             nn.Conv2d(
-              in_channels=32,
-              out_channels=64,
-              kernel_size=3,
-              stride=1,
-              padding=2
+                in_channels=32,
+                out_channels=64,
+                kernel_size=3,
+                stride=1,
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(64)
+            nn.BatchNorm2d(64),
         )
         self.conv4 = nn.Sequential(
             nn.Conv2d(
-              in_channels=64,
-              out_channels=128,
-              kernel_size=3,
-              stride=1,
-              padding=2
+                in_channels=64,
+                out_channels=128,
+                kernel_size=3,
+                stride=1,
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(128)
+            nn.BatchNorm2d(128),
         )
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(p=0.3)
@@ -69,4 +68,3 @@ class AudioModel(nn.Module):
         predictions = self.softmax(logits)
 
         return predictions
-

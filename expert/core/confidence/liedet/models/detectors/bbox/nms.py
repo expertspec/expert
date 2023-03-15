@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import numpy as np
-
 import torch
 import torch.nn as nn
-
-from mmcv.utils import ConfigDict
 from mmdet.core.bbox import bbox2result
 from mmdet.core.post_processing import multiclass_nms
 
@@ -78,7 +75,9 @@ class Frames2Results(nn.Module):
 
 @registry.register_module()
 class ExtractBBoxes(nn.Module):
-    def __init__(self, single: bool = False, no_result_placeholder: str = "full"):
+    def __init__(
+        self, single: bool = False, no_result_placeholder: str = "full"
+    ):
         super().__init__()
 
         self.single = single

@@ -1,21 +1,28 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import List, Tuple
+
+from sumy.nlp.stemmers import Stemmer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.lsa import LsaSummarizer
-from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
 from text_preprocessing import remove_url
-from typing import List, Tuple
 
 
 class Summarization(ABC):
-    """Abstract class for Annotating input text to a given size. 
+    """Abstract class for Annotating input text to a given size.
     Contains implementation of preprocessing and postprocessing methods.
     """
 
-    def _cut_title(self, text: str, max_length: int, over_chared_postfix: str, cutted_end_punct: List = ["."]) -> str:
+    def _cut_title(
+        self,
+        text: str,
+        max_length: int,
+        over_chared_postfix: str,
+        cutted_end_punct: List = ["."],
+    ) -> str:
         words = text.split()
         ch_count = 0
         left_words = []
@@ -28,8 +35,9 @@ class Summarization(ABC):
             else:
                 over_chared = True
                 break
-        answer = " ".join(left_words) + \
-            (over_chared_postfix if over_chared else "")
+        answer = " ".join(left_words) + (
+            over_chared_postfix if over_chared else ""
+        )
         if (not over_chared) and (answer[-1] in cutted_end_punct):
             answer = answer[:-1]
 
@@ -60,7 +68,7 @@ class Summarization(ABC):
         context: Tuple,
         max_length: int,
         over_chared_postfix: str,
-        allowed_punctuation: List
+        allowed_punctuation: List,
     ) -> str:
         text = text.strip()
         text = self._bracket_trouble(text)
@@ -87,8 +95,25 @@ class SummarizationEN(Summarization):
         sentences_count: int = 1,
         max_length: int = 300,
         over_chared_postfix: str = "...",
-        allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
-                                     "(", ")", "–", "%", "&", "@", '"', "'"]
+        allowed_punctuation: List = [
+            ",",
+            ".",
+            "!",
+            "?",
+            ":",
+            "—",
+            "-",
+            "#",
+            "+",
+            "(",
+            ")",
+            "–",
+            "%",
+            "&",
+            "@",
+            '"',
+            "'",
+        ],
     ) -> str:
         """Get annotation for a text.
 
@@ -108,7 +133,7 @@ class SummarizationEN(Summarization):
         lsa_summarizer = LsaSummarizer(stemmer)
         lsa_summarizer.stop_words = get_stop_words("english")
 
-        my_parser = PlaintextParser.from_string(text, Tokenizer('english'))
+        my_parser = PlaintextParser.from_string(text, Tokenizer("english"))
         lsa_summary = lsa_summarizer(
             my_parser.document, sentences_count=sentences_count
         )
@@ -120,8 +145,11 @@ class SummarizationEN(Summarization):
         dirty_summary = dirty_summary.rstrip()
 
         summary = self._postprocess(
-            text=dirty_summary, context=my_parser.document.sentences,
-            max_length=max_length, over_chared_postfix=over_chared_postfix, allowed_punctuation=allowed_punctuation
+            text=dirty_summary,
+            context=my_parser.document.sentences,
+            max_length=max_length,
+            over_chared_postfix=over_chared_postfix,
+            allowed_punctuation=allowed_punctuation,
         )
 
         return summary
@@ -140,8 +168,25 @@ class SummarizationRU(Summarization):
         sentences_count: int = 1,
         max_length: int = 300,
         over_chared_postfix: str = "...",
-        allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
-                                     "(", ")", "–", "%", "&", "@", '"', "'"]
+        allowed_punctuation: List = [
+            ",",
+            ".",
+            "!",
+            "?",
+            ":",
+            "—",
+            "-",
+            "#",
+            "+",
+            "(",
+            ")",
+            "–",
+            "%",
+            "&",
+            "@",
+            '"',
+            "'",
+        ],
     ) -> str:
         """Get annotation for a text.
 
@@ -169,8 +214,11 @@ class SummarizationRU(Summarization):
         dirty_summary = dirty_summary.rstrip()
 
         summary = self._postprocess(
-            text=dirty_summary, context=my_parser.document.sentences,
-            max_length=max_length, over_chared_postfix=over_chared_postfix, allowed_punctuation=allowed_punctuation
+            text=dirty_summary,
+            context=my_parser.document.sentences,
+            max_length=max_length,
+            over_chared_postfix=over_chared_postfix,
+            allowed_punctuation=allowed_punctuation,
         )
 
         return summary

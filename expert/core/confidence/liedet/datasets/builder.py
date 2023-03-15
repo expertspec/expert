@@ -1,6 +1,6 @@
+from mmcv.utils import Registry
 from torch.utils.data import Dataset
 
-from mmcv.utils import Registry
 
 datasets = Registry("datasets")
 

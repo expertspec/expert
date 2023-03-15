@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import torch
-from torch import nn, Tensor
 import numpy as np
+import torch
+from torch import Tensor, nn
 
 from expert.core.functional_tools import get_model_weights
 
@@ -18,9 +18,7 @@ class AngleNet(nn.Module):
     """
 
     def __init__(
-        self,
-        pretrained: bool = True,
-        device: torch.device | None = None
+        self, pretrained: bool = True, device: torch.device | None = None
     ) -> None:
         """
         Args:
@@ -31,33 +29,33 @@ class AngleNet(nn.Module):
         super(AngleNet, self).__init__()
 
         self.layer_1 = nn.Sequential(
-            nn.Linear(in_features=128*3, out_features=512, bias=True),
+            nn.Linear(in_features=128 * 3, out_features=512, bias=True),
             nn.Dropout(p=0.3),
-            nn.LeakyReLU()
+            nn.LeakyReLU(),
         )
 
         self.layer_2 = nn.Sequential(
             nn.Linear(in_features=512, out_features=256, bias=True),
             nn.Dropout(p=0.2),
-            nn.LeakyReLU()
+            nn.LeakyReLU(),
         )
 
         self.layer_3 = nn.Sequential(
             nn.Linear(in_features=256, out_features=128, bias=True),
             nn.Dropout(p=0.2),
-            nn.LeakyReLU()
+            nn.LeakyReLU(),
         )
 
         self.layer_4 = nn.Sequential(
             nn.Linear(in_features=128, out_features=64, bias=True),
             nn.Dropout(p=0.1),
-            nn.LeakyReLU()
+            nn.LeakyReLU(),
         )
 
         self.layer_5 = nn.Sequential(
             nn.Linear(in_features=64, out_features=32, bias=True),
             nn.Dropout(p=0.1),
-            nn.LeakyReLU()
+            nn.LeakyReLU(),
         )
 
         self.fc = nn.Linear(in_features=32, out_features=3)
@@ -108,6 +106,9 @@ def classify_rotation(angle_predictions: np.ndarray) -> int:
 
     # Comparing angle values to the threshold value in radians.
     rotation_threshold = np.radians(25)
-    if np.absolute(angle_predictions[0]) >= rotation_threshold or np.absolute(angle_predictions[1]) >= rotation_threshold:
+    if (
+        np.absolute(angle_predictions[0]) >= rotation_threshold
+        or np.absolute(angle_predictions[1]) >= rotation_threshold
+    ):
         return 1
     return 0

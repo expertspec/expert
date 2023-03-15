@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 import torch.nn as nn
-from torch import Tensor
-
 from mmcv.cnn import trunc_normal_init
-
-from expert.core.confidence.liedet.models.registry import registry
+from torch import Tensor
 
 
 class TimeSformerHead(nn.Module):
     """Classification head for TimeSformer."""
 
-    def __init__(self, num_classes: int, in_channels: int = 768, init_std: float = 0.02, **kwargs) -> None:
+    def __init__(
+        self,
+        num_classes: int,
+        in_channels: int = 768,
+        init_std: float = 0.02,
+        **kwargs,
+    ) -> None:
         """
         Args:
             num_classes (int): Number of classes to be classified.

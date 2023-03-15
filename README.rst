@@ -90,9 +90,9 @@ Contacts
 ==========================================================
 
 - Anatoly Medvedev - ML-engineer
-- Ivan Smirnov - ML-engineer 
+- Ivan Smirnov - ML-engineer
 - Samigulin Timur - ML-engineer
-- Artyom Bondar - ML-engineer 
+- Artyom Bondar - ML-engineer
 - Alena Komarova - ML-engineer
 - Andrei Laptev - Backend Developer
 - Nikita Nosov - Backend Developer
@@ -100,7 +100,7 @@ Contacts
 - Olga Hoffman - Scientist
 - Nika Kraynovskikh - Researcher
 - Anastasia Laushkina - Project Manager, Researcher
- 
+
 Citation
 ==========================================================
 @article{"name",

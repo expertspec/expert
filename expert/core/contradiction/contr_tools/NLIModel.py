@@ -12,11 +12,10 @@ class BERTNLIModel(nn.Module):
         self.out = nn.Linear(embedding_dim, output_dim)
 
     def forward(self, sequence, attn_mask, token_type):
-
         embedded = self.bert(
             input_ids=sequence,
             attention_mask=attn_mask,
-            token_type_ids=token_type
+            token_type_ids=token_type,
         )[1]
         output = self.out(embedded)
 

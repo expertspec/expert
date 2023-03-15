@@ -2,12 +2,13 @@ from collections import OrderedDict
 from typing import Any
 
 import torch
+from mmcv.parallel import collate
 from torch import Tensor
 
-from mmcv.parallel import collate
-
+from expert.core.confidence.liedet.models.detectors.bbox import (
+    SingleStageDetector,
+)
 from expert.core.confidence.liedet.models.registry import build, registry
-from expert.core.confidence.liedet.models.detectors.bbox import SingleStageDetector
 
 
 @registry.register_module()
@@ -22,7 +23,12 @@ class Tinaface(SingleStageDetector):
 
     """
 
-    def __init__(self, frame_to_result: dict[str, Any], extract_bboxes: dict[str, Any], **kwargs) -> None:
+    def __init__(
+        self,
+        frame_to_result: dict[str, Any],
+        extract_bboxes: dict[str, Any],
+        **kwargs,
+    ) -> None:
         """
         Args:
             frame_to_result (dict[str, Any]): dictionary of parameters
@@ -37,7 +43,9 @@ class Tinaface(SingleStageDetector):
         self.extract_bboxes = build(cfg=extract_bboxes)
 
         # TODO: remove me
-        state_dict = torch.load("weights/tinaface_r50_fpn_gn_dcn.pth", map_location="cpu")
+        state_dict = torch.load(
+            "weights/tinaface_r50_fpn_gn_dcn.pth", map_location="cpu"
+        )
         new_state_dict = OrderedDict()
         for old_key, value in state_dict.items():
             new_key = old_key

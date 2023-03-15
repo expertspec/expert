@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from typing import Tuple
+
 import torch
 import torch.nn.functional as F
 import torch.nn.init as init
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torchvision import models
-from typing import Tuple
 
 from expert.core.functional_tools import get_model_weights
 
@@ -22,7 +23,7 @@ class DAN(nn.Module):
         num_class: int = 8,
         num_head: int = 4,
         pretrained: bool = True,
-        device: torch.device | None = None
+        device: torch.device | None = None,
     ) -> None:
         """
         Args:
@@ -85,7 +86,6 @@ class DAN(nn.Module):
 
 
 class CrossAttentionHead(nn.Module):
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -115,7 +115,6 @@ class CrossAttentionHead(nn.Module):
 
 
 class SpatialAttention(nn.Module):
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -151,7 +150,6 @@ class SpatialAttention(nn.Module):
 
 
 class ChannelAttention(nn.Module):
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -162,7 +160,7 @@ class ChannelAttention(nn.Module):
             nn.BatchNorm1d(32),
             nn.ReLU(inplace=True),
             nn.Linear(32, 512),
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
     def forward(self, sa: Tensor) -> Tensor:

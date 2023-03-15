@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-import torch
-from os import PathLike
-from typing import List, Tuple
 import json
 import os
+from os import PathLike
+from typing import List, Tuple
 
-from expert.core.aggression.video_aggression.video_analysis import VideoAggression
-from expert.core.aggression.audio_aggression.audio_analysis import AudioAggression
+import torch
+
+from expert.core.aggression.audio_aggression.audio_analysis import (
+    AudioAggression,
+)
 from expert.core.aggression.text_aggression.text_analysis import TextAggression
+from expert.core.aggression.video_aggression.video_analysis import (
+    VideoAggression,
+)
 from expert.data.annotation.speech_to_text import get_phrases
 
 
@@ -73,7 +78,7 @@ class AggressionDetector:
         refine_landmarks: bool = True,
         min_detection_confidence: float = 0.5,
         min_tracking_confidence: float = 0.5,
-        output_dir: str | PathLike | None = None
+        output_dir: str | PathLike | None = None,
     ) -> None:
         if lang not in ["en", "ru"]:
             raise NotImplementedError("'lang' must be 'en' or 'ru'.")
@@ -123,10 +128,15 @@ class AggressionDetector:
             Tuple[List, List, str]: Lists of divided and aggregated video markers and key to the speaker's speech.
         """
         video_model = VideoAggression(
-            video_path=self.video_path, features_path=self.features_path, face_image=self.face_image,
-            device=self._device, static_image_mode=self.static_image_mode, max_num_faces=self.max_num_faces,
-            refine_landmarks=self.refine_landmarks, min_detection_confidence=self.min_detection_confidence,
-            min_tracking_confidence=self.min_tracking_confidence
+            video_path=self.video_path,
+            features_path=self.features_path,
+            face_image=self.face_image,
+            device=self._device,
+            static_image_mode=self.static_image_mode,
+            max_num_faces=self.max_num_faces,
+            refine_landmarks=self.refine_landmarks,
+            min_detection_confidence=self.min_detection_confidence,
+            min_tracking_confidence=self.min_tracking_confidence,
         )
         div_vid_agg, full_vid_agg, key = video_model.get_report()
 
@@ -139,7 +149,11 @@ class AggressionDetector:
             Tuple[List, List]: Lists of divided and aggregated audio markers.
         """
         audio_model = AudioAggression(
-            audio=self.video_path, stamps=stamps, duration=self.duration, sr=self.sr)
+            audio=self.video_path,
+            stamps=stamps,
+            duration=self.duration,
+            sr=self.sr,
+        )
         div_aud_agg, full_aud_agg = audio_model.get_report()
 
         return div_aud_agg, full_aud_agg
@@ -151,7 +165,8 @@ class AggressionDetector:
             Tuple[List, List]: Lists of divided and aggregated text markers.
         """
         text_model = TextAggression(
-            fragments=fragments, lang=self.lang, device=self._device)
+            fragments=fragments, lang=self.lang, device=self._device
+        )
         div_text_agg, full_text_agg = text_model.get_report()
 
         return div_text_agg, full_text_agg
@@ -165,33 +180,39 @@ class AggressionDetector:
         fragments = []
         for phrase in self.phrases:
             for stamp in stamps:
-                if phrase["time"][0] >= stamp[0] and phrase["time"][0] <= stamp[1]:
-                    fragments.append({
-                        "time_sec": phrase["time"][0],
-                        "text": phrase["text"]
-                    })
+                if (
+                    phrase["time"][0] >= stamp[0]
+                    and phrase["time"][0] <= stamp[1]
+                ):
+                    fragments.append(
+                        {"time_sec": phrase["time"][0], "text": phrase["text"]}
+                    )
                     continue
         div_text_agg, full_text_agg = self.get_text_state(fragments=fragments)
 
         div_agg = {
             "video": div_vid_agg,
             "audio": div_aud_agg,
-            "text": div_text_agg
+            "text": div_text_agg,
         }
 
         full_agg = {
             "video": full_vid_agg,
             "audio": full_aud_agg,
-            "text": full_text_agg
+            "text": full_text_agg,
         }
 
-        with open(os.path.join(self.temp_path, "aggression_divided.json"), "w") as file:
+        with open(
+            os.path.join(self.temp_path, "aggression_divided.json"), "w"
+        ) as file:
             json.dump(div_agg, file)
 
-        with open(os.path.join(self.temp_path, "aggression_aggregated.json"), "w") as file:
+        with open(
+            os.path.join(self.temp_path, "aggression_aggregated.json"), "w"
+        ) as file:
             json.dump(full_agg, file)
 
         return (
             os.path.join(self.temp_path, "aggression_divided.json"),
-            os.path.join(self.temp_path, "aggression_aggregated.json")
+            os.path.join(self.temp_path, "aggression_aggregated.json"),
         )
