@@ -1,12 +1,10 @@
-from .core import (
+from .expert import (
     AggressionDetector,
     AntiplagiatClient,
     AsyncAntiplagiatClient,
     ConfidenceDetector,
     CongruenceDetector,
     ContradictionDetector,
-)
-from .data import (
     FaceDetector,
     FeatureExtractor,
     SpeakerDiarization,
