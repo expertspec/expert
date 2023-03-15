@@ -8,7 +8,7 @@
    :stub-columns: 1
 
    * - package
-     - | |py_8| |py_9| |py_10|
+     - | |py_9|
    * - license
      - | |license|
    * - languages
@@ -37,16 +37,28 @@ Expert Applications
 - **Transcribe**
 - **Summarize**
 
+Requirements
+==========================================================
+
+- Python ~=3.9 (python3.9-full, python3.9-dev)
+- pip >=21.0 or PDM ~=2.4.8
+
 Installation
 ==========================================================
 
 Describe how users can install your project.
 
-<Name of your project> can be installed with ``pip``:
+Expert can be installed with ``pip``:
 
-.. code-block:: python
+.. code-block:: bash
 
-    $ pip install <projectname>
+    $ pip install git+https://github.com/expertspec/expert.git
+
+or with ``pdm``:
+
+.. code-block:: bash
+
+    $ pdm add git+https://github.com/expertspec/expert.git
 
 How to Use
 ==========================================================
@@ -54,6 +66,35 @@ How to Use
 Describe examples how it should work and should be used.
 Images, GIFs and code cells are welcome.
 Examples & Tutorials
+
+Development
+==========================================================
+
+Clone repository:
+
+.. code-block:: bash
+
+    $ git clone https://github.com/expertspec/expert.git
+
+Install all dependencies from ``pdm.lock`` file:
+
+.. code-block:: bash
+
+    $ pdm install
+
+or optional dependencies for each library module (check ``pyproject.toml``):
+
+.. code-block:: bash
+
+    $ pdm install -G <group>
+
+Run pre-commited hooks:
+
+.. code-block:: bash
+
+    $ pre-commit run (all hooks only for commited changes)
+    $ pre-commit run --all-files (all hooks for all changes)
+    $ pre-commit run <hook_name> (specified hook)
 
 Documentation
 ==========================================================

@@ -130,3 +130,6 @@ dmypy.json
 
 # PDM
 .pdm.toml
+
+# VScode
+.vscode
