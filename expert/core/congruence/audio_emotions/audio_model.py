@@ -5,7 +5,7 @@ from torch import nn
 import gdown
 import os
 
-from expert.core.utils import get_model_weights
+from expert.core.functional_tools import get_model_weights
 
 
 class AudioModel(nn.Module):

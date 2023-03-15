@@ -7,7 +7,7 @@ from torch import nn, Tensor
 from torchvision import models
 from typing import Tuple
 
-from expert.core.utils import get_model_weights
+from expert.core.functional_tools import get_model_weights
 
 
 class DAN(nn.Module):
