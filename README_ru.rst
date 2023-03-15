@@ -8,7 +8,7 @@
    :stub-columns: 1
 
    * - package
-     - | |py_8| |py_9| |py_10|
+     - | |py_9|
    * - license
      - | |license|
    * - languages
@@ -28,11 +28,58 @@
 Область применения
 ==========================================================
 
+Требования
+==========================================================
+
+- Python ~=3.9 (python3.9-full, python3.9-dev)
+- pip >=21.0 или PDM ~=2.4.8
+
 Установка
 ==========================================================
 
+Эксперт может быть установлен с помощью ``pip``:
+
+.. code-block:: bash
+
+    $ pip install git+https://github.com/expertspec/expert.git
+
+или с помощью ``pdm``:
+
+.. code-block:: bash
+
+    $ pdm add git+https://github.com/expertspec/expert.git
+
 Как использовать
 ==========================================================
+
+Development
+==========================================================
+
+Склонировать репозиторий:
+
+.. code-block:: bash
+
+    $ git clone https://github.com/expertspec/expert.git
+
+Установить все зависимости из ``pdm.lock`` файла:
+
+.. code-block:: bash
+
+    $ pdm install
+
+или опциональные зависимости для каждого отдельного модуля библиотеки (см. ``pyproject.toml``):
+
+.. code-block:: bash
+
+    $ pdm install -G <group>
+
+Запустить прекоммитные хуки:
+
+.. code-block:: bash
+
+    $ pre-commit run (все хуки, только для закоммиченых изменений)
+    $ pre-commit run --all-files (все хуки для любых изменений)
+    $ pre-commit run <hook_name> (определенный хук)
 
 Примеры
 ==========================================================
