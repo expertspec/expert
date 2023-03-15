@@ -22,6 +22,7 @@ class TextModel:
         self._device = torch.device("cpu")
         if device is not None:
             self._device = device
+        self.tokenizer_kwargs = {"padding": True, "truncation": True}
 
         # Initialization of the ruBert Russian-language model for emotion classification.
         if self._lang == "ru":
@@ -68,14 +69,14 @@ class TextModel:
         emotion_dict = {"anger": 0., "neutral": 0., "happiness": 0.}
 
         if self._lang == "ru":
-            output = self.classifier(text)
+            output = self.classifier(text, **self.tokenizer_kwargs)
 
             emotion_dict["anger"] = output[0][5]["score"]
             emotion_dict["neutral"] = output[0][0]["score"]
             emotion_dict["happiness"] = output[0][1]["score"]
 
         elif self._lang == "en":
-            output = self.classifier(text)
+            output = self.classifier(text, **self.tokenizer_kwargs)
 
             emotion_dict["anger"] = output[0][0]["score"]
             emotion_dict["neutral"] = output[0][4]["score"]
