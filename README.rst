@@ -52,13 +52,19 @@ Expert can be installed with ``pip``:
 
 .. code-block:: bash
 
-    $ pip install git+https://github.com/expertspec/expert.git
+    $ pip install "expert[all] @ git+https://github.com/expertspec/expert.git"
 
 or with ``pdm``:
 
 .. code-block:: bash
 
-    $ pdm add git+https://github.com/expertspec/expert.git
+    $ pdm add "expert[all] @ git+https://github.com/expertspec/expert.git"
+
+The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed. 
+If you want to install dependencies only from a group of a certain library module, 
+then enter the name of the required module instead of ``all``. 
+Installing without specifying a dependency group will result in installing a library 
+without dependencies
 
 How to Use
 ==========================================================

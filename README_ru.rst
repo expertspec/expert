@@ -41,13 +41,19 @@
 
 .. code-block:: bash
 
-    $ pip install git+https://github.com/expertspec/expert.git
+    $ pip install "expert[all] @ git+https://github.com/expertspec/expert.git"
 
 или с помощью ``pdm``:
 
 .. code-block:: bash
 
-    $ pdm add git+https://github.com/expertspec/expert.git
+    $ pdm add "expert[all] @ git+https://github.com/expertspec/expert.git"
+
+Запись ``expert[all]`` означает, что будут установлены зависимости из группы ``all``. 
+Если вы хотите установить зависимости только из группы определенного модуля библиотеки, 
+то впишите вместо ``all`` название необходимого модуля. 
+Установка без указания группы зависимостей приведет к установке 
+библиотеки без зависимостей
 
 Как использовать
 ==========================================================
