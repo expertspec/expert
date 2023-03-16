@@ -8,7 +8,7 @@ authors = [
     { name = "Timur Samigulin", email = "timursamigulin98@gmail.com" },
     { name = "Nikita Nosov", email = "nnmastodont@gmail.com" },
 ]
-dependencies = []
+dependencies = ["pip>=22.0"]
 requires-python = "~=3.9.0"
 readme = "README.rst"
 license = { text = "BSD-3-Clause-Clear" }
@@ -139,7 +139,7 @@ build-backend = "pdm.pep517.api"
 post_install = "pip install catalyst~=22.2.1" # из-за бага https://github.com/pdm-project/pdm/issues/1765
 
 [tool.pdm.dev-dependencies]
-tools = ["pip~=23.0", "pre-commit~=3.0.3"]
+tools = ["pre-commit~=3.0.3"]
 linters = ["flake8~=6.0.0", "black~=23.1.0", "isort~=5.12.0"]
 security = ["bandit~=1.7.4"]
 test = [
