@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import torch
-from os import PathLike
-from typing import List, Union
 import json
 import os
+from os import PathLike
+from typing import List, Union
+
+import torch
 
 from expert.core.contradiction.contr_tools import model_tools
 
@@ -65,13 +66,13 @@ class ContradictionDetector:
             sentence = all_words[0]["text"]
 
             for idx in range(len(all_words[:-1])):
-                if all_words[idx+1]["start"] - end < 1.0:
-                    sentence += " " + all_words[idx+1]["text"]
-                    end = all_words[idx+1]["end"]
+                if all_words[idx + 1]["start"] - end < 1.0:
+                    sentence += " " + all_words[idx + 1]["text"]
+                    end = all_words[idx + 1]["end"]
                 else:
                     sentences.append(sentence)
-                    end = all_words[idx+1]["end"]
-                    sentence = all_words[idx+1]["text"]
+                    end = all_words[idx + 1]["end"]
+                    sentence = all_words[idx + 1]["text"]
             sentences.append(sentence)
         else:
             raise "No words."
@@ -94,18 +95,21 @@ class ContradictionDetector:
                 end_time = elem["end"]
             else:
                 phrases.append(
-                    {"time": [init_elem["start"], elem["end"]], "text": phrase})
+                    {"time": [init_elem["start"], elem["end"]], "text": phrase}
+                )
         return phrases
 
-    def analysis(self,
-                 entered_text: str,
-                 texts: Union[str, List[str]],
-                 ind=0
-                 ) -> List[dict]:
+    def analysis(
+        self, entered_text: str, texts: Union[str, List[str]], ind=0
+    ) -> List[dict]:
         analysis_results = []
         if isinstance(texts, str):
             part, predict = model_tools.predict_inference(
-                entered_text, texts, self.model, lang=self.lang, device=self._device
+                entered_text,
+                texts,
+                self.model,
+                lang=self.lang,
+                device=self._device,
             )
             analysis_results.append(
                 {
@@ -117,7 +121,11 @@ class ContradictionDetector:
         elif isinstance(texts, list):
             for text in texts:
                 part, predict = model_tools.predict_inference(
-                    entered_text, text, self.model, lang=self.lang, device=self._device
+                    entered_text,
+                    text,
+                    self.model,
+                    lang=self.lang,
+                    device=self._device,
                 )
                 try:
                     analysis_results.append(
@@ -148,9 +156,10 @@ class ContradictionDetector:
         """
         return self._device
 
-    def get_contradiction(self,
-                          entered_text: str,
-                          ) -> None:
+    def get_contradiction(
+        self,
+        entered_text: str,
+    ) -> None:
         """Function for text analyzing.
         Creates json file with predictions.
 
@@ -162,12 +171,16 @@ class ContradictionDetector:
 
         if len(self.chosen_intervals):
             fragments = self.get_phrases(
-                words[:], duration=self.interval_duration)
+                words[:], duration=self.interval_duration
+            )
             intervals = dict.fromkeys(range(len(fragments)))
             for interval in self.chosen_intervals:
                 interval_words = []
                 for word in words:
-                    if fragments[interval]["time"][0] <= word["start"] and word["end"] <= fragments[interval]["time"][1]:
+                    if (
+                        fragments[interval]["time"][0] <= word["start"]
+                        and word["end"] <= fragments[interval]["time"][1]
+                    ):
                         interval_words.append(word)
                 texts = self.get_sentences(interval_words)
                 intervals[interval] = texts
@@ -177,7 +190,8 @@ class ContradictionDetector:
             for ind in intervals:
                 if intervals[ind]:
                     analysis_results = self.analysis(
-                        entered_text, texts, ind=ind)
+                        entered_text, texts, ind=ind
+                    )
                     contr_data.append(analysis_results)
 
             # Unpacking of the list of lists.
@@ -187,7 +201,9 @@ class ContradictionDetector:
             texts = self.get_sentences(words)
             contr_data = self.analysis(entered_text, texts)
 
-        with open(os.path.join(self.temp_path, "contradiction.json"), "w") as filename:
+        with open(
+            os.path.join(self.temp_path, "contradiction.json"), "w"
+        ) as filename:
             json.dump(contr_data, filename)
 
         return os.path.join(self.temp_path, "contradiction.json")

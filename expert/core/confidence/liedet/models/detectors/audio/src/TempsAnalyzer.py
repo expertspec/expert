@@ -1,16 +1,21 @@
 import warnings
-from math import ceil
-from statistics import mean
 
 import librosa
-import numpy as np
+
 
 warnings.filterwarnings("ignore")
 
 
 class TempsAnalyzer:
     def __init__(
-        self, chunk_length=1, signal=False, voice=False, sr=22050, duration=False, chunks=False, path_to_audio=False
+        self,
+        chunk_length=1,
+        signal=False,
+        voice=False,
+        sr=22050,
+        duration=False,
+        chunks=False,
+        path_to_audio=False,
     ):
         self.path_to_audio = path_to_audio
         self.chunks = chunks

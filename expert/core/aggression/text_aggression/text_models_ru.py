@@ -1,37 +1,42 @@
 from __future__ import annotations
 
-import torch
-from transformers import BertTokenizer, BertForSequenceClassification
-from typing import Tuple, List
-import pymorphy2
 import re
+from typing import List, Tuple
+
+import pymorphy2
+import torch
+from transformers import BertForSequenceClassification, BertTokenizer
 
 from expert.core.functional_tools import get_model_folder
 
 
 class Porter:
     PERFECTIVEGROUND = re.compile(
-        u"((ив|ивши|ившись|ыв|ывши|ывшись)|((?<=[ая])(в|вши|вшись)))$")
-    REFLEXIVE = re.compile(u"(с[яь])$")
+        "((ив|ивши|ившись|ыв|ывши|ывшись)|((?<=[ая])(в|вши|вшись)))$"
+    )
+    REFLEXIVE = re.compile("(с[яь])$")
     ADJECTIVE = re.compile(
-        u"(ее|ие|ые|ое|ими|ыми|ей|ий|ый|ой|ем|им|ым|ом|его|ого|ему|ому|их|ых|ую|юю|ая|яя|ою|ею)$")
-    PARTICIPLE = re.compile(u"((ивш|ывш|ующ)|((?<=[ая])(ем|нн|вш|ющ|щ)))$")
+        "(ее|ие|ые|ое|ими|ыми|ей|ий|ый|ой|ем|им|ым|ом|его|ого|ему|ому|их|ых|ую|юю|ая|яя|ою|ею)$"
+    )
+    PARTICIPLE = re.compile("((ивш|ывш|ующ)|((?<=[ая])(ем|нн|вш|ющ|щ)))$")
     VERB = re.compile(
-        u"((ила|ыла|ена|ейте|уйте|ите|или|ыли|ей|уй|ил|ыл|им|ым|ен|ило|ыло|ено|ят|ует|уют|ит|ыт|ены|ить|ыть|ишь|ую|ю)|((?<=[ая])(ла|на|ете|йте|ли|й|л|ем|н|ло|но|ет|ют|ны|ть|ешь|нно)))$")
+        "((ила|ыла|ена|ейте|уйте|ите|или|ыли|ей|уй|ил|ыл|им|ым|ен|ило|ыло|ено|ят|ует|уют|ит|ыт|ены|ить|ыть|ишь|ую|ю)|((?<=[ая])(ла|на|ете|йте|ли|й|л|ем|н|ло|но|ет|ют|ны|ть|ешь|нно)))$"
+    )
     NOUN = re.compile(
-        u"(а|ев|ов|ие|ье|е|иями|ями|ами|еи|ии|и|ией|ей|ой|ий|й|иям|ям|ием|ем|ам|ом|о|у|ах|иях|ях|ы|ь|ию|ью|ю|ия|ья|я)$")
-    RVRE = re.compile(u"^(.*?[аеиоуыэюя])(.*)$")
-    DERIVATIONAL = re.compile(u".*[^аеиоуыэюя]+[аеиоуыэюя].*ость?$")
-    DER = re.compile(u"ость?$")
-    SUPERLATIVE = re.compile(u"(ейше|ейш)$")
-    I = re.compile(u"и$")
-    P = re.compile(u"ь$")
-    NN = re.compile(u"нн$")
+        "(а|ев|ов|ие|ье|е|иями|ями|ами|еи|ии|и|ией|ей|ой|ий|й|иям|ям|ием|ем|ам|ом|о|у|ах|иях|ях|ы|ь|ию|ью|ю|ия|ья|я)$"
+    )
+    RVRE = re.compile("^(.*?[аеиоуыэюя])(.*)$")
+    DERIVATIONAL = re.compile(".*[^аеиоуыэюя]+[аеиоуыэюя].*ость?$")
+    DER = re.compile("ость?$")
+    SUPERLATIVE = re.compile("(ейше|ейш)$")
+    I_ = re.compile("и$")
+    P = re.compile("ь$")
+    NN = re.compile("нн$")
 
     @staticmethod
     def stem(word):
         word = word.lower()
-        word = word.replace(u"ё", u"е")
+        word = word.replace("ё", "е")
         m = re.match(Porter.RVRE, word)
         if m and m.groups():
             pre = m.group(1)
@@ -52,23 +57,22 @@ class Porter:
             else:
                 rv = temp
 
-            rv = Porter.I.sub("", rv, 1)
+            rv = Porter.I_.sub("", rv, 1)
             if re.match(Porter.DERIVATIONAL, rv):
                 rv = Porter.DER.sub("", rv, 1)
 
             temp = Porter.P.sub("", rv, 1)
             if temp == rv:
                 rv = Porter.SUPERLATIVE.sub("", rv, 1)
-                rv = Porter.NN.sub(u"н", rv, 1)
+                rv = Porter.NN.sub("н", rv, 1)
             else:
                 rv = temp
-            word = pre+rv
+            word = pre + rv
 
         return word
 
 
 class ImperativeRU:
-
     def __init__(self) -> None:
         self.morph = pymorphy2.MorphAnalyzer()
 
@@ -97,7 +101,7 @@ class ImperativeRU:
                 in action ('иди', 'идите'), when 'идем' will return False.
 
         Returns:
-            bool: If the word is in the imperative mood, returns True. 
+            bool: If the word is in the imperative mood, returns True.
         """
         word_morph = self.morph.parse(word)
         for w_morph in word_morph:
@@ -121,7 +125,8 @@ class DepreciationRU:
         self.stemmer = Porter()
 
         self.AFFECT = re.compile(
-            u"(ик|ек|к|ец|иц|оск|ечк|оньк|еньк|ышк|инш|ушк|юшк)$")
+            "(ик|ек|к|ец|иц|оск|ечк|оньк|еньк|ышк|инш|ушк|юшк)$"
+        )
 
     def is_depreciation(self, sentence: str) -> Tuple[bool, List]:
         """
@@ -163,7 +168,6 @@ class DepreciationRU:
 
 
 class ToxicRU:
-
     def __init__(self, device) -> None:
         self._device = torch.device("cpu")
         if device is not None:
@@ -193,14 +197,14 @@ class ToxicRU:
         out = {
             "text": text,
             "input_ids": encoding["input_ids"].flatten(),
-            "attention_mask": encoding["attention_mask"].flatten()
+            "attention_mask": encoding["attention_mask"].flatten(),
         }
 
         input_ids = out["input_ids"].to(self._device)
         attention_mask = out["attention_mask"].to(self._device)
         outputs = self.model(
             input_ids=input_ids.unsqueeze(0),
-            attention_mask=attention_mask.unsqueeze(0)
+            attention_mask=attention_mask.unsqueeze(0),
         )
 
         prediction = torch.argmax(outputs.logits, dim=1).cpu().numpy()[0]

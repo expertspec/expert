@@ -34,7 +34,9 @@ model = dict(
         type="FaceLandmarks",
         window=window,
         init=True,
-        init_cfg=dict(type="PretrainedInit", checkpoint="weights/angles_regressor.pth"),
+        init_cfg=dict(
+            type="PretrainedInit", checkpoint="weights/angles_regressor.pth"
+        ),
     ),
     features_dims=features_dims,
     embed_dims=embed_dims,
@@ -53,9 +55,13 @@ model = dict(
         norm=dict(type="LayerNorm", normalized_shape=embed_dims),
     ),
     # classifier
-    cls_head=dict(type="Linear", in_features=embed_dims, out_features=num_classes),
+    cls_head=dict(
+        type="Linear", in_features=embed_dims, out_features=num_classes
+    ),
     init=True,
-    init_cfg=dict(type="PretrainedInit", checkpoint="weights/landmarks_transformer.pth"),
+    init_cfg=dict(
+        type="PretrainedInit", checkpoint="weights/landmarks_transformer.pth"
+    ),
 )
 
 runner = dict(type="LieDetectorRunner")

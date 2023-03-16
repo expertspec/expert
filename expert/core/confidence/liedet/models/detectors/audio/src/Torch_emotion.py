@@ -1,17 +1,25 @@
 import librosa
 import numpy as np
-
 import torch
 import torchaudio
-from torch.utils.data import Dataset
 
-from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import AudioModel
-from expert.core.confidence.liedet.models.detectors.audio.src.utils import chunkizer
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import (
+    chunkizer,
+)
 
 
 class Torch_emotion:
     # Заменить audio_path на False и по умолчанию передавать chunks
-    def __init__(self, model, chunks=False, silence=False, audio_path=False, device="cpu", model_path=False, sr=22050):
+    def __init__(
+        self,
+        model,
+        chunks=False,
+        silence=False,
+        audio_path=False,
+        device="cpu",
+        model_path=False,
+        sr=22050,
+    ):
         self.audio_path = audio_path
         self.chunks = chunks
         self.device = device
@@ -46,7 +54,9 @@ class Torch_emotion:
             self.chunks = chunkizer(1, self.waveform, torch_sr)
         else:
             torch_sr = self.sr
-        self.chunks = [torch.Tensor(i) for i in self.chunks]  # Перевод фрагментов в тензоры
+        self.chunks = [
+            torch.Tensor(i) for i in self.chunks
+        ]  # Перевод фрагментов в тензоры
         self.test = []  # Лист для записи преобразованных фрагментов
         for i in range(len(self.chunks)):
             # Преобразование к одному значению sample rate
@@ -55,8 +65,12 @@ class Torch_emotion:
             w = self._cut_if_necessary(w)
             w = self._right_pad_if_necessary(w)
 
-            mfcc = torchaudio.transforms.MFCC(sample_rate=torch_sr, n_mfcc=13)(w)
-            mfcc = mfcc.repeat(3, 1, 1)  # Чтобы на вход модели подавалось 3 канала
+            mfcc = torchaudio.transforms.MFCC(sample_rate=torch_sr, n_mfcc=13)(
+                w
+            )
+            mfcc = mfcc.repeat(
+                3, 1, 1
+            )  # Чтобы на вход модели подавалось 3 канала
             mfcc = np.transpose(mfcc.numpy(), (1, 2, 0))
             mfcc = np.transpose(mfcc, (2, 0, 1)).astype(np.float32)
 
@@ -69,7 +83,9 @@ class Torch_emotion:
             c = self.test[i]
             c.unsqueeze_(0)
             # Добавление значения в список предсказаний
-            self.predict.append(np.argmax(self.model(c).to("cpu").detach().numpy(), axis=1)[0])
+            self.predict.append(
+                np.argmax(self.model(c).to("cpu").detach().numpy(), axis=1)[0]
+            )
 
         # Замена соответствующих значений на silence
         for num, val in enumerate(self.silence):
@@ -99,7 +115,9 @@ class Torch_emotion:
 
     def _resample_if_necessary(self, signal, sr):
         if sr != self.target_sample_rate:
-            resampler = torchaudio.transforms.Resample(self.sr, self.target_sample_rate)
+            resampler = torchaudio.transforms.Resample(
+                self.sr, self.target_sample_rate
+            )
             signal = resampler(signal)
         return signal
 

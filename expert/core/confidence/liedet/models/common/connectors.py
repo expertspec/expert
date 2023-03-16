@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import overload
 
-from einops import rearrange
-
 import torch.nn as nn
+from einops import rearrange
 from torch import Tensor
 
 from expert.core.confidence.liedet.models.registry import registry

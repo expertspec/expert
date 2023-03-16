@@ -1,16 +1,21 @@
 from __future__ import annotations
 
-import torch
-from torch import Tensor
-from pyannote.audio import Pipeline
-from decord import AudioReader, bridge
-from typing import Dict
 from os import PathLike
+from typing import Dict
+
+import torch
+from decord import AudioReader, bridge
+from pyannote.audio import Pipeline
+from torch import Tensor
 
 from expert.data.diarization.audio_transforms import (
-    rttm_to_timestamps, json_to_timestamps, merge_intervals,
-    separate_marks_for_speakers, get_rounded_intervals
+    get_rounded_intervals,
+    json_to_timestamps,
+    merge_intervals,
+    rttm_to_timestamps,
+    separate_marks_for_speakers,
 )
+
 
 bridge.set_bridge(new_bridge="torch")
 
@@ -23,7 +28,7 @@ class SpeakerDiarization:
         audio: PathLike | Tensor,
         sr: int = 16000,
         rttm_file: str | PathLike | None = None,
-        device: torch.device | None = None
+        device: torch.device | None = None,
     ) -> None:
         """
         Args:
@@ -51,7 +56,7 @@ class SpeakerDiarization:
         if device is not None:
             self._device = device
 
-        token = "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"
+        token = "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"  # FIXME убрать харкод пароля # nosec
         self.pipeline = Pipeline.from_pretrained(
             "pyannote/speaker-diarization@2.1", use_auth_token=token
         )

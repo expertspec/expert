@@ -3,20 +3,20 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-
 import torch
 import torch.nn as nn
-from torch import Tensor
-
 from mmcv import ConfigDict
 from mmcv.cnn import build_norm_layer
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
 from mmcv.cnn.utils.weight_init import trunc_normal_
 from mmcv.runner import _load_checkpoint, load_state_dict
 from mmdet.utils.logger import get_root_logger
+from torch import Tensor
 
+from expert.core.confidence.liedet.models.backbones.timesformer import (
+    PatchEmbed as PE,
+)
 from expert.core.confidence.liedet.models.registry import registry
-from expert.core.confidence.liedet.models.backbones.timesformer import PatchEmbed as PE
 
 
 class PatchEmbed(PE):
@@ -94,7 +94,9 @@ class AST(nn.Module):
         """
         super().__init__()
 
-        assert transformer_layers is None or isinstance(transformer_layers, (dict, list))
+        assert transformer_layers is None or isinstance(
+            transformer_layers, (dict, list)
+        )
 
         self.pretrained = pretrained
         self.embed_dims = embed_dims
@@ -110,7 +112,9 @@ class AST(nn.Module):
         num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dims))
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dims))
+        self.pos_embed = nn.Parameter(
+            torch.zeros(1, num_patches + 1, embed_dims)
+        )
         self.drop_after_pos = nn.Dropout(p=dropout_ratio)
 
         self.norm = build_norm_layer(norm_cfg, embed_dims)[1]
@@ -128,7 +132,9 @@ class AST(nn.Module):
                             embed_dims=embed_dims,
                             num_heads=num_heads,
                             batch_first=True,
-                            dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                            dropout_layer=dict(
+                                type="DropPath", drop_prob=dpr[i]
+                            ),
                         )
                     ],
                     ffn_cfgs=dict(
@@ -154,7 +160,9 @@ class AST(nn.Module):
                 )
             )
 
-        self.transformer_layers = build_transformer_layer_sequence(transformer_layers)
+        self.transformer_layers = build_transformer_layer_sequence(
+            transformer_layers
+        )
 
     def init_weights(self, pretrained=None):
         """Initiate the parameters either from existing checkpoint or from scratch."""

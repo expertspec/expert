@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+from typing import Dict, List, Tuple
+
 import torch
-from typing import List, Tuple, Dict
 
-from expert.core.aggression.text_aggression.text_models_en import DepreciationEN
-from expert.core.aggression.text_aggression.text_models_en import ImperativeEN
-from expert.core.aggression.text_aggression.text_models_en import ToxicEN
-
-from expert.core.aggression.text_aggression.text_models_ru import DepreciationRU
-from expert.core.aggression.text_aggression.text_models_ru import ImperativeRU
-from expert.core.aggression.text_aggression.text_models_ru import ToxicRU
+from expert.core.aggression.text_aggression.text_models_en import (
+    DepreciationEN,
+    ImperativeEN,
+    ToxicEN,
+)
+from expert.core.aggression.text_aggression.text_models_ru import (
+    DepreciationRU,
+    ImperativeRU,
+    ToxicRU,
+)
 
 
 class TextAggression:
@@ -25,7 +29,7 @@ class TextAggression:
         self,
         fragments: str | List[Dict],
         lang: str = "en",
-        device: torch.device | None = None
+        device: torch.device | None = None,
     ) -> None:
         self.lang = lang
         if self.lang not in ["en", "ru"]:
@@ -115,7 +119,8 @@ class TextAggression:
                 result_list = []
                 for fragment in self.fragments:
                     prediction = len(
-                        depreciation.is_depreciation(fragment["text"])[1])
+                        depreciation.is_depreciation(fragment["text"])[1]
+                    )
                     fragment["is_deprication"] = prediction
                     result_list.append(prediction)
                 return result_list
@@ -153,7 +158,4 @@ class TextAggression:
             "imperative_part": imperative_part / len(self.fragments),
         }
 
-        return (
-            self.div_text_agg,
-            self.full_text_agg
-        )
+        return (self.div_text_agg, self.full_text_agg)

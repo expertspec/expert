@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from typing import Dict
+
 import torch
 from transformers import pipeline
-from typing import Dict
 
 
 class TextModel:
     """Emotion classification across the text channel."""
 
-    def __init__(self, lang: str = "en", device: torch.device | None = None) -> None:
+    def __init__(
+        self, lang: str = "en", device: torch.device | None = None
+    ) -> None:
         """
         Args:
             lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
@@ -33,7 +36,7 @@ class TextModel:
                 framework="pt",
                 function_to_apply="softmax",
                 return_all_scores=True,
-                device=self._device
+                device=self._device,
             )
 
         # Initialization of the DistilRoBERTa English-language model for emotion classification.
@@ -45,7 +48,7 @@ class TextModel:
                 framework="pt",
                 function_to_apply="softmax",
                 return_all_scores=True,
-                device=self._device
+                device=self._device,
             )
 
     @property
@@ -66,7 +69,7 @@ class TextModel:
         """
         assert isinstance(text, str), "Text must be string type."
 
-        emotion_dict = {"anger": 0., "neutral": 0., "happiness": 0.}
+        emotion_dict = {"anger": 0.0, "neutral": 0.0, "happiness": 0.0}
 
         if self._lang == "ru":
             output = self.classifier(text, **self.tokenizer_kwargs)

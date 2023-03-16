@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import torch
-import numpy as np
-import albumentations as A
-from albumentations.pytorch.transforms import ToTensorV2
 from typing import List
-import mediapipe
+
+import albumentations as A
 import cv2
+import mediapipe
+import numpy as np
+import torch
+from albumentations.pytorch.transforms import ToTensorV2
 
 from expert.data.detection.inception_resnet_v1 import InceptionResnetV1
 
@@ -25,7 +26,7 @@ class FaceDetector:
         model_selection: int = 0,
         min_detection_confidence: float = 0.75,
         max_num_faces: int = 10,
-        device: torch.device | None = None
+        device: torch.device | None = None,
     ) -> None:
         """
         Args:
@@ -43,7 +44,7 @@ class FaceDetector:
         face_detector = mediapipe.solutions.face_detection
         self.face_detector = face_detector.FaceDetection(
             model_selection=model_selection,
-            min_detection_confidence=min_detection_confidence
+            min_detection_confidence=min_detection_confidence,
         )
 
         # Initialize InceptionResnetV1 on GPU device if available.
@@ -52,14 +53,19 @@ class FaceDetector:
             self._device = device
 
         self.face_embedder = InceptionResnetV1(
-            pretrained="vggface2", device=self._device).eval()
+            pretrained="vggface2", device=self._device
+        ).eval()
 
         # Declare an augmentation pipeline.
-        self.transform = A.Compose([
-            A.Resize(width=224, height=224),
-            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-            ToTensorV2(),
-        ])
+        self.transform = A.Compose(
+            [
+                A.Resize(width=224, height=224),
+                A.Normalize(
+                    mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)
+                ),
+                ToTensorV2(),
+            ]
+        )
 
     @property
     def device(self) -> torch.device:
@@ -85,12 +91,26 @@ class FaceDetector:
         prediction = self.face_detector.process(image)
 
         if prediction.detections:
-            for n, idx in zip(range(self.max_num_faces), range(len(prediction.detections))):
-                bounding_box = prediction.detections[idx].location_data.relative_bounding_box
-                face_location = [[int(bounding_box.xmin * image_width), int(bounding_box.ymin * image_height)],
-                                 [int(bounding_box.width * image_width), int(bounding_box.height * image_height)]]
+            for n, idx in zip(
+                range(self.max_num_faces), range(len(prediction.detections))
+            ):
+                bounding_box = prediction.detections[
+                    idx
+                ].location_data.relative_bounding_box
+                face_location = [
+                    [
+                        int(bounding_box.xmin * image_width),
+                        int(bounding_box.ymin * image_height),
+                    ],
+                    [
+                        int(bounding_box.width * image_width),
+                        int(bounding_box.height * image_height),
+                    ],
+                ]
 
-                if sum([sum(loc) for loc in face_location]) == sum([sum(map(abs, loc)) for loc in face_location]):
+                if sum([sum(loc) for loc in face_location]) == sum(
+                    [sum(map(abs, loc)) for loc in face_location]
+                ):
                     face_array.append(face_location)
 
         return face_array
@@ -112,13 +132,18 @@ class FaceDetector:
 
         if face_array is not None:
             for face_location in face_array:
-                face_image = image[face_location[0][1]:face_location[0][1]+face_location[1][1],
-                                   face_location[0][0]:face_location[0][0]+face_location[1][0]]
+                face_image = image[
+                    face_location[0][1] : face_location[0][1]
+                    + face_location[1][1],
+                    face_location[0][0] : face_location[0][0]
+                    + face_location[1][0],
+                ]
 
                 transformed_face = self.transform(image=face_image)["image"]
                 in_face = transformed_face.unsqueeze(0).to(self._device)
-                face_emb = self.face_embedder(
-                    in_face)[0].detach().cpu().tolist()
+                face_emb = (
+                    self.face_embedder(in_face)[0].detach().cpu().tolist()
+                )
 
                 face_batch.append([face_emb, face_location])
 

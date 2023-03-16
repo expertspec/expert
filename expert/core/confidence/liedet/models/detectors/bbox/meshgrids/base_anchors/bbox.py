@@ -20,26 +20,41 @@ class BBoxBaseAnchor:
         """
         self.ratios = torch.Tensor(ratios)
         if center_offset != 0:
-            assert centers is None, "center cannot be set when center_offset" f"!=0, {centers} is given."
+            assert centers is None, (
+                "center cannot be set when center_offset"
+                f"!=0, {centers} is given."
+            )
         if not (0 <= center_offset <= 1):
-            raise ValueError("center_offset should be in range [0, 1], " f"{center_offset} is given.")
+            raise ValueError(
+                "center_offset should be in range [0, 1], "
+                f"{center_offset} is given."
+            )
         if centers is not None:
             assert len(centers) == len(base_sizes), (
-                "The number of base_sizes should be the same as centers, " f"got {base_sizes} and {centers}"
+                "The number of base_sizes should be the same as centers, "
+                f"got {base_sizes} and {centers}"
             )
 
         # calculate scales of anchors
-        assert (octave_base_scale is not None and scales_per_octave is not None) ^ (scales is not None), (
-            "scales and octave_base_scale with scales_per_octave cannot" " be set at the same time"
+        assert (
+            octave_base_scale is not None and scales_per_octave is not None
+        ) ^ (scales is not None), (
+            "scales and octave_base_scale with scales_per_octave cannot"
+            " be set at the same time"
         )
         if scales is not None:
             self.scales = torch.Tensor(scales)
         elif octave_base_scale is not None and scales_per_octave is not None:
-            octave_scales = np.array([2 ** (i / scales_per_octave) for i in range(scales_per_octave)])
+            octave_scales = np.array(
+                [2 ** (i / scales_per_octave) for i in range(scales_per_octave)]
+            )
             scales = octave_scales * octave_base_scale
             self.scales = torch.Tensor(scales)
         else:
-            raise ValueError("Either scales or octave_base_scale with " "scales_per_octave should be set")
+            raise ValueError(
+                "Either scales or octave_base_scale with "
+                "scales_per_octave should be set"
+            )
 
         self.base_sizes = base_sizes
         self.scale_major = scale_major
@@ -54,13 +69,20 @@ class BBoxBaseAnchor:
                 center = self.centers[i]
             multi_level_base_anchors.append(
                 self._single_level_base_anchors(
-                    base_size, self.scales, self.ratios, self.center_offset, self.scale_major, center
+                    base_size,
+                    self.scales,
+                    self.ratios,
+                    self.center_offset,
+                    self.scale_major,
+                    center,
                 )
             )
         return multi_level_base_anchors
 
     @staticmethod
-    def _single_level_base_anchors(base_size, scales, ratios, center_offset, scale_major, center=None):
+    def _single_level_base_anchors(
+        base_size, scales, ratios, center_offset, scale_major, center=None
+    ):
         """Generate base anchors of a single level.
         Args:
             base_size (int | float): Basic size of an anchor.
@@ -91,7 +113,12 @@ class BBoxBaseAnchor:
 
         # use float anchor and the anchor's center is aligned with the
         # pixel center
-        base_anchors = [x_center - 0.5 * ws, y_center - 0.5 * hs, x_center + 0.5 * ws, y_center + 0.5 * hs]
+        base_anchors = [
+            x_center - 0.5 * ws,
+            y_center - 0.5 * hs,
+            x_center + 0.5 * ws,
+            y_center + 0.5 * hs,
+        ]
         base_anchors = torch.stack(base_anchors, dim=-1)
 
         return base_anchors

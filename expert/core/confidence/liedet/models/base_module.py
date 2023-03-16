@@ -5,11 +5,20 @@ from abc import ABCMeta
 
 import torch.nn as nn
 
-from expert.core.confidence.liedet.models.utils.weights_init import BaseInit, PretrainedInit, initialize
+from expert.core.confidence.liedet.models.utils.weights_init import (
+    BaseInit,
+    PretrainedInit,
+    initialize,
+)
 
 
 class BaseModule(nn.Module, metaclass=ABCMeta):
-    def __init__(self, init_cfg: BaseInit | tuple[BaseInit, ...] | None = None, init: bool = False, **kwargs) -> None:
+    def __init__(
+        self,
+        init_cfg: BaseInit | tuple[BaseInit, ...] | None = None,
+        init: bool = False,
+        **kwargs,
+    ) -> None:
         super().__init__()
 
         self._is_init = False
@@ -29,7 +38,9 @@ class BaseModule(nn.Module, metaclass=ABCMeta):
         logger = logging.getLogger(name="module_init")
         if not self._is_init:
             if self.init_cfg is not None:
-                logger.info(f"initialize {module_name} with init_cfg {self.init_cfg}")
+                logger.info(
+                    f"initialize {module_name} with init_cfg {self.init_cfg}"
+                )
                 initialize(module=self, init_cfg=self.init_cfg)
 
                 if isinstance(self.init_cfg, PretrainedInit):
@@ -48,7 +59,9 @@ class BaseModule(nn.Module, metaclass=ABCMeta):
                     initialize(m, init_cfg=self.init_cfg)
             self._is_init = True
         else:
-            logger.warn(f"init_weights of {self.__class__.__name__} has been called more than ones")
+            logger.warn(
+                f"init_weights of {self.__class__.__name__} has been called more than ones"
+            )
 
         if is_top_level_module:
             for sub_module in self.modules():
@@ -63,7 +76,9 @@ class BaseModule(nn.Module, metaclass=ABCMeta):
 
 
 class Sequential(BaseModule, nn.Sequential):
-    def __init__(self, *modules: nn.Module, init_cfg=None, init: bool = False, **kwargs) -> None:
+    def __init__(
+        self, *modules: nn.Module, init_cfg=None, init: bool = False, **kwargs
+    ) -> None:
         BaseModule.__init__(self, init_cfg=init_cfg, init=False)
         nn.Sequential.__init__(self, *modules)
 
@@ -72,7 +87,9 @@ class Sequential(BaseModule, nn.Sequential):
 
 
 class ModuleList(BaseModule, nn.ModuleList):
-    def __init__(self, modules=None, init_cfg=None, init: bool = False, **kwargs) -> None:
+    def __init__(
+        self, modules=None, init_cfg=None, init: bool = False, **kwargs
+    ) -> None:
         BaseModule.__init__(self, init_cfg=init_cfg, init=False)
         nn.ModuleList.__init__(self, modules=modules)
 
@@ -81,7 +98,9 @@ class ModuleList(BaseModule, nn.ModuleList):
 
 
 class ModuleDict(BaseModule, nn.ModuleDict):
-    def __init__(self, modules=None, init_cfg=None, init: bool = False, **kwargs) -> None:
+    def __init__(
+        self, modules=None, init_cfg=None, init: bool = False, **kwargs
+    ) -> None:
         BaseModule.__init__(self, init_cfg=init_cfg, init=False)
         nn.ModuleDict.__init__(self, modules=modules)
 

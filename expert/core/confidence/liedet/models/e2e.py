@@ -1,15 +1,12 @@
-
 from __future__ import annotations
-
-from catalyst import dl
-from einops import rearrange
 
 import torch
 import torch.nn as nn
-from torch import Tensor
-
+from catalyst import dl
+from einops import rearrange
 from mmcv.cnn.utils.weight_init import kaiming_init, trunc_normal_
 from mmcv.utils import ConfigDict
+from torch import Tensor
 
 from expert.core.confidence.liedet.models.base_module import BaseModule
 from expert.core.confidence.liedet.models.registry import build, registry
@@ -73,7 +70,9 @@ class LieDetector(BaseModule):
         super().__init__(init=False, **kwargs)
 
         if video_model is None and audio_model is None:
-            raise ValueError("At least one of video_model or audio_model should be specified.")
+            raise ValueError(
+                "At least one of video_model or audio_model should be specified."
+            )
 
         self.video_model = video_model
         self.audio_model = audio_model
@@ -93,7 +92,9 @@ class LieDetector(BaseModule):
 
         if features_dims is not None and embed_dims is not None:
             self.use_embed = True
-            self.embed = nn.Linear(in_features=features_dims, out_features=embed_dims)
+            self.embed = nn.Linear(
+                in_features=features_dims, out_features=embed_dims
+            )
         else:
             self.use_embed = False
             self.embed = nn.Identity()
@@ -101,7 +102,9 @@ class LieDetector(BaseModule):
         if self.use_embed:
             self.cls_tokens = nn.Parameter(torch.zeros(1, 1, embed_dims))
             self.pos_embed = pos_embed
-            self.pos_embeds = nn.Parameter(torch.zeros(1, window + 1, embed_dims))
+            self.pos_embeds = nn.Parameter(
+                torch.zeros(1, window + 1, embed_dims)
+            )
 
         if init:
             self.init_weights()
@@ -122,7 +125,7 @@ class LieDetector(BaseModule):
         if self.video_model is not None:
             vfeatures, is_face = self.video_model(vframes)
             if sum(is_face) == 0:
-                return 'No face'
+                return "No face"
         if self.audio_model is not None:
             afeatures = self.audio_model(aframes)
 
@@ -170,6 +173,7 @@ class LieDetector(BaseModule):
 
 class LieDetectorRunner(dl.Runner):
     """Base Lie Detector Runner."""
+
     @torch.no_grad()
     def predict_batch(self, batch: dict[str, Tensor]) -> Tensor:
         """Predicts indexes of target classes over batch.
@@ -183,7 +187,7 @@ class LieDetectorRunner(dl.Runner):
         self.model.eval()
         logits = self.model(batch)
         if isinstance(logits, str):
-            return 'No face'
+            return "No face"
         probs = torch.sigmoid(logits)
 
         return probs
@@ -197,13 +201,21 @@ class LieDetectorRunner(dl.Runner):
         Returns:
             Tensor: target class index.
         """
-        sample["video_frames"] = rearrange(sample["video_frames"], "(b t) c h w -> b t c h w", b=1)
-        sample["audio_frames"] = rearrange(sample["audio_frames"], "(b c) t -> b c t", b=1)
+        sample["video_frames"] = rearrange(
+            sample["video_frames"], "(b t) c h w -> b t c h w", b=1
+        )
+        sample["audio_frames"] = rearrange(
+            sample["audio_frames"], "(b c) t -> b c t", b=1
+        )
 
         return self.predict_batch(sample)
 
     def handle_batch(self, batch: dict[str, Tensor]) -> None:
-        _, _, labels = batch["video_frames"], batch["audio_frames"], batch["labels"]
+        _, _, labels = (
+            batch["video_frames"],
+            batch["audio_frames"],
+            batch["labels"],
+        )
 
         logits = self.model(batch)
 

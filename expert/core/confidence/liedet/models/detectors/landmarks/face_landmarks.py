@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from einops import rearrange
-from expert.core.confidence.liedet.models.base_module import BaseModule
-from mediapipe.python.solutions import face_mesh
-
 import torch
+from einops import rearrange
+from mediapipe.python.solutions import face_mesh
 from torch import Tensor
 
+from expert.core.confidence.liedet.models.base_module import BaseModule
+from expert.core.confidence.liedet.models.detectors.landmarks.rotate_regressor import (
+    Regressor,
+)
 from expert.core.confidence.liedet.models.registry import registry
-from expert.core.confidence.liedet.models.detectors.landmarks.rotate_regressor import Regressor
 
 
 @registry.register_module()
@@ -106,13 +107,18 @@ class FaceLandmarks(BaseModule):
                 chunk_landmarks = []
                 # FIXME: It will be better to use .zeros and clip gradient,
                 #   but catalyst's BackwardCallback with grad_clip_fn has bag: it uses undefined variable `model`
-                prev_landmarks = torch.rand(size=(3, 478), dtype=torch.float).to(device)
+                prev_landmarks = torch.rand(
+                    size=(3, 478), dtype=torch.float
+                ).to(device)
                 for frame in chunk:
                     landmarks = fm.process(frame)
                     if landmarks.multi_face_landmarks:
                         landmarks = landmarks.multi_face_landmarks[0].landmark
                         landmarks = [
-                            torch.tensor((landmark.x, landmark.y, landmark.z), dtype=torch.float)
+                            torch.tensor(
+                                (landmark.x, landmark.y, landmark.z),
+                                dtype=torch.float,
+                            )
                             for landmark in landmarks
                         ]
                         landmarks = torch.stack(landmarks).T.to(device)
@@ -145,7 +151,10 @@ class FaceLandmarks(BaseModule):
         Returns:
             Tensor: batch of normalized landmarks.
         """
-        min_value, max_value = x.min(dim=-1, keepdim=True).values, x.max(dim=-1, keepdim=True).values
+        min_value, max_value = (
+            x.min(dim=-1, keepdim=True).values,
+            x.max(dim=-1, keepdim=True).values,
+        )
 
         if min_value.allclose(max_value):
             return torch.zeros(x.size(), dtype=torch.float).to(x.device)
@@ -170,7 +179,11 @@ class FaceLandmarks(BaseModule):
         dot_products = rearrange(dot_products, "c k m b t f -> b t f (c k m)")
         cross_products = torch.linalg.cross(axis, x, dim=-1)
 
-        return cos_angles * x + sin_angles * cross_products + (1 - cos_angles) * dot_products * axis
+        return (
+            cos_angles * x
+            + sin_angles * cross_products
+            + (1 - cos_angles) * dot_products * axis
+        )
 
     def rotate(self, x: Tensor) -> Tensor:
         """Regresses rotations angles and normalizes landmarks rotation angles.

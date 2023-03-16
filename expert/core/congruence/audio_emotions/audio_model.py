@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import torch
 from torch import nn
-import gdown
-import os
 
 from expert.core.functional_tools import get_model_weights
 
@@ -12,9 +10,7 @@ class AudioModel(nn.Module):
     """Model for emotion classification by audio signal."""
 
     def __init__(
-        self,
-        pretrained: bool = True,
-        device: torch.device | None = None
+        self, pretrained: bool = True, device: torch.device | None = None
     ) -> None:
         """
         Args:
@@ -28,11 +24,11 @@ class AudioModel(nn.Module):
                 out_channels=512,
                 kernel_size=3,
                 stride=1,
-                padding=2
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(512)
+            nn.BatchNorm2d(512),
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(
@@ -40,11 +36,11 @@ class AudioModel(nn.Module):
                 out_channels=256,
                 kernel_size=3,
                 stride=1,
-                padding=2
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(256)
+            nn.BatchNorm2d(256),
         )
         self.conv3 = nn.Sequential(
             nn.Conv2d(
@@ -52,11 +48,11 @@ class AudioModel(nn.Module):
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
-                padding=2
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(128)
+            nn.BatchNorm2d(128),
         )
         self.conv4 = nn.Sequential(
             nn.Conv2d(
@@ -64,11 +60,11 @@ class AudioModel(nn.Module):
                 out_channels=64,
                 kernel_size=3,
                 stride=1,
-                padding=2
+                padding=2,
             ),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.BatchNorm2d(64)
+            nn.BatchNorm2d(64),
         )
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(p=0.3)

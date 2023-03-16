@@ -2,17 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from einops import rearrange
-
 import torch
 import torch.nn as nn
-from torch import Tensor
-
+from einops import rearrange
 from mmcv.cnn import build_norm_layer, constant_init
 from mmcv.cnn.bricks.transformer import FFN, build_dropout
 from mmcv.cnn.builder import build_from_cfg
 from mmcv.runner.base_module import BaseModule
 from mmcv.utils import digit_version
+from torch import Tensor
 
 from expert.core.confidence.liedet.models.registry import registry
 
@@ -26,9 +24,15 @@ class TransformerEncoder(nn.TransformerEncoder):
 
     def __init__(self, encoder_layer, num_layers, norm=None):
         encoder_layer = build_from_cfg(cfg=encoder_layer, registry=registry)
-        norm = build_from_cfg(cfg=norm, registry=registry) if norm is not None else None
+        norm = (
+            build_from_cfg(cfg=norm, registry=registry)
+            if norm is not None
+            else None
+        )
 
-        super().__init__(encoder_layer=encoder_layer, num_layers=num_layers, norm=norm)
+        super().__init__(
+            encoder_layer=encoder_layer, num_layers=num_layers, norm=norm
+        )
 
 
 class DividedTemporalAttentionWithNorm(BaseModule):
@@ -72,9 +76,13 @@ class DividedTemporalAttentionWithNorm(BaseModule):
 
         if digit_version(torch.__version__) < digit_version("1.9.0"):
             kwargs.pop("batch_first", None)
-        self.attn = nn.MultiheadAttention(embed_dims, num_heads, attn_drop, **kwargs)
+        self.attn = nn.MultiheadAttention(
+            embed_dims, num_heads, attn_drop, **kwargs
+        )
         self.proj_drop = nn.Dropout(proj_drop)
-        self.dropout_layer = build_dropout(dropout_layer) if dropout_layer else nn.Identity()
+        self.dropout_layer = (
+            build_dropout(dropout_layer) if dropout_layer else nn.Identity()
+        )
         self.temporal_fc = nn.Linear(self.embed_dims, self.embed_dims)
 
         self.init_weights()
@@ -83,7 +91,9 @@ class DividedTemporalAttentionWithNorm(BaseModule):
         """Constant weights initialization of temporal linear layer."""
         constant_init(self.temporal_fc, val=0, bias=0)
 
-    def forward(self, query: Tensor, key=None, value=None, residual=None, **kwargs) -> Tensor:
+    def forward(
+        self, query: Tensor, key=None, value=None, residual=None, **kwargs
+    ) -> Tensor:
         """Forwards Divided Temporal Attention with Normalization
 
         (Input)--[Extract Class Token]-->(Initial Class Token)
@@ -103,7 +113,9 @@ class DividedTemporalAttentionWithNorm(BaseModule):
         Returns:
             Tensor: output time sequence.
         """
-        assert residual is None, "Always adding the shortcut in the forward function"
+        assert (
+            residual is None
+        ), "Always adding the shortcut in the forward function"
 
         init_cls_token = query[:, 0, :].unsqueeze(1)
         identity = query_t = query[:, 1:, :]
@@ -115,7 +127,9 @@ class DividedTemporalAttentionWithNorm(BaseModule):
         # res_temporal [batch_size * num_patches, num_frames, embed_dims]
         query_t = self.norm(query_t.reshape(b * p, t, m)).permute(1, 0, 2)
         res_temporal = self.attn(query_t, query_t, query_t)[0].permute(1, 0, 2)
-        res_temporal = self.dropout_layer(self.proj_drop(res_temporal.contiguous()))
+        res_temporal = self.dropout_layer(
+            self.proj_drop(res_temporal.contiguous())
+        )
         res_temporal = self.temporal_fc(res_temporal)
 
         # res_temporal [batch_size, num_patches * num_frames, embed_dims]
@@ -167,9 +181,13 @@ class DividedSpatialAttentionWithNorm(BaseModule):
         self.norm = build_norm_layer(norm_cfg, self.embed_dims)[1]
         if digit_version(torch.__version__) < digit_version("1.9.0"):
             kwargs.pop("batch_first", None)
-        self.attn = nn.MultiheadAttention(embed_dims, num_heads, attn_drop, **kwargs)
+        self.attn = nn.MultiheadAttention(
+            embed_dims, num_heads, attn_drop, **kwargs
+        )
         self.proj_drop = nn.Dropout(proj_drop)
-        self.dropout_layer = build_dropout(dropout_layer) if dropout_layer else nn.Identity()
+        self.dropout_layer = (
+            build_dropout(dropout_layer) if dropout_layer else nn.Identity()
+        )
 
         self.init_weights()
 
@@ -177,7 +195,9 @@ class DividedSpatialAttentionWithNorm(BaseModule):
         # init DividedSpatialAttentionWithNorm by default
         pass
 
-    def forward(self, query: Tensor, key=None, value=None, residual=None, **kwargs) -> Tensor:
+    def forward(
+        self, query: Tensor, key=None, value=None, residual=None, **kwargs
+    ) -> Tensor:
         """Forwards Divided Spatial Attention with Normalization.
 
         (Input)--
@@ -197,7 +217,9 @@ class DividedSpatialAttentionWithNorm(BaseModule):
             Tensor: output time sequence.
         """
 
-        assert residual is None, "Always adding the shortcut in the forward function"
+        assert (
+            residual is None
+        ), "Always adding the shortcut in the forward function"
 
         identity = query
         init_cls_token = query[:, 0, :].unsqueeze(1)
@@ -208,7 +230,9 @@ class DividedSpatialAttentionWithNorm(BaseModule):
         p, t = pt // self.num_frames, self.num_frames
 
         # cls_token [batch_size * num_frames, 1, embed_dims]
-        cls_token = init_cls_token.repeat(1, t, 1).reshape(b * t, m).unsqueeze(1)
+        cls_token = (
+            init_cls_token.repeat(1, t, 1).reshape(b * t, m).unsqueeze(1)
+        )
 
         # query_s [batch_size * num_frames, num_patches + 1, embed_dims]
         query_s = rearrange(query_s, "b (p t) m -> (b t) p m", p=p, t=t)
@@ -217,14 +241,18 @@ class DividedSpatialAttentionWithNorm(BaseModule):
         # res_spatial [batch_size * num_frames, num_patches + 1, embed_dims]
         query_s = self.norm(query_s).permute(1, 0, 2)
         res_spatial = self.attn(query_s, query_s, query_s)[0].permute(1, 0, 2)
-        res_spatial = self.dropout_layer(self.proj_drop(res_spatial.contiguous()))
+        res_spatial = self.dropout_layer(
+            self.proj_drop(res_spatial.contiguous())
+        )
 
         # cls_token [batch_size, 1, embed_dims]
         cls_token = res_spatial[:, 0, :].reshape(b, t, m)
         cls_token = torch.mean(cls_token, 1, True)
 
         # res_spatial [batch_size * num_frames, num_patches + 1, embed_dims]
-        res_spatial = rearrange(res_spatial[:, 1:, :], "(b t) p m -> b (p t) m", p=p, t=t)
+        res_spatial = rearrange(
+            res_spatial[:, 1:, :], "(b t) p m -> b (p t) m", p=p, t=t
+        )
         res_spatial = torch.cat((cls_token, res_spatial), 1)
 
         new_query = identity + res_spatial
@@ -237,7 +265,9 @@ class FFNWithNorm(FFN):
     It apply one normalization layer before forwarding the input data to feed-forward networks.
     """
 
-    def __init__(self, *args, norm_cfg: dict[str, Any] = dict(type="LN"), **kwargs) -> None:
+    def __init__(
+        self, *args, norm_cfg: dict[str, Any] = dict(type="LN"), **kwargs
+    ) -> None:
         """
         Args:
             embed_dims (int): Dimensions of embedding.

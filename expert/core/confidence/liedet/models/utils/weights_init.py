@@ -5,34 +5,50 @@ import math
 import warnings
 
 import numpy as np
-
 import torch
 import torch.nn as nn
 from torch import Tensor, device
 
 
-def constant_init(module: nn.Module, val: int | float, bias: int | float = 0) -> None:
+def constant_init(
+    module: nn.Module, val: int | float, bias: int | float = 0
+) -> None:
     if hasattr(module, "weight") and module.weight is not None:
         nn.init.constant_(tensor=module.weight, val=val)  # type: ignore
     if hasattr(module, "bias") and module.bias is not None:
         nn.init.constant_(tensor=module.bias, val=bias)  # type: ignore
 
 
-def normal_init(module: nn.Module, mean: int | float = 0, std: int | float = 1, bias: int | float = 0) -> None:
+def normal_init(
+    module: nn.Module,
+    mean: int | float = 0,
+    std: int | float = 1,
+    bias: int | float = 0,
+) -> None:
     if hasattr(module, "weight") and module.weight is not None:
         nn.init.normal_(tensor=module.weight, mean=mean, std=std)  # type: ignore
     if hasattr(module, "bias") and module.bias is not None:
         nn.init.constant_(tensor=module.bias, val=bias)  # type: ignore
 
 
-def uniform_init(module: nn.Module, a: int | float = 0, b: int | float = 1, bias: int | float = 0) -> None:
+def uniform_init(
+    module: nn.Module,
+    a: int | float = 0,
+    b: int | float = 1,
+    bias: int | float = 0,
+) -> None:
     if hasattr(module, "weight") and module.weight is not None:
         nn.init.uniform_(tensor=module.weight, a=a, b=b)  # type: ignore
     if hasattr(module, "bias") and module.bias is not None:
         nn.init.constant_(tensor=module.bias, bias=bias)  # type: ignore
 
 
-def xavier_init(module: nn.Module, gain: int | float = 1, bias: int | float = 0, distribution: str = "normal") -> None:
+def xavier_init(
+    module: nn.Module,
+    gain: int | float = 1,
+    bias: int | float = 0,
+    distribution: str = "normal",
+) -> None:
     supported_distributions = {"normal", "uniform"}
     if distribution not in supported_distributions:
         raise NotImplementedError(
@@ -82,7 +98,14 @@ def kaiming_init(
 
 
 def caffe2_xavier_init(module: nn.Module, bias: int | float = 0) -> None:
-    kaiming_init(module=module, a=1, mode="fan_in", nonlinearity="leaky_relu", bias=bias, distribution="uniform")
+    kaiming_init(
+        module=module,
+        a=1,
+        mode="fan_in",
+        nonlinearity="leaky_relu",
+        bias=bias,
+        distribution="uniform",
+    )
 
 
 def bias_init_with_prob(prior_prob: float) -> float:
@@ -161,10 +184,14 @@ class BaseInit(object):
             raise TypeError(f"bias must be a number, but got a {type(bias)}")
 
         if bias_prob is not None and not isinstance(bias_prob, float):
-            raise TypeError(f"bias_prob must be float, but got a {type(bias_prob)}")
+            raise TypeError(
+                f"bias_prob must be float, but got a {type(bias_prob)}"
+            )
 
         if layer is not None and not isinstance(layer, (str, list, tuple)):
-            raise TypeError(f"layer must be a str or a list/tuple or str, but got a {type(layer)}")
+            raise TypeError(
+                f"layer must be a str or a list/tuple or str, but got a {type(layer)}"
+            )
         elif layer is None:
             self.wholemodule = True
             layer = []
@@ -222,7 +249,9 @@ class ConstantInit(BaseInit):
 
 
 class NormalInit(BaseInit):
-    def __init__(self, mean: int | float = 0, std: int | float = 1, **kwargs) -> None:
+    def __init__(
+        self, mean: int | float = 0, std: int | float = 1, **kwargs
+    ) -> None:
         super().__init__(**kwargs)
 
         self.mean = mean
@@ -236,12 +265,17 @@ class NormalInit(BaseInit):
                 layername = m.__class__.__name__
                 basesnames = _get_bases_names(module=m)
                 if len(set(self.layer) & set([layername] + basesnames)):
-                    normal_init(module=m, mean=self.mean, std=self.std, bias=self.bias)
+                    normal_init(
+                        module=m, mean=self.mean, std=self.std, bias=self.bias
+                    )
 
         module.apply(init)
 
     def _get_init_info(self) -> str:
-        info = f"{self.__class__.__name__}: mean={self.mean}," f" std={self.std}, bias={self.bias}"
+        info = (
+            f"{self.__class__.__name__}: mean={self.mean},"
+            f" std={self.std}, bias={self.bias}"
+        )
         if self.layer is not None:
             info = f"{info}, layer={self.layer}"
 
@@ -268,7 +302,10 @@ class UniformInit(BaseInit):
         module.apply(init)
 
     def _get_init_info(self) -> str:
-        info = f"{self.__class__.__name__}: a={self.a}," f" b={self.b}, bias={self.bias}"
+        info = (
+            f"{self.__class__.__name__}: a={self.a},"
+            f" b={self.b}, bias={self.bias}"
+        )
         if self.layer is not None:
             info = f"{info}, layer={self.layer}"
 
@@ -276,7 +313,9 @@ class UniformInit(BaseInit):
 
 
 class XavierInit(BaseInit):
-    def __init__(self, gain: int | float = 1, distribution: str = "normal", **kwargs) -> None:
+    def __init__(
+        self, gain: int | float = 1, distribution: str = "normal", **kwargs
+    ) -> None:
         super().__init__(**kwargs)
 
         self.gain = gain
@@ -285,17 +324,30 @@ class XavierInit(BaseInit):
     def __call__(self, module: nn.Module) -> None:
         def init(m: nn.Module) -> None:
             if self.wholemodule:
-                xavier_init(module=m, gain=self.gain, bias=self.bias, distribution=self.distribution)
+                xavier_init(
+                    module=m,
+                    gain=self.gain,
+                    bias=self.bias,
+                    distribution=self.distribution,
+                )
             else:
                 layername = m.__class__.__name__
                 basesnames = _get_bases_names(m)
                 if len(set(self.layer) & set([layername] + basesnames)):
-                    xavier_init(module=m, gain=self.gain, bias=self.bias, distribution=self.distribution)
+                    xavier_init(
+                        module=m,
+                        gain=self.gain,
+                        bias=self.bias,
+                        distribution=self.distribution,
+                    )
 
         module.apply(init)
 
     def _get_init_info(self) -> str:
-        info = f"{self.__class__.__name__}: gain={self.gain}, " f"distribution={self.distribution}, bias={self.bias}"
+        info = (
+            f"{self.__class__.__name__}: gain={self.gain}, "
+            f"distribution={self.distribution}, bias={self.bias}"
+        )
         if self.layer is not None:
             info = f"{info}, layer={self.layer}"
 
@@ -359,7 +411,13 @@ class KaimingInit(BaseInit):
 
 class Caffe2XavierInit(KaimingInit):
     def __init__(self, **kwargs) -> None:
-        super().__init__(a=1, mode="fan_in", nonlinearity="leaky_relu", distribution="uniform", **kwargs)
+        super().__init__(
+            a=1,
+            mode="fan_in",
+            nonlinearity="leaky_relu",
+            distribution="uniform",
+            **kwargs,
+        )
 
     def __call__(self, module: nn.Module) -> None:
         super().__call__(module=module)
@@ -409,7 +467,8 @@ class TruncNormalInit(BaseInit):
 
     def _get_init_info(self) -> str:
         info = (
-            f"{self.__class__.__name__}: a={self.a}, b={self.b}," f" mean={self.mean}, std={self.std}, bias={self.bias}"
+            f"{self.__class__.__name__}: a={self.a}, b={self.b},"
+            f" mean={self.mean}, std={self.std}, bias={self.bias}"
         )
         return info
 
@@ -433,12 +492,18 @@ class PretrainedInit(object):
     def __call__(self, module: nn.Module) -> None:
         logger = logging.getLogger(name="module_init")
 
-        logger.info(f"load model from: {self.checkpoint}, to {self.map_location}")
+        logger.info(
+            f"load model from: {self.checkpoint}, to {self.map_location}"
+        )
 
-        state_dict = torch.load(f=self.checkpoint, map_location=self.map_location)
+        state_dict = torch.load(
+            f=self.checkpoint, map_location=self.map_location
+        )
 
         if not isinstance(state_dict, dict):
-            raise TypeError(f"Checkpoint {self.checkpoint} should contains dict, but got {type(state_dict)}")
+            raise TypeError(
+                f"Checkpoint {self.checkpoint} should contains dict, but got {type(state_dict)}"
+            )
 
         if "state_dict" in state_dict:
             state_dict = state_dict["state_dict"]
@@ -454,7 +519,11 @@ class PretrainedInit(object):
             if self.prefix_add:
                 state_dict = {f"{prefix}{k}": v for k, v in state_dict.items()}
             else:
-                state_dict = {k[prefix_size:]: v for k, v in state_dict.items() if k.startswith(prefix)}
+                state_dict = {
+                    k[prefix_size:]: v
+                    for k, v in state_dict.items()
+                    if k.startswith(prefix)
+                }
 
         module.load_state_dict(state_dict=state_dict, strict=True)
 
@@ -464,7 +533,10 @@ class PretrainedInit(object):
         return info
 
 
-def initialize(module: nn.Module, init_cfg: BaseInit | tuple[BaseInit, ...] | list[BaseInit] | None) -> None:
+def initialize(
+    module: nn.Module,
+    init_cfg: BaseInit | tuple[BaseInit, ...] | list[BaseInit] | None,
+) -> None:
     if init_cfg is not None:
         if not isinstance(init_cfg, (tuple, list)):
             init_cfg = [init_cfg]

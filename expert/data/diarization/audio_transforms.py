@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from os import PathLike
+from typing import Dict, List
+
 import torch
 from torch import Tensor
-from typing import List, Dict
-from os import PathLike
 
 
 def rttm_to_timestamps(path: str | PathLike) -> List:
@@ -54,16 +55,20 @@ def separate_marks_for_speakers(dict_with_marks: List) -> Dict:
     return speakers
 
 
-def create_separated_signals(signal: List, speakers_info: Dict, name: str, sr: int = 16000) -> Tensor:
+def create_separated_signals(
+    signal: List, speakers_info: Dict, name: str, sr: int = 16000
+) -> Tensor:
     first = signal[0][
-        int(speakers_info[name][0][0] * sr): int(speakers_info[name][0][1] * sr)
+        int(speakers_info[name][0][0] * sr) : int(
+            speakers_info[name][0][1] * sr
+        )
     ]
     for num in range(1, len(speakers_info[name])):
         first = torch.concat(
             (
                 first,
                 signal[0][
-                    int(speakers_info[name][num][0] * sr): int(
+                    int(speakers_info[name][num][0] * sr) : int(
                         speakers_info[name][num][1] * sr
                     )
                 ],

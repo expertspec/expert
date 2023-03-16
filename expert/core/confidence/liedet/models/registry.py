@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 from collections import OrderedDict
-from typing import Any, Mapping, Optional
-
-from mmaction.models.builder import MODELS as MMACTION_MODELS
+from typing import Optional
 
 import torch.nn as nn
-from torch.nn import modules as TORCH_MODULES  # noqa: N812
-from torchvision.transforms import transforms as TORCHVISION_TRANSFORMS  # noqa: N812
-
+from mmaction.models.builder import MODELS as MMACTION_MODELS
 from mmcv.cnn import MODELS
 from mmcv.cnn.bricks.registry import (
     ACTIVATION_LAYERS,
@@ -28,8 +24,13 @@ from mmcv.cnn.bricks.wrappers import Linear, MaxPool2d, MaxPool3d
 from mmcv.utils import ConfigDict, Registry
 from mmcv.utils.logging import get_logger, logger_initialized
 from mmdet.models.builder import MODELS as MMDET_MODELS
+from torch.nn import modules as TORCH_MODULES  # noqa: N812
+from torchvision.transforms import (  # noqa: N812
+    transforms as TORCHVISION_TRANSFORMS,
+)
 
 from expert.core.confidence.liedet.models.builder import recursive_build
+
 
 registry = Registry(name="registry", parent=MODELS)
 
@@ -66,7 +67,9 @@ for reg in registries:
     for module_name in reg._module_dict:  # noqa: WPS437
         # May fail on CUDA ops
         try:
-            registry.register_module(module_name, force=True, module=reg.get(module_name))
+            registry.register_module(
+                module_name, force=True, module=reg.get(module_name)
+            )
         except ImportError:
             pass
 
@@ -89,7 +92,9 @@ def build(
     elif isinstance(cfg, dict):
         cfg_dict = cfg
     else:
-        raise ValueError(f"Config should be dict, list or tuple, but got {type(cfg)}")
+        raise ValueError(
+            f"Config should be dict, list or tuple, but got {type(cfg)}"
+        )
 
     init = cfg_dict.pop("init", init)
     print_init_info = cfg_dict.pop("print_init_info", print_init_info)
@@ -115,7 +120,9 @@ def build(
             if prev_level < 30:
                 logger.setLevel("WARNING")
 
-        if not isinstance(module, nn.Parameter) and hasattr(module, "init_weights"):
+        if not isinstance(module, nn.Parameter) and hasattr(
+            module, "init_weights"
+        ):
             module.init_weights()
 
         if not print_init_info:

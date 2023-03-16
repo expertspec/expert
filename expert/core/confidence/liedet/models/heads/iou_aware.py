@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 import torch.nn as nn
-
 from mmcv.cnn import ConvModule, bias_init_with_prob, constant_init, normal_init
 from mmdet.models.dense_heads import AnchorHead
 
@@ -49,7 +48,9 @@ class IoUAwareRetinaHead(AnchorHead):
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
 
-        super().__init__(num_classes=num_classes, in_channels=in_channels, **kwargs)
+        super().__init__(
+            num_classes=num_classes, in_channels=in_channels, **kwargs
+        )
 
     def _init_layers(self):
         self._init_cls_convs()

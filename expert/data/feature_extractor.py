@@ -1,22 +1,30 @@
 from __future__ import annotations
 
+import json
+import os
+from os import PathLike
+from typing import Dict, List, Tuple
+
+import cv2
+import numpy as np
+import pandas as pd
 import torch
 from sklearn.cluster import OPTICS
-from typing import Dict, Tuple, List
 from tqdm.auto import tqdm
-from os import PathLike
-import pandas as pd
-import numpy as np
-import json
-import cv2
-import os
 
 from expert.core.functional_tools import Rescale
-from expert.data.video_reader import VideoReader
+from expert.data.annotation.speech_to_text import (
+    get_all_words,
+    get_phrases,
+    transcribe_video,
+)
+from expert.data.annotation.summarization import (
+    SummarizationEN,
+    SummarizationRU,
+)
 from expert.data.detection.face_detector import FaceDetector
-from expert.data.annotation.speech_to_text import transcribe_video, get_all_words, get_phrases
 from expert.data.diarization.speaker_diarization import SpeakerDiarization
-from expert.data.annotation.summarization import SummarizationRU, SummarizationEN
+from expert.data.video_reader import VideoReader
 
 
 class FeatureExtractor:
@@ -67,11 +75,28 @@ class FeatureExtractor:
         sum_sentences_count: int = 2,
         sum_max_length: int = 300,
         sum_over_chared_postfix: str = "...",
-        sum_allowed_punctuation: List = [",", ".", "!", "?", ":", "—", "-", "#", "+",
-                                           "(", ")", "–", "%", "&", "@", '"', "'", ],
+        sum_allowed_punctuation: List = [
+            ",",
+            ".",
+            "!",
+            "?",
+            ":",
+            "—",
+            "-",
+            "#",
+            "+",
+            "(",
+            ")",
+            "–",
+            "%",
+            "&",
+            "@",
+            '"',
+            "'",
+        ],
         output_dir: str | PathLike | None = None,
         output_img_size: int | Tuple = 512,
-        drop_extra: bool = True
+        drop_extra: bool = True,
     ) -> None:
         """
         Initialization of audio, text and video models parameters.
@@ -110,7 +135,8 @@ class FeatureExtractor:
         self.cache_capacity = cache_capacity
         self.stt_mode = stt_mode
         self.video = VideoReader(
-            filename=video_path, cache_capacity=self.cache_capacity)
+            filename=video_path, cache_capacity=self.cache_capacity
+        )
 
         self._device = torch.device("cpu")
         if device is not None:
@@ -119,14 +145,19 @@ class FeatureExtractor:
         self.model_selection = model_selection
         self.min_detection_confidence = min_detection_confidence
         self.max_num_faces = max_num_faces
-        self.detector = FaceDetector(device=self._device, model_selection=self.model_selection,
-                                     min_detection_confidence=self.min_detection_confidence, max_num_faces=self.max_num_faces)
+        self.detector = FaceDetector(
+            device=self._device,
+            model_selection=self.model_selection,
+            min_detection_confidence=self.min_detection_confidence,
+            max_num_faces=self.max_num_faces,
+        )
         self.frame_step = int(self.video.fps)
 
         if frame_per_second is not None:
             if frame_per_second > self.video.fps:
                 raise ValueError(
-                    f"'frame_per_second' must be less than or equal to {self.frame_step}.")
+                    f"'frame_per_second' must be less than or equal to {self.frame_step}."
+                )
             self.frame_step = int(self.video.fps // frame_per_second)
 
         if lang not in ["en", "ru"]:
@@ -174,18 +205,27 @@ class FeatureExtractor:
     def analyze_speech(self) -> Dict:
         """Method for processing audio signal from video."""
         diarization_pipe = SpeakerDiarization(
-            audio=self.video_path, sr=self.sr, device=self._device)
+            audio=self.video_path, sr=self.sr, device=self._device
+        )
         self.stamps = diarization_pipe.apply()
-        with open(os.path.join(self.temp_path, "diarization.json"), "w") as filename:
+        with open(
+            os.path.join(self.temp_path, "diarization.json"), "w"
+        ) as filename:
             json.dump(self.stamps, filename)
 
         self.transcribed_text = transcribe_video(
-            video_path=self.video_path, lang=self.lang, model=self.stt_mode, device=self._device
+            video_path=self.video_path,
+            lang=self.lang,
+            model=self.stt_mode,
+            device=self._device,
         )
         self.transcribed_text, self.full_text = get_all_words(
-            transcribation=self.transcribed_text)
+            transcribation=self.transcribed_text
+        )
 
-        with open(os.path.join(self.temp_path, "transcription.json"), "w") as filename:
+        with open(
+            os.path.join(self.temp_path, "transcription.json"), "w"
+        ) as filename:
             json.dump(self.transcribed_text, filename)
         with open(os.path.join(self.temp_path, "text.txt"), "w") as filename:
             filename.write(self.full_text)
@@ -194,35 +234,46 @@ class FeatureExtractor:
             if self.lang == "en":
                 summarizer = SummarizationEN()
                 phrases = get_phrases(
-                    self.transcribed_text, duration=self.phrase_duration)
+                    self.transcribed_text, duration=self.phrase_duration
+                )
                 annotations = []
                 for phrase in phrases:
                     annotations.append(
-                        {"time": phrase["time"], "annotation": summarizer.get_summary(
-                            phrase["text"],
-                            sentences_count=self.sum_sentences_count,
-                            max_length=self.sum_max_length,
-                            over_chared_postfix=self.sum_over_chared_postfix,
-                            allowed_punctuation=self.sum_allowed_punctuation
-                        )}
+                        {
+                            "time": phrase["time"],
+                            "annotation": summarizer.get_summary(
+                                phrase["text"],
+                                sentences_count=self.sum_sentences_count,
+                                max_length=self.sum_max_length,
+                                over_chared_postfix=self.sum_over_chared_postfix,
+                                allowed_punctuation=self.sum_allowed_punctuation,
+                            ),
+                        }
                     )
 
             if self.lang == "ru":
                 summarizer = SummarizationRU()
                 phrases = get_phrases(
-                    self.transcribed_text, duration=self.phrase_duration)
+                    self.transcribed_text, duration=self.phrase_duration
+                )
                 annotations = []
                 for phrase in phrases:
                     annotations.append(
-                        {"time": phrase["time"], "annotation": summarizer.get_summary(
-                            text=phrase["text"],
-                            sentences_count=self.sum_sentences_count,
-                            max_length=self.sum_max_length,
-                            over_chared_postfix=self.sum_over_chared_postfix,
-                            allowed_punctuation=self.sum_allowed_punctuation
-                        )})
+                        {
+                            "time": phrase["time"],
+                            "annotation": summarizer.get_summary(
+                                text=phrase["text"],
+                                sentences_count=self.sum_sentences_count,
+                                max_length=self.sum_max_length,
+                                over_chared_postfix=self.sum_over_chared_postfix,
+                                allowed_punctuation=self.sum_allowed_punctuation,
+                            ),
+                        }
+                    )
             self.annotations = annotations
-            with open(os.path.join(self.temp_path, "summarization.json"), "w") as filename:
+            with open(
+                os.path.join(self.temp_path, "summarization.json"), "w"
+            ) as filename:
                 json.dump(self.annotations, filename)
 
         return self.stamps
@@ -233,20 +284,33 @@ class FeatureExtractor:
 
         # Train a face clusterer and make prediction.
         audio_samples = int(
-            self.face_features["speaker_by_audio"].value_counts().mean() // 2)
+            self.face_features["speaker_by_audio"].value_counts().mean() // 2
+        )
         # If the video is too short, decrease the cluster size.
-        min_samples = self.min_cluster_samples if audio_samples > self.min_cluster_samples else audio_samples
-        cl_model = OPTICS(metric="euclidean", n_jobs=-1, cluster_method="xi",
-                          min_samples=min_samples, max_eps=self.max_eps)
+        min_samples = (
+            self.min_cluster_samples
+            if audio_samples > self.min_cluster_samples
+            else audio_samples
+        )
+        cl_model = OPTICS(
+            metric="euclidean",
+            n_jobs=-1,
+            cluster_method="xi",
+            min_samples=min_samples,
+            max_eps=self.max_eps,
+        )
         self.face_features["speaker_by_video"] = cl_model.fit_predict(
-            np.array(self.face_features["face_embedding"].tolist()))
+            np.array(self.face_features["face_embedding"].tolist())
+        )
 
         # Optional step to save memory.
         if self.drop_extra:
             self.face_features = self.face_features.drop(
-                columns=["face_embedding"])
+                columns=["face_embedding"]
+            )
             self.face_features = self.face_features.drop_duplicates(
-                subset=["time_sec", "speaker_by_video"], keep="first")
+                subset=["time_sec", "speaker_by_video"], keep="first"
+            )
             self.face_features = self.face_features.reset_index(drop=True)
 
         return self.face_features
@@ -262,36 +326,46 @@ class FeatureExtractor:
 
         for speaker in tqdm(self.stamps):
             for start_sec, finish_sec in self.stamps[speaker]:
-                start_frame, finish_frame = int(-(-start_sec*fps//1)
-                                                ), int(-(-finish_sec*fps//1))
+                start_frame, finish_frame = int(-(-start_sec * fps // 1)), int(
+                    -(-finish_sec * fps // 1)
+                )
                 # Avoiding out-of-range error after diarization.
-                finish_frame = finish_frame if finish_frame <= len(
-                    self.video) else len(self.video)
-                frames = [frame for frame in range(
-                    start_frame, finish_frame) if not frame % self.frame_step]
+                finish_frame = (
+                    finish_frame
+                    if finish_frame <= len(self.video)
+                    else len(self.video)
+                )
+                frames = [
+                    frame
+                    for frame in range(start_frame, finish_frame)
+                    if not frame % self.frame_step
+                ]
                 for frame_idx in frames:
                     face_batch = self.detector.embed(self.video[frame_idx])
 
                     # Recording if face was detected.
                     if face_batch is not None:
                         for face_emb, face_location in face_batch:
-                            self.face_features.append({
-                                "video_path": self.video_path,
-                                "time_sec": int(-(-frame_idx//fps)),
-                                "frame_index": frame_idx,
-                                "face_bbox": face_location,
-                                # Truncate embedding to reduce computational complexity.
-                                "face_embedding": face_emb[:150],
-                                "speaker_by_audio": speaker
-                            })
+                            self.face_features.append(
+                                {
+                                    "video_path": self.video_path,
+                                    "time_sec": int(-(-frame_idx // fps)),
+                                    "frame_index": frame_idx,
+                                    "face_bbox": face_location,
+                                    # Truncate embedding to reduce computational complexity.
+                                    "face_embedding": face_emb[:150],
+                                    "speaker_by_audio": speaker,
+                                }
+                            )
 
         if len(self.face_features) == 0:
             raise Warning(
-                "Failed to detect faces. Try to change 'min_detection_confidence' manually.")
+                "Failed to detect faces. Try to change 'min_detection_confidence' manually."
+            )
         self.face_features = self.cluster_faces()
-        self.face_features.to_json(os.path.join(
-            self.temp_path, "features.json"), orient="records")
-        n_faces = self.get_face_images() + 1
+        self.face_features.to_json(
+            os.path.join(self.temp_path, "features.json"), orient="records"
+        )
 
         return self.temp_path
 
@@ -301,21 +375,27 @@ class FeatureExtractor:
         if not os.path.exists(images_path):
             os.makedirs(images_path)
 
-        idxes = self.face_features[self.face_features["speaker_by_video"]
-                                   != -1]["speaker_by_video"].unique()
+        idxes = self.face_features[
+            self.face_features["speaker_by_video"] != -1
+        ]["speaker_by_video"].unique()
         if len(idxes) == 0:
             raise Warning(
-                "Unable to identify unique faces. Try to change 'min_cluster_samples' manually.")
-        for idx, cluster in zip(range(self.max_num_faces), idxes):
-            cur_row = self.face_features[self.face_features["speaker_by_video"] == cluster].sample(
+                "Unable to identify unique faces. Try to change 'min_cluster_samples' manually."
             )
+        for idx, cluster in zip(range(self.max_num_faces), idxes):
+            cur_row = self.face_features[
+                self.face_features["speaker_by_video"] == cluster
+            ].sample()
             cur_frame = self.video[cur_row["frame_index"].item()]
             cur_loc = cur_row["face_bbox"].item()
-            cur_face = cur_frame[cur_loc[0][1]:cur_loc[0][1]+cur_loc[1][1],
-                                 cur_loc[0][0]:cur_loc[0][0]+cur_loc[1][0]]
+            cur_face = cur_frame[
+                cur_loc[0][1] : cur_loc[0][1] + cur_loc[1][1],
+                cur_loc[0][0] : cur_loc[0][0] + cur_loc[1][0],
+            ]
 
             transformed_face = self.transforms(image=cur_face)
-            cv2.imwrite(os.path.join(
-                images_path, f"{cluster}.jpg"), transformed_face)
+            cv2.imwrite(
+                os.path.join(images_path, f"{cluster}.jpg"), transformed_face
+            )
 
         return idx

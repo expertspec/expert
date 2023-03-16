@@ -1,38 +1,40 @@
-import librosa
-import numpy as np
+import json
+import math
 import os
 import re
-
-import math
-import json
-import soundfile as sf
-import noisereduce as nr
-from pydub import AudioSegment
-from moviepy.editor import VideoFileClip
-
 import warnings
 
-warnings.filterwarnings('ignore')
+import librosa
+import noisereduce as nr
+import numpy as np
+from moviepy.editor import VideoFileClip
+from pydub import AudioSegment
 
 
-def test_mfcc(dataset_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=2,
-              sr=22050, duration=2):
-    '''
+warnings.filterwarnings("ignore")
+
+
+def test_mfcc(
+    dataset_path,
+    json_path,
+    n_mfcc=13,
+    n_fft=2048,
+    hop_length=512,
+    num_segments=2,
+    sr=22050,
+    duration=2,
+):
+    """
     Функция позволяет сохранять mfcc каждого аудиотрека в указанной директории в json файл
-    '''
+    """
     SAMPLE_RATE = sr
     DURATION = duration
     SAMPLE_PER_TRACK = SAMPLE_RATE * DURATION
-    data = {
-        "mapping": [],
-        "name": [],
-        "mfcc": []
-    }
+    data = {"mapping": [], "name": [], "mfcc": []}
 
     num_samples_per_segment = int(SAMPLE_PER_TRACK / num_segments)
 
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(dataset_path)):
-
         # Обработка файлов
         for f in filenames:
             # Загрузка аудиофайлов
@@ -46,22 +48,26 @@ def test_mfcc(dataset_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, nu
                 finish_sample = start_sample + num_samples_per_segment
 
                 if len(signal) < finish_sample:
-                    mfcc = librosa.feature.mfcc(signal[start_sample:],
-                                                sr=sr,
-                                                n_fft=n_fft,
-                                                n_mfcc=n_mfcc,
-                                                hop_length=hop_length)
+                    mfcc = librosa.feature.mfcc(
+                        signal[start_sample:],
+                        sr=sr,
+                        n_fft=n_fft,
+                        n_mfcc=n_mfcc,
+                        hop_length=hop_length,
+                    )
                 else:
-                    mfcc = librosa.feature.mfcc(signal[start_sample:finish_sample],
-                                                sr=sr,
-                                                n_fft=n_fft,
-                                                n_mfcc=n_mfcc,
-                                                hop_length=hop_length)
+                    mfcc = librosa.feature.mfcc(
+                        signal[start_sample:finish_sample],
+                        sr=sr,
+                        n_fft=n_fft,
+                        n_mfcc=n_mfcc,
+                        hop_length=hop_length,
+                    )
                 mfcc = mfcc.T
 
                 # Запись значений
-                data['name'].append(f)
-                data['mfcc'].append(mfcc.tolist())
+                data["name"].append(f)
+                data["mfcc"].append(mfcc.tolist())
                 print("{}, segment:{}".format(file_path, s + 1))
 
     with open(json_path, "w") as fp:
@@ -69,15 +75,15 @@ def test_mfcc(dataset_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, nu
 
 
 def load(dataset_path):
-    '''
+    """
 
     Загрузка и преобразование данных из JSON
-    '''
+    """
     with open(dataset_path, "r") as fp:
         data = json.load(fp)
     # lists to numpy array
-    inputs = np.array(data['mfcc'])
-    names = np.array(data['name'])
+    inputs = np.array(data["mfcc"])
+    names = np.array(data["name"])
     inputs = inputs[..., np.newaxis]
 
     return inputs, names
@@ -88,34 +94,38 @@ def chunkizer(chunk_length, audio, sr):
     num_chunks = math.ceil(librosa.get_duration(audio, sr=sr) / chunk_length)
     chunks = []
     for i in range(num_chunks):
-        chunks.append(audio[i * chunk_length * sr:(i + 1) * chunk_length * sr])
+        chunks.append(
+            audio[i * chunk_length * sr : (i + 1) * chunk_length * sr]
+        )
     return chunks
+
 
 def prepare_audio_from_video(video_path):
     video = VideoFileClip(video_path)
     # Извлечение имени файла из пути, для создания одноименного аудиофайла
     template = r"\w+.mp4$"
     video_name = re.search(template, video_path)
-    folder = video_path.replace(video_name[0], '')
+    folder = video_path.replace(video_name[0], "")
     video_name = video_name[0][:-4]
-    audio_path = os.path.join(folder, video_name + '.mp3')
-    video.audio.write_audiofile(audio_path) # Сохранение аудиофайла
+    audio_path = os.path.join(folder, video_name + ".mp3")
+    video.audio.write_audiofile(audio_path)  # Сохранение аудиофайла
 
     # Предобработка звука
     audio, sr = librosa.load(audio_path)
     reduced_noise = nr.reduce_noise(y=audio, sr=sr)
     # перевод librosa в pydub
-    audio = np.array(reduced_noise* (1<<15), dtype=np.int16)
+    audio = np.array(reduced_noise * (1 << 15), dtype=np.int16)
     audio = AudioSegment(
         audio.tobytes(),
         frame_rate=sr,
         sample_width=audio.dtype.itemsize,
-        channels=1
+        channels=1,
     )
     normalized = normalization(audio, -18.0)
-    normalized.export(audio_path, format='mp3')
+    normalized.export(audio_path, format="mp3")
 
     return audio_path
+
 
 # Выравнивает громкость к заданному среднему значению
 def normalization(signal, target_dBFS):

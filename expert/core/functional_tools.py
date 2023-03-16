@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import torch
-from torch import Tensor
-import torchvision.transforms as transforms
-from typing import Tuple
-import numpy as np
-import gdown
-import cv2
 import os
+from typing import Tuple
+
+import cv2
+import gdown
+import numpy as np
+import torch
+import torchvision.transforms as transforms
+from torch import Tensor
 
 
 def get_torch_home() -> str:
@@ -16,7 +17,7 @@ def get_torch_home() -> str:
     torch_home = os.path.expanduser(
         os.getenv(
             "TORCH_HOME",
-            os.path.join(os.getenv("DG_CACHE_HOME", "~/.cache"), "torch")
+            os.path.join(os.getenv("DG_CACHE_HOME", "~/.cache"), "torch"),
         )
     )
 
@@ -69,8 +70,9 @@ class Rescale:
             out_height, out_width = self.output_size
 
         out_height, out_width = int(out_height), int(out_width)
-        image = cv2.resize(image, (out_height, out_width),
-                           interpolation=cv2.INTER_AREA)
+        image = cv2.resize(
+            image, (out_height, out_width), interpolation=cv2.INTER_AREA
+        )
 
         return image
 
@@ -90,6 +92,7 @@ class Normalize:
 
     def __call__(self, image: Tensor) -> Tensor:
         normalization = transforms.Normalize(
-            mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+            mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)
+        )
 
         return normalization(image).float()

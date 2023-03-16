@@ -1,34 +1,33 @@
 from __future__ import annotations
 
 import torch
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import functional as F
 
 from expert.core.functional_tools import get_model_weights
 
 
 class BasicConv2d(nn.Module):
-
     def __init__(
         self,
         in_planes: int,
         out_planes: int,
         kernel_size: int,
         stride: int,
-        padding: int = 0
+        padding: int = 0,
     ) -> None:
         super().__init__()
 
         self.conv = nn.Conv2d(
-            in_planes, out_planes,
-            kernel_size=kernel_size, stride=stride,
-            padding=padding, bias=False
+            in_planes,
+            out_planes,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            bias=False,
         )
         self.bn = nn.BatchNorm2d(
-            out_planes,
-            eps=0.001,
-            momentum=0.1,
-            affine=True
+            out_planes, eps=0.001, momentum=0.1, affine=True
         )
         self.relu = nn.ReLU(inplace=False)
 
@@ -41,27 +40,31 @@ class BasicConv2d(nn.Module):
 
 
 class Block35(nn.Module):
-
     def __init__(self, scale: float = 1.0) -> None:
         super().__init__()
 
         self.scale = scale
         self.branch0 = BasicConv2d(
-            in_planes=256, out_planes=32, kernel_size=1, stride=1)
+            in_planes=256, out_planes=32, kernel_size=1, stride=1
+        )
         self.branch1 = nn.Sequential(
             BasicConv2d(in_planes=256, out_planes=32, kernel_size=1, stride=1),
-            BasicConv2d(in_planes=32, out_planes=32,
-                        kernel_size=3, stride=1, padding=1)
+            BasicConv2d(
+                in_planes=32, out_planes=32, kernel_size=3, stride=1, padding=1
+            ),
         )
         self.branch2 = nn.Sequential(
             BasicConv2d(in_planes=256, out_planes=32, kernel_size=1, stride=1),
-            BasicConv2d(in_planes=32, out_planes=32,
-                        kernel_size=3, stride=1, padding=1),
-            BasicConv2d(in_planes=32, out_planes=32,
-                        kernel_size=3, stride=1, padding=1)
+            BasicConv2d(
+                in_planes=32, out_planes=32, kernel_size=3, stride=1, padding=1
+            ),
+            BasicConv2d(
+                in_planes=32, out_planes=32, kernel_size=3, stride=1, padding=1
+            ),
         )
         self.conv2d = nn.Conv2d(
-            in_channels=96, out_channels=256, kernel_size=1, stride=1)
+            in_channels=96, out_channels=256, kernel_size=1, stride=1
+        )
         self.relu = nn.ReLU(inplace=False)
 
     def forward(self, x: Tensor) -> Tensor:
@@ -77,23 +80,33 @@ class Block35(nn.Module):
 
 
 class Block17(nn.Module):
-
     def __init__(self, scale: float = 1.0) -> None:
         super().__init__()
 
         self.scale = scale
         self.branch0 = BasicConv2d(
-            in_planes=896, out_planes=128, kernel_size=1, stride=1)
+            in_planes=896, out_planes=128, kernel_size=1, stride=1
+        )
         self.branch1 = nn.Sequential(
-            BasicConv2d(in_planes=896, out_planes=128,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=128, out_planes=128,
-                        kernel_size=(1, 7), stride=1, padding=(0, 3)),
-            BasicConv2d(in_planes=128, out_planes=128,
-                        kernel_size=(7, 1), stride=1, padding=(3, 0))
+            BasicConv2d(in_planes=896, out_planes=128, kernel_size=1, stride=1),
+            BasicConv2d(
+                in_planes=128,
+                out_planes=128,
+                kernel_size=(1, 7),
+                stride=1,
+                padding=(0, 3),
+            ),
+            BasicConv2d(
+                in_planes=128,
+                out_planes=128,
+                kernel_size=(7, 1),
+                stride=1,
+                padding=(3, 0),
+            ),
         )
         self.conv2d = nn.Conv2d(
-            in_channels=256, out_channels=896, kernel_size=1, stride=1)
+            in_channels=256, out_channels=896, kernel_size=1, stride=1
+        )
         self.relu = nn.ReLU(inplace=False)
 
     def forward(self, x: Tensor) -> Tensor:
@@ -108,24 +121,36 @@ class Block17(nn.Module):
 
 
 class Block8(nn.Module):
-
     def __init__(self, scale: float = 1.0, noReLU: bool = False) -> None:
         super().__init__()
 
         self.scale = scale
         self.noReLU = noReLU
         self.branch0 = BasicConv2d(
-            in_planes=1792, out_planes=192, kernel_size=1, stride=1)
+            in_planes=1792, out_planes=192, kernel_size=1, stride=1
+        )
         self.branch1 = nn.Sequential(
-            BasicConv2d(in_planes=1792, out_planes=192,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=192, out_planes=192,
-                        kernel_size=(1, 3), stride=1, padding=(0, 1)),
-            BasicConv2d(in_planes=192, out_planes=192,
-                        kernel_size=(3, 1), stride=1, padding=(1, 0))
+            BasicConv2d(
+                in_planes=1792, out_planes=192, kernel_size=1, stride=1
+            ),
+            BasicConv2d(
+                in_planes=192,
+                out_planes=192,
+                kernel_size=(1, 3),
+                stride=1,
+                padding=(0, 1),
+            ),
+            BasicConv2d(
+                in_planes=192,
+                out_planes=192,
+                kernel_size=(3, 1),
+                stride=1,
+                padding=(1, 0),
+            ),
         )
         self.conv2d = nn.Conv2d(
-            in_channels=384, out_channels=1792, kernel_size=1, stride=1)
+            in_channels=384, out_channels=1792, kernel_size=1, stride=1
+        )
         if not self.noReLU:
             self.relu = nn.ReLU(inplace=False)
 
@@ -142,18 +167,22 @@ class Block8(nn.Module):
 
 
 class Mixed_6a(nn.Module):
-
     def __init__(self) -> None:
         super().__init__()
 
         self.branch0 = BasicConv2d(
-            in_planes=256, out_planes=384, kernel_size=3, stride=2)
+            in_planes=256, out_planes=384, kernel_size=3, stride=2
+        )
         self.branch1 = nn.Sequential(
-            BasicConv2d(in_planes=256, out_planes=192,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=192, out_planes=192,
-                        kernel_size=3, stride=1, padding=1),
-            BasicConv2d(in_planes=192, out_planes=256, kernel_size=3, stride=2)
+            BasicConv2d(in_planes=256, out_planes=192, kernel_size=1, stride=1),
+            BasicConv2d(
+                in_planes=192,
+                out_planes=192,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            BasicConv2d(in_planes=192, out_planes=256, kernel_size=3, stride=2),
         )
         self.branch2 = nn.MaxPool2d(kernel_size=3, stride=2)
 
@@ -167,26 +196,27 @@ class Mixed_6a(nn.Module):
 
 
 class Mixed_7a(nn.Module):
-
     def __init__(self) -> None:
         super().__init__()
 
         self.branch0 = nn.Sequential(
-            BasicConv2d(in_planes=896, out_planes=256,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=256, out_planes=384, kernel_size=3, stride=2)
+            BasicConv2d(in_planes=896, out_planes=256, kernel_size=1, stride=1),
+            BasicConv2d(in_planes=256, out_planes=384, kernel_size=3, stride=2),
         )
         self.branch1 = nn.Sequential(
-            BasicConv2d(in_planes=896, out_planes=256,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=256, out_planes=256, kernel_size=3, stride=2)
+            BasicConv2d(in_planes=896, out_planes=256, kernel_size=1, stride=1),
+            BasicConv2d(in_planes=256, out_planes=256, kernel_size=3, stride=2),
         )
         self.branch2 = nn.Sequential(
-            BasicConv2d(in_planes=896, out_planes=256,
-                        kernel_size=1, stride=1),
-            BasicConv2d(in_planes=256, out_planes=256,
-                        kernel_size=3, stride=1, padding=1),
-            BasicConv2d(in_planes=256, out_planes=256, kernel_size=3, stride=2)
+            BasicConv2d(in_planes=896, out_planes=256, kernel_size=1, stride=1),
+            BasicConv2d(
+                in_planes=256,
+                out_planes=256,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            BasicConv2d(in_planes=256, out_planes=256, kernel_size=3, stride=2),
         )
         self.branch3 = nn.MaxPool2d(kernel_size=3, stride=2)
 
@@ -223,7 +253,7 @@ class InceptionResnetV1(nn.Module):
         classify: bool = False,
         num_classes: int | None = None,
         dropout_prob: float | None = 0.6,
-        device: torch.device | None = None
+        device: torch.device | None = None,
     ) -> None:
         """
         Args:
@@ -252,21 +282,28 @@ class InceptionResnetV1(nn.Module):
             model_name = "20180408-102900-casia-webface.pt"
         elif pretrained is None and self.classify and self.num_classes is None:
             raise Exception(
-                'If "pretrained" is not specified and "classify" is True, "num_classes" must be specified.')
+                'If "pretrained" is not specified and "classify" is True, "num_classes" must be specified.'
+            )
 
         self.conv2d_1a = BasicConv2d(
-            in_planes=3, out_planes=32, kernel_size=3, stride=2)
+            in_planes=3, out_planes=32, kernel_size=3, stride=2
+        )
         self.conv2d_2a = BasicConv2d(
-            in_planes=32, out_planes=32, kernel_size=3, stride=1)
+            in_planes=32, out_planes=32, kernel_size=3, stride=1
+        )
         self.conv2d_2b = BasicConv2d(
-            in_planes=32, out_planes=64, kernel_size=3, stride=1, padding=1)
+            in_planes=32, out_planes=64, kernel_size=3, stride=1, padding=1
+        )
         self.maxpool_3a = nn.MaxPool2d(kernel_size=3, stride=2)
         self.conv2d_3b = BasicConv2d(
-            in_planes=64, out_planes=80, kernel_size=1, stride=1)
+            in_planes=64, out_planes=80, kernel_size=1, stride=1
+        )
         self.conv2d_4a = BasicConv2d(
-            in_planes=80, out_planes=192, kernel_size=3, stride=1)
+            in_planes=80, out_planes=192, kernel_size=3, stride=1
+        )
         self.conv2d_4b = BasicConv2d(
-            in_planes=192, out_planes=256, kernel_size=3, stride=2)
+            in_planes=192, out_planes=256, kernel_size=3, stride=2
+        )
         self.repeat_1 = nn.Sequential(
             Block35(scale=0.17),
             Block35(scale=0.17),
@@ -299,9 +336,11 @@ class InceptionResnetV1(nn.Module):
         self.avgpool_1a = nn.AdaptiveAvgPool2d(output_size=1)
         self.dropout = nn.Dropout(p=dropout_prob)
         self.last_linear = nn.Linear(
-            in_features=1792, out_features=512, bias=False)
+            in_features=1792, out_features=512, bias=False
+        )
         self.last_bn = nn.BatchNorm1d(
-            num_features=512, eps=0.001, momentum=0.1, affine=True)
+            num_features=512, eps=0.001, momentum=0.1, affine=True
+        )
         self._device = torch.device("cpu")
 
         if pretrained is not None:
@@ -312,7 +351,8 @@ class InceptionResnetV1(nn.Module):
 
         if self.classify and self.num_classes is not None:
             self.logits = nn.Linear(
-                in_features=512, out_features=self.num_classes)
+                in_features=512, out_features=self.num_classes
+            )
 
         if device is not None:
             self._device = device

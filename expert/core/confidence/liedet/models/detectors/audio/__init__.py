@@ -6,15 +6,21 @@ import torch.nn as nn
 import torchaudio
 from torch import Tensor
 
-from expert.core.confidence.liedet.models.registry import registry
 from expert.core.confidence.liedet.models.detectors.audio.main import main
+from expert.core.confidence.liedet.models.registry import registry
 
 
 @registry.register_module()
 class AudioFeatures(nn.Module):
     """Audio Features extractor."""
 
-    def __init__(self, fps: int = 30, chunk_length=1, sr=48000, normalization: bool = True):
+    def __init__(
+        self,
+        fps: int = 30,
+        chunk_length=1,
+        sr=48000,
+        normalization: bool = True,
+    ):
         """
         Args:
             fps (int, optional): number of video frames per second.
@@ -50,7 +56,9 @@ class AudioFeatures(nn.Module):
         h = []
         for i in range(batch_size):
             tmp_path = uuid.uuid4()
-            tmp_path = f"/tmp/{tmp_path}.wav"
+            tmp_path = (
+                f"/tmp/{tmp_path}.wav"  # FIXME убрать харкод пути # nosec
+            )
             torchaudio.save(tmp_path, x[i], self.sample_rate)
 
             hi = main(

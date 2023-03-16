@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+from os import PathLike
+from typing import Dict
+
+import numpy as np
 import torch
 import torchaudio
-from torch import nn
 from decord import AudioReader, bridge
-from typing import Dict
-from os import PathLike
-import numpy as np
+from torch import nn
 
 from expert.core.congruence.audio_emotions.audio_model import AudioModel
+
 
 bridge.set_bridge(new_bridge="torch")
 
@@ -37,7 +39,8 @@ class AudioAnalysis:
         if isinstance(video_path, (str, PathLike)):
             self.path = video_path
             self.audio = AudioReader(
-                video_path, sample_rate=self.sr, mono=True)[:]
+                video_path, sample_rate=self.sr, mono=True
+            )[:]
         else:
             raise TypeError
 
@@ -70,9 +73,12 @@ class AudioAnalysis:
         if self.stamps[self.speaker]:
             for stamp in self.stamps[self.speaker]:
                 current_time = stamp[0]
-                fragment = self.audio[0][stamp[0] * self.sr: stamp[1]*self.sr]
+                fragment = self.audio[0][
+                    stamp[0] * self.sr : stamp[1] * self.sr
+                ]
                 self.chunks = self._chunkizer(
-                    self.duration, fragment.numpy(), self.sr)
+                    self.duration, fragment.numpy(), self.sr
+                )
 
                 for num, chunk in enumerate(self.chunks):
                     parts_predict = []
@@ -88,13 +94,17 @@ class AudioAnalysis:
                         w = self._right_pad_if_necessary(w)
 
                         mfcc = torchaudio.transforms.MFCC(
-                            sample_rate=self.sr, n_mfcc=13)(w)
+                            sample_rate=self.sr, n_mfcc=13
+                        )(w)
 
                         mfcc = np.transpose(mfcc.numpy(), (1, 2, 0))
                         mfcc = np.transpose(mfcc, (2, 0, 1)).astype(np.float32)
 
-                        self.test.append(torch.tensor(
-                            mfcc, dtype=torch.float).to(self._device))
+                        self.test.append(
+                            torch.tensor(mfcc, dtype=torch.float).to(
+                                self._device
+                            )
+                        )
 
                     self.model.eval()
                     for i in range(len(self.test)):
@@ -102,16 +112,23 @@ class AudioAnalysis:
                         c.unsqueeze_(0)
 
                         logits = self.model(c)[0].cpu().detach()
-                        lim_emotions = softmax(torch.Tensor(
-                            [[logits[0], logits[3], logits[2]]]))[0].numpy()
+                        lim_emotions = softmax(
+                            torch.Tensor([[logits[0], logits[3], logits[2]]])
+                        )[0].numpy()
                         parts_predict.append(lim_emotions)
                     parts_predict = np.array(parts_predict)
-                    self.predicts.append({
-                        "time_sec": float(current_time),
-                        "audio_anger": float(parts_predict[:, [0]].mean()),
-                        "audio_neutral": float(parts_predict[:, [1]].mean()),
-                        "audio_happiness": float(parts_predict[:, [2]].mean())
-                    })
+                    self.predicts.append(
+                        {
+                            "time_sec": float(current_time),
+                            "audio_anger": float(parts_predict[:, [0]].mean()),
+                            "audio_neutral": float(
+                                parts_predict[:, [1]].mean()
+                            ),
+                            "audio_happiness": float(
+                                parts_predict[:, [2]].mean()
+                            ),
+                        }
+                    )
                     current_time += len(chunk) // self.sr
         else:
             raise "No stamps."
@@ -140,6 +157,7 @@ class AudioAnalysis:
         chunks = []
         for i in range(num_chunks):
             chunks.append(
-                audio[i * chunk_length * sr: (i + 1) * chunk_length * sr])
+                audio[i * chunk_length * sr : (i + 1) * chunk_length * sr]
+            )
 
         return chunks

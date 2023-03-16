@@ -4,9 +4,8 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
-from torch import Tensor, nn
-
 from mmcv.cnn import ConvModule, xavier_init
+from torch import Tensor, nn
 
 from expert.core.confidence.liedet.models.registry import registry
 

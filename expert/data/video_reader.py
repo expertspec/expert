@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections import OrderedDict
+from os import PathLike
+from typing import Tuple
+
 import cv2
 import numpy as np
-from collections import OrderedDict
-from typing import Tuple
-from os import PathLike
 
 
 class Cache:
@@ -62,7 +63,9 @@ class VideoReader:
         StopIteration: If the end of the video has been reached.
     """
 
-    def __init__(self, filename: str | PathLike, cache_capacity: int = 10) -> None:
+    def __init__(
+        self, filename: str | PathLike, cache_capacity: int = 10
+    ) -> None:
         self._vcap = cv2.VideoCapture(filename)
         self._cache = Cache(cache_capacity)
         self._position = 0
@@ -201,7 +204,8 @@ class VideoReader:
         """
         if frame_id < 0 or frame_id >= self._frame_cnt:
             raise IndexError(
-                f'"frame_id" must be between 0 and {self._frame_cnt - 1}')
+                f'"frame_id" must be between 0 and {self._frame_cnt - 1}'
+            )
         if frame_id == self._position:
             return self.read()
         if self._cache:
@@ -225,7 +229,7 @@ class VideoReader:
         """
         if self._position == 0:
             return None
-        return self._cache.get(self._position-1)
+        return self._cache.get(self._position - 1)
 
     def __len__(self):
         return self.frame_cnt
@@ -233,8 +237,7 @@ class VideoReader:
     def __getitem__(self, index: int):
         if isinstance(index, slice):
             return [
-                self.get_frame(i)
-                for i in range(*index.indices(self.frame_cnt))
+                self.get_frame(i) for i in range(*index.indices(self.frame_cnt))
             ]
 
         if index < 0:

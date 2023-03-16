@@ -3,18 +3,18 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from einops import rearrange
-
 import torch
 import torch.nn as nn
-from torch import Tensor
-from torch.nn.modules.utils import _pair
-
+from einops import rearrange
 from mmcv import ConfigDict
 from mmcv.cnn import build_conv_layer, build_norm_layer, kaiming_init
 from mmcv.cnn.utils.weight_init import trunc_normal_
 from mmcv.runner import _load_checkpoint, load_state_dict
 from mmdet.utils.logger import get_root_logger
+from torch import Tensor
+from torch.nn.modules.utils import _pair
+
+from expert.core.confidence.liedet.models.registry import build
 
 
 class PatchEmbed(nn.Module):
@@ -61,15 +61,22 @@ class PatchEmbed(nn.Module):
         self.patch_size = _pair(patch_size)
         self.stride = _pair(stride) if stride is not None else self.patch_size
 
-        num_patches = (self.img_size[1] // self.patch_size[1]) * (self.img_size[0] // self.patch_size[0])
+        num_patches = (self.img_size[1] // self.patch_size[1]) * (
+            self.img_size[0] // self.patch_size[0]
+        )
         assert (
-            num_patches * self.patch_size[0] * self.patch_size[1] == self.img_size[0] * self.img_size[1]
+            num_patches * self.patch_size[0] * self.patch_size[1]
+            == self.img_size[0] * self.img_size[1]
         ), "The image size H*W must be divisible by patch size"
         self.num_patches = num_patches
 
         # Use conv layer to embed
         self.projection = build_conv_layer(
-            conv_cfg, in_channels, embed_dims, kernel_size=patch_size, stride=self.stride
+            conv_cfg,
+            in_channels,
+            embed_dims,
+            kernel_size=patch_size,
+            stride=self.stride,
         )
 
         self.init_weights()
@@ -105,7 +112,11 @@ class TimeSformer(nn.Module):
 
     """
 
-    supported_attention_types = {"divided_space_time", "space_only", "joint_space_time"}
+    supported_attention_types = {
+        "divided_space_time",
+        "space_only",
+        "joint_space_time",
+    }
 
     def __init__(
         self,
@@ -153,8 +164,12 @@ class TimeSformer(nn.Module):
         """
         super().__init__()
 
-        assert attention_type in self.supported_attention_types, f"Unsupported Attention Type {attention_type}!"
-        assert transformer_layers is None or isinstance(transformer_layers, (dict, list))
+        assert (
+            attention_type in self.supported_attention_types
+        ), f"Unsupported Attention Type {attention_type}!"
+        assert transformer_layers is None or isinstance(
+            transformer_layers, (dict, list)
+        )
 
         self.num_frames = num_frames
         self.pretrained = pretrained
@@ -171,10 +186,14 @@ class TimeSformer(nn.Module):
         num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dims))
-        self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dims))
+        self.pos_embed = nn.Parameter(
+            torch.zeros(1, num_patches + 1, embed_dims)
+        )
         self.drop_after_pos = nn.Dropout(p=dropout_ratio)
         if self.attention_type != "space_only":
-            self.time_embed = nn.Parameter(torch.zeros(1, num_frames, embed_dims))
+            self.time_embed = nn.Parameter(
+                torch.zeros(1, num_frames, embed_dims)
+            )
             self.drop_after_time = nn.Dropout(p=dropout_ratio)
 
         self.norm = build_norm_layer(norm_cfg, embed_dims)[1]
@@ -194,7 +213,9 @@ class TimeSformer(nn.Module):
                                     embed_dims=embed_dims,
                                     num_heads=num_heads,
                                     num_frames=num_frames,
-                                    dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                                    dropout_layer=dict(
+                                        type="DropPath", drop_prob=dpr[i]
+                                    ),
                                     norm_cfg=dict(type="LN", eps=1e-6),
                                 )
                             ),
@@ -204,7 +225,9 @@ class TimeSformer(nn.Module):
                                     embed_dims=embed_dims,
                                     num_heads=num_heads,
                                     num_frames=num_frames,
-                                    dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                                    dropout_layer=dict(
+                                        type="DropPath", drop_prob=dpr[i]
+                                    ),
                                     norm_cfg=dict(type="LN", eps=1e-6),
                                 )
                             ),
@@ -215,7 +238,9 @@ class TimeSformer(nn.Module):
                             feedforward_channels=embed_dims * 4,
                             num_fcs=2,
                             act_cfg=dict(type="GELU"),
-                            dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                            dropout_layer=dict(
+                                type="DropPath", drop_prob=dpr[i]
+                            ),
                             norm_cfg=dict(type="LN", eps=1e-6),
                         ),
                         operation_order=("self_attn", "self_attn", "ffn"),
@@ -233,7 +258,9 @@ class TimeSformer(nn.Module):
                                 embed_dims=embed_dims,
                                 num_heads=num_heads,
                                 batch_first=True,
-                                dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                                dropout_layer=dict(
+                                    type="DropPath", drop_prob=dpr[i]
+                                ),
                             )
                         ],
                         ffn_cfgs=dict(
@@ -242,7 +269,9 @@ class TimeSformer(nn.Module):
                             feedforward_channels=embed_dims * 4,
                             num_fcs=2,
                             act_cfg=dict(type="GELU"),
-                            dropout_layer=dict(type="DropPath", drop_prob=dpr[i]),
+                            dropout_layer=dict(
+                                type="DropPath", drop_prob=dpr[i]
+                            ),
                         ),
                         operation_order=("norm", "self_attn", "norm", "ffn"),
                         norm_cfg=dict(type="LN", eps=1e-6),
@@ -282,7 +311,9 @@ class TimeSformer(nn.Module):
                 old_state_dict_keys = list(state_dict.keys())
                 for old_key in old_state_dict_keys:
                     if "norms" in old_key:
-                        new_key = old_key.replace("norms.0", "attentions.0.norm")
+                        new_key = old_key.replace(
+                            "norms.0", "attentions.0.norm"
+                        )
                         new_key = new_key.replace("norms.1", "ffns.0.norm")
                         state_dict[new_key] = state_dict.pop(old_key)
 
@@ -290,7 +321,9 @@ class TimeSformer(nn.Module):
                 old_state_dict_keys = list(state_dict.keys())
                 for old_key in old_state_dict_keys:
                     if "attentions.0" in old_key:
-                        new_key = old_key.replace("attentions.0", "attentions.1")
+                        new_key = old_key.replace(
+                            "attentions.0", "attentions.1"
+                        )
                         state_dict[new_key] = state_dict[old_key].clone()
 
             load_state_dict(self, state_dict, strict=False, logger=logger)

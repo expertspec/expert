@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import cv2
-import numpy as np
 import mediapipe
+import numpy as np
 
+# fmt: off
 HEAD_INDEXES = np.array([
     0, 7, 10, 13, 14, 17, 21, 33, 37, 39, 40,
     46, 52, 53, 54, 55, 58, 61, 63, 65, 66, 67,
@@ -37,6 +38,7 @@ UPP_PART = np.array([
     276, 282, 283, 284, 285, 286, 293, 295, 296, 297, 298, 299, 300, 301, 332, 333, 334, 336, 337, 338,
     368, 383, 384, 385, 386, 387, 389, 413, 414, 417, 441, 442, 443, 444, 445, 468, 469, 470, 471, 475
 ])
+# fmt: on
 
 
 class FaceMesh(object):
@@ -68,7 +70,7 @@ class FaceMesh(object):
         max_num_faces: int = 1,
         refine_landmarks: bool = True,
         min_detection_confidence: float = 0.5,
-        min_tracking_confidence: float = 0.5
+        min_tracking_confidence: float = 0.5,
     ) -> None:
         mesh_detector = mediapipe.solutions.face_mesh
         self.model = mesh_detector.FaceMesh(
@@ -76,7 +78,7 @@ class FaceMesh(object):
             max_num_faces=max_num_faces,
             refine_landmarks=refine_landmarks,
             min_detection_confidence=min_detection_confidence,
-            min_tracking_confidence=min_tracking_confidence
+            min_tracking_confidence=min_tracking_confidence,
         )
 
     def detect(self, image: np.ndarray, normalize: bool = True) -> np.ndarray:
@@ -94,7 +96,11 @@ class FaceMesh(object):
             for idx in range(len(prediction.multi_face_landmarks)):
                 landmarks = prediction.multi_face_landmarks[idx].landmark
                 face_vector = np.array(
-                    [[landmark.x, landmark.y, landmark.z] for landmark in landmarks])
+                    [
+                        [landmark.x, landmark.y, landmark.z]
+                        for landmark in landmarks
+                    ]
+                )
 
                 if normalize:
                     # Normalization and centering of the face from -0.5 to 0.5 in width, height and depth of the face.
@@ -102,12 +108,17 @@ class FaceMesh(object):
                     max_value = face_vector.max(axis=0)
 
                     face_array = np.absolute(
-                        face_vector - min_value) / np.absolute(max_value - min_value) - face_vector.mean(axis=0)
+                        face_vector - min_value
+                    ) / np.absolute(max_value - min_value) - face_vector.mean(
+                        axis=0
+                    )
 
         return np.array(face_array)
 
 
-def preprocess_face_vector(face_vector: np.ndarray, head_indexes: np.ndarray = HEAD_INDEXES) -> np.ndarray:
+def preprocess_face_vector(
+    face_vector: np.ndarray, head_indexes: np.ndarray = HEAD_INDEXES
+) -> np.ndarray:
     """Face landmarks preprocessing for head rotation prediction.
 
     Args:

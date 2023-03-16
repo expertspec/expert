@@ -26,7 +26,9 @@ class Pipeline(BaseModule):
             if isinstance(cfg, nn.Module):
                 module = cfg
             else:
-                module = build(cfg=cfg, input_key=input_key, target_key=target_key)
+                module = build(
+                    cfg=cfg, input_key=input_key, target_key=target_key
+                )
             self.add_module(name=module_name, module=module)
 
         self.input_key = input_key
@@ -44,11 +46,19 @@ class Pipeline(BaseModule):
         cur_target_key = module.target_key
 
         for m in module.children():
-            if hasattr(m, "input_key") and len(m._modules) != 0 and not m.is_lower_trackable:
+            if (
+                hasattr(m, "input_key")
+                and len(m._modules) != 0
+                and not m.is_lower_trackable
+            ):
                 batch = self.forward_next(batch=batch, module=m)
                 cur_target_key = m.target_key
             elif hasattr(m, "input_key"):
-                inputs = [batch[m.input_key]] if isinstance(m.input_key, str) else [batch[ikey] for ikey in m.input_key]
+                inputs = (
+                    [batch[m.input_key]]
+                    if isinstance(m.input_key, str)
+                    else [batch[ikey] for ikey in m.input_key]
+                )
                 batch[m.target_key] = m(*inputs)
                 cur_target_key = m.target_key
             else:
@@ -62,12 +72,18 @@ class Pipeline(BaseModule):
 
             del_keys = getattr(m, "del_keys", {})
             del_keys = dict.fromkeys(del_keys)
-            batch = {key: value for key, value in batch.items() if key not in del_keys}
+            batch = {
+                key: value
+                for key, value in batch.items()
+                if key not in del_keys
+            }
 
         del_keys = getattr(module, "del_keys", {})
         del_keys = dict.fromkeys(del_keys)
 
-        batch = {key: value for key, value in batch.items() if key not in del_keys}
+        batch = {
+            key: value for key, value in batch.items() if key not in del_keys
+        }
 
         return batch
 

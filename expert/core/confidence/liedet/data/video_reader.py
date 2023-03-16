@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import decord
-from einops import rearrange
-
 import torch
+from einops import rearrange
 from torch import Tensor
 from torch.utils.data import Dataset
 from torchaudio.functional import resample
@@ -21,7 +20,9 @@ class AVReader(decord.AVReader):
     .. _`decord.AVReader`: https://github.com/dmlc/decord/blob/master/python/decord/av_reader.py
     """
 
-    def __getitem__(self, idx: int | slice | Tensor) -> tuple[tuple[Tensor], Tensor]:
+    def __getitem__(
+        self, idx: int | slice | Tensor
+    ) -> tuple[tuple[Tensor], Tensor]:
         """Gets video and audio frames with passed index(es).
 
         Args:
@@ -32,7 +33,9 @@ class AVReader(decord.AVReader):
             Audio frames are returned as a tuple of Tensors because of different sizes.
             Video frames are returned as a Tensor.
         """
-        assert self.__video_reader is not None and self.__audio_reader is not None
+        assert (
+            self.__video_reader is not None and self.__audio_reader is not None
+        )
 
         if isinstance(idx, (slice, int)):
             return super().__getitem__(idx)
@@ -149,8 +152,12 @@ class VideoReader(Dataset):
             self.orig_audio_fps = meta["audio_fps"]
         except KeyError:
             self.orig_audio_fps = 0
-        self.video_fps = video_fps if video_fps is not None else self.orig_video_fps
-        self.audio_fps = audio_fps if audio_fps is not None else self.orig_audio_fps
+        self.video_fps = (
+            video_fps if video_fps is not None else self.orig_video_fps
+        )
+        self.audio_fps = (
+            audio_fps if audio_fps is not None else self.orig_audio_fps
+        )
 
         self.avreader = AVReader(
             uri=uri,
@@ -190,7 +197,9 @@ class VideoReader(Dataset):
         """
         return len(self.avreader)
 
-    def _validate_indices(self, idx: slice, length: int) -> tuple[int, int, int]:
+    def _validate_indices(
+        self, idx: slice, length: int
+    ) -> tuple[int, int, int]:
         start, stop, step = idx.start, idx.stop, idx.step
         if start is None:
             start = 0
@@ -265,7 +274,9 @@ class VideoReader(Dataset):
             dict[str, Any]: dictionary with `video_frames`, `audio_frames` and `meta` keys.
         """
         if isinstance(idx, slice):
-            start, stop, step = self._validate_indices(idx, self.num_video_frames)
+            start, stop, step = self._validate_indices(
+                idx, self.num_video_frames
+            )
             indices, pad_size = self._to_real_indices(
                 start,
                 stop,
@@ -299,7 +310,9 @@ class VideoReader(Dataset):
             else:
                 # FIXME: It will be better to use .zeros and clip gradient,
                 #   but catalyst's BackwardCallback with grad_clip_fn has bag: it uses undefined variable `model`
-                audio_frames = torch.rand(self.num_audio_channels, expected_audio_size)
+                audio_frames = torch.rand(
+                    self.num_audio_channels, expected_audio_size
+                )
 
             if self.video_transforms is not None:
                 video_frames = self.video_transforms(video_frames)
@@ -313,7 +326,9 @@ class VideoReader(Dataset):
             video_frames = rearrange(video_frames, "h w c -> c h w")
 
             expected_audio_size = int(self.audio_fps / self.video_fps)
-            audio_frames = resample(audio_frames, self.orig_audio_fps, self.audio_fps)
+            audio_frames = resample(
+                audio_frames, self.orig_audio_fps, self.audio_fps
+            )
             audio_frames = self._pad(
                 audio_frames,
                 pad_size=expected_audio_size - audio_frames.size(-1),

@@ -44,12 +44,18 @@ class AttentionBottleneckTransformer(nn.Module):
         """
         super().__init__()
 
-        self.transformers = [build(cfg=transformer) for transformer in transformers]
-        self.bottleneck = nn.Parameter(data=torch.zeros(1, neck_size, embed_dims))
+        self.transformers = [
+            build(cfg=transformer) for transformer in transformers
+        ]
+        self.bottleneck = nn.Parameter(
+            data=torch.zeros(1, neck_size, embed_dims)
+        )
 
         self.cls_only = cls_only
 
-    def forward(self, *per_transformer_x: Tensor) -> tuple[Tensor, ...] | Tensor:
+    def forward(
+        self, *per_transformer_x: Tensor
+    ) -> tuple[Tensor, ...] | Tensor:
         """Forwards input tensors and shared bottleneck to correpsonding transformers.
 
         It also calculates and stores bottleneck for next iteration
