@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import re
 import json
 import os
+import re
 from os import PathLike
 from typing import List, Tuple
 
@@ -41,15 +41,14 @@ class EvasivenessDetector:
     """
 
     def __init__(
-            self,
-            video_path: str | PathLike,
-            transcription_path: str | PathLike,
-            diarization_path: str | PathLike,
-            lang: str = 'en',
-            device: torch.device | None = None,
-            output_dir: str | PathLike | None = None
+        self,
+        video_path: str | PathLike,
+        transcription_path: str | PathLike,
+        diarization_path: str | PathLike,
+        lang: str = "en",
+        device: torch.device | None = None,
+        output_dir: str | PathLike | None = None,
     ) -> None:
-
         self.transcription_path = transcription_path
         self.diarization_path = diarization_path
         self.lang = lang
@@ -131,10 +130,14 @@ class EvasivenessDetector:
             i = len(dialogue_timestamps) - 1
             while i >= 0:
                 start = dialogue_timestamps[i][0][0]
-                while (i > 0) and (dialogue_timestamps[i][1] == dialogue_timestamps[i - 1][1]):
+                while (i > 0) and (
+                    dialogue_timestamps[i][1] == dialogue_timestamps[i - 1][1]
+                ):
                     i -= 1
                 end = dialogue_timestamps[i][0][1]
-                merged_dialogue_timestamps.append(([start, end], dialogue_timestamps[i][1]))
+                merged_dialogue_timestamps.append(
+                    ([start, end], dialogue_timestamps[i][1])
+                )
                 i -= 1
             return merged_dialogue_timestamps
 
@@ -160,23 +163,25 @@ class EvasivenessDetector:
             pattern = r"[A-Z].*[.?!]"
             cut_phrase = re.findall(pattern, phrase)
             if len(cut_phrase) == 0:
-                return ''
+                return ""
             else:
                 return cut_phrase[0]
 
         dialogue = []
-        prev_text = ''
+        prev_text = ""
         for i in dialogue_timestamps:
             if i[0][1] > wrds[-1]["end"]:
                 break
             text = between_timestamps(wrds, i[0][0], i[0][1])
             text = cut_phrases(text)
-            if text == '':
+            if text == "":
                 continue
-            if prev_text != '':  # additional check for cases, like: "USA? What do you think about it?"
+            if (
+                prev_text != ""
+            ):  # additional check for cases, like: "USA? What do you think about it?"
                 first_punc = re.search("[?!.]", text).span()[1]
                 if text[:first_punc] == prev_text[-first_punc:]:
-                    text = text[first_punc + 1:]
+                    text = text[first_punc + 1 :]
             prev_text = text
             dialogue.append(i + (text,))
 
@@ -196,11 +201,14 @@ class EvasivenessDetector:
                 List: List of separated questions, detected from the speech part
 
             Examples:
-                >>> text = "Let's introduce ourselves. My name is Sam. What is your name?"
+                >>> txt = "Let's introduce ourselves. My name is Sam. What is your name?"
+                >>> get_questions(txt)
                 ['What is your name?']
-                >>> text = "My name is Sam. What is your name? How old are you"
+                >>> txt = "My name is Sam. What is your name? How old are you"
+                >>> get_questions(txt)
                 ['What is your name?', 'How old are you']
-                >>> text = "Your father passed away last night. And I wonder why are you here?"
+                >>> txt = "Your father passed away last night. And I wonder why are you here?"
+                >>> get_questions(txt)
                 ["Your father passed away last night. And I wonder why are you here?"]
             """
             full_question = text
@@ -234,15 +242,28 @@ class EvasivenessDetector:
                 return int(num.lstrip("0"))
 
         for i in range(len(dialogue) - 1):
-            if "?" in dialogue[i][2] or self.qs_model.get_qs_label(dialogue[i][2]) == 1:
+            if (
+                "?" in dialogue[i][2]
+                or self.qs_model.get_qs_label(dialogue[i][2]) == 1
+            ):
                 questions = get_questions(dialogue[i][2])
                 for question in questions:
-                    answer_info = self.ev_model.get_evas_info(question, dialogue[i + 1][2])
-                    answers[get_number(dialogue[i][1])].append({"resp": dialogue[i][1], "question": question,
-                                                                "answer": dialogue[i + 1][2], "label": answer_info[0],
-                                                                "model_conf": answer_info[1],
-                                                                "pred_answer": answer_info[2]})
-        with open(os.path.join(self.temp_path, "evasiveness.json"), 'w') as filename:
+                    answer_info = self.ev_model.get_evas_info(
+                        question, dialogue[i + 1][2]
+                    )
+                    answers[get_number(dialogue[i][1])].append(
+                        {
+                            "resp": dialogue[i][1],
+                            "question": question,
+                            "answer": dialogue[i + 1][2],
+                            "label": answer_info[0],
+                            "model_conf": answer_info[1],
+                            "pred_answer": answer_info[2],
+                        }
+                    )
+        with open(
+            os.path.join(self.temp_path, "evasiveness.json"), "w"
+        ) as filename:
             json.dump(answers, filename)
 
         return os.path.join(self.temp_path, "evasiveness.json")
