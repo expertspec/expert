@@ -136,7 +136,7 @@ requires = ["pdm-pep517>=1.0"]
 build-backend = "pdm.pep517.api"
 
 [tool.pdm.scripts]
-post_install = "pip install catalyst~=22.2.1" # из-за бага https://github.com/pdm-project/pdm/issues/1765
+post_install = "pip install git+https://github.com/AndrewLaptev/catalyst.git" # v22.4.1 (custom version for pdm)
 
 [tool.pdm.dev-dependencies]
 tools = ["pre-commit~=3.0.3"]

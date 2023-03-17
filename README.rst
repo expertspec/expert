@@ -60,10 +60,10 @@ or with ``pdm``:
 
     $ pdm add "expert[all] @ git+https://github.com/expertspec/expert.git"
 
-The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed. 
-If you want to install dependencies only from a group of a certain library module, 
-then enter the name of the required module instead of ``all``. 
-Installing without specifying a dependency group will result in installing a library 
+The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed.
+If you want to install dependencies only from a group of a certain library module,
+then enter the name of the required module instead of ``all``.
+Installing without specifying a dependency group will result in installing a library
 without dependencies
 
 How to Use
@@ -86,13 +86,19 @@ Install all dependencies from ``pdm.lock`` file:
 
 .. code-block:: bash
 
-    $ pdm install
+    $ pdm install -G all
 
 or optional dependencies for each library module (check ``pyproject.toml``):
 
 .. code-block:: bash
 
     $ pdm install -G <group>
+
+For update dependency (package) version you need change version in ``pyproject.toml`` and after execute:
+
+.. code-block:: bash
+
+    $ pdm update -G <group> <package>
 
 Run pre-commited hooks:
 
