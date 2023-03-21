@@ -1,4 +1,4 @@
-.. image:: /docs/ru/logo_ru.png
+.. image:: docs/img/ru/logo_ru.png
    :width: 500px
    :align: center
    :alt: Expert Logo in Russian
@@ -26,7 +26,7 @@
 
 Библиотека разработана в рамках научно-исследовательской работы, финансируемой из централизованных средств федерального государственного автономного образовательного учреждения высшего образования "Национального исследовательского университета ИТМО".
 
-.. image:: /docs/ru/diagram_ru.png
+.. image:: docs/img/ru/diagram_ru.png
     :width: 700px
     :align: center
     :alt: Expert Diagram in Russian
@@ -136,7 +136,7 @@
 При поддержке
 ==========================================================
 
-.. image:: docs/en/itmo_logo.png
+.. image:: docs/img/en/itmo_logo.png
     :width: 300px
     :align: center
     :alt: ITMO university logo
@@ -185,6 +185,6 @@
    :alt: Supported License
    :target: https://github.com/expertspec/expert/blob/master/LICENSE.md
 
-.. |itmo| image:: docs/ru/ITMO_badge_rus.svg
+.. |itmo| image:: docs/img/ru/ITMO_badge_rus.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
