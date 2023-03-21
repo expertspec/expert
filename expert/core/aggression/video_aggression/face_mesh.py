@@ -4,6 +4,7 @@ import cv2
 import mediapipe
 import numpy as np
 
+
 # fmt: off
 HEAD_INDEXES = np.array([
     0, 7, 10, 13, 14, 17, 21, 33, 37, 39, 40,
