@@ -1,4 +1,4 @@
-.. image:: docs/en/logo_en.png
+.. image:: docs/img/en/logo_en.png
    :width: 500px
    :align: center
    :alt: Expert Logo in English
@@ -26,7 +26,7 @@ Expert Features
 
 The library was developed as part of a research project funded from the centralized funds of ITMO University.
 
-.. image:: docs/en/diagram_en.png
+.. image:: docs/img/en/diagram_en.png
     :width: 750px
     :align: center
     :alt: Expert Diagram in English
@@ -135,7 +135,7 @@ We acknowledge the contributors for their important impact and the participants 
 Supported by
 ==========================================================
 
-.. image:: docs/en/itmo_logo.png
+.. image:: docs/img/en/itmo_logo.png
     :width: 300px
     :align: center
     :alt: ITMO university logo
@@ -184,6 +184,6 @@ Citation
    :alt: Supported License
    :target: https://github.com/expertspec/expert/blob/master/LICENSE.md
 
-.. |itmo| image:: docs/en/ITMO_badge.svg
+.. |itmo| image:: docs/img/en/ITMO_badge.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
