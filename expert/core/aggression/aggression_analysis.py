@@ -112,6 +112,9 @@ class AggressionDetector:
         if not os.path.exists(self.temp_path):
             os.makedirs(self.temp_path)
 
+        self.div_agg = {}
+        self.full_agg = {}
+        
     @property
     def device(self) -> torch.device:
         """Check the device type.
@@ -190,13 +193,13 @@ class AggressionDetector:
                     continue
         div_text_agg, full_text_agg = self.get_text_state(fragments=fragments)
 
-        div_agg = {
+        self.div_agg = {
             "video": div_vid_agg,
             "audio": div_aud_agg,
             "text": div_text_agg,
         }
 
-        full_agg = {
+        self.full_agg = {
             "video": full_vid_agg,
             "audio": full_aud_agg,
             "text": full_text_agg,
@@ -205,12 +208,12 @@ class AggressionDetector:
         with open(
             os.path.join(self.temp_path, "aggression_divided.json"), "w"
         ) as file:
-            json.dump(div_agg, file)
+            json.dump(self.div_agg, file)
 
         with open(
             os.path.join(self.temp_path, "aggression_aggregated.json"), "w"
         ) as file:
-            json.dump(full_agg, file)
+            json.dump(self.full_agg, file)
 
         return (
             os.path.join(self.temp_path, "aggression_divided.json"),

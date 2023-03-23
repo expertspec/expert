@@ -1,4 +1,4 @@
-.. image:: docs/en/logo_en.png
+.. image:: docs/img/en/logo_en.png
    :width: 500px
    :align: center
    :alt: Expert Logo in English
@@ -13,16 +13,20 @@
      - | |license|
    * - languages
      - | |eng| |rus|
+   * - acknowledgments
+     - | |itmo|
 .. end-badges
 
-**Expert** - is an open-source technology that is designed to assess the validity of expert opinion based on dynamic video content mining.
+**Expert** - is a library that is designed to assess the validity of expert opinion based on dynamic intellectual analysis of video content.
 
 Expert Features
 ==========================================================
 
-Service "EXPERT" is designed to assess the consistency of expert opinion based on various parameters obtained by multimodal analysis of audio, video and text data. This development can be applied in the field of education and online learning, HR processes, issues related to the analysis of information of social and political nature.
+"Expert" is designed to assess the validity of expert opinion based on various parameters obtained by multimodal analysis of audio, video and text data. This development can be applied in the field of education and online learning, HR processes, issues related to the analysis of information of social and political nature.
 
-.. image:: docs/en/diagram_en.png
+The library was developed as part of a research project funded from the centralized funds of ITMO University.
+
+.. image:: docs/img/en/diagram_en.png
     :width: 750px
     :align: center
     :alt: Expert Diagram in English
@@ -30,23 +34,24 @@ Service "EXPERT" is designed to assess the consistency of expert opinion based o
 Expert Applications
 ==========================================================
 
-- **Authenticity** - is a characteristic that allows us to evaluate the level of consistency of information simultaneously transmitted by a person verbally and non-verbally (audio, video and textual channels).
+- **Confidence** - is a characteristic that allows to evaluate a property of personality, the core of which is a positive assessment of an individual's own skills and abilities as sufficient to achieve goals meaningful to him and meet his needs.
 - **Aggression** - is a qualitative characteristic of a person's attitude toward someone or something, expressed in a state of hostility, ill-will, aggression, anger toward the object of hostility.
-- **Confidence** - is a characteristic that allows us to evaluate a property of personality, the core of which is a positive assessment of an individual's own skills and abilities as sufficient to achieve goals meaningful to him and meet his needs.
-- **Contradiction** - is a characteristic that allows us to evaluate two statements of which one is the negation of the other. If two statements are in a contradictory relation, then one of them is equivalent to the negation of the other.
-- **Transcribe**
-- **Summarize**
+- **Congruence** - is a characteristic that allows us to evaluate the level of consistency of information simultaneously transmitted by a person verbally and non-verbally (audio, video and textual channels).
+- **Inconsistency** - is a characteristic that allows us to evaluate two statements of which one is the negation of the other. If two statements are in a contradictory relation, then one of them is equivalent to the negation of the other.
+- **Speaker Verification**
+- **Speech  Recognition and Summarization**
 
 Requirements
 ==========================================================
 
 - Python ~=3.9 (python3.9-full, python3.9-dev)
 - pip >=22.0 or PDM ~=2.4.8
+- CUDA >= 11.6
 
 Installation
 ==========================================================
 
-Describe how users can install your project.
+- **Case A**: If You use Expert as a dependency or third-party package:
 
 Expert can be installed with ``pip``:
 
@@ -60,21 +65,13 @@ or with ``pdm``:
 
     $ pdm add "expert[all] @ git+https://github.com/expertspec/expert.git"
 
-The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed. 
-If you want to install dependencies only from a group of a certain library module, 
-then enter the name of the required module instead of ``all``. 
-Installing without specifying a dependency group will result in installing a library 
+The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed.
+If you want to install dependencies only from a group of a certain library module,
+then enter the name of the required module instead of ``all``.
+Installing without specifying a dependency group will result in installing a library
 without dependencies
 
-How to Use
-==========================================================
-
-Describe examples how it should work and should be used.
-Images, GIFs and code cells are welcome.
-Examples & Tutorials
-
-Development
-==========================================================
+- **Case B**: If You develop and run Expert directly, install it from source:
 
 Clone repository:
 
@@ -86,13 +83,19 @@ Install all dependencies from ``pdm.lock`` file:
 
 .. code-block:: bash
 
-    $ pdm install
+    $ pdm install -G all
 
 or optional dependencies for each library module (check ``pyproject.toml``):
 
 .. code-block:: bash
 
     $ pdm install -G <group>
+
+For update dependency (package) version you need change version in ``pyproject.toml`` and after execute:
+
+.. code-block:: bash
+
+    $ pdm update -G <group> <package>
 
 Run pre-commited hooks:
 
@@ -102,10 +105,16 @@ Run pre-commited hooks:
     $ pre-commit run --all-files (all hooks for all changes)
     $ pre-commit run <hook_name> (specified hook)
 
+How to Use
+==========================================================
+
+Describe examples how it should work and should be used.
+Images, GIFs and code cells are welcome.
+
 Documentation
 ==========================================================
 
-Link to the documentation
+Link to the documentation.
 
 Publications About Expert
 ==========================================================
@@ -126,7 +135,7 @@ We acknowledge the contributors for their important impact and the participants 
 Supported by
 ==========================================================
 
-.. image:: docs/en/itmo_logo.png
+.. image:: docs/img/en/itmo_logo.png
     :width: 300px
     :align: center
     :alt: ITMO university logo
@@ -136,7 +145,7 @@ Funding research project No. 622279 "Development of a service for assessing the 
 Contacts
 ==========================================================
 
-- Anatoly Medvedev - ML-engineer
+- Anatolii Medvedev - ML-engineer
 - Ivan Smirnov - ML-engineer
 - Samigulin Timur - ML-engineer
 - Artyom Bondar - ML-engineer
@@ -150,35 +159,31 @@ Contacts
 
 Citation
 ==========================================================
-@article{"name",
-  title = {},
-  author = {},
-  journal = {},
-  year = {},
-  issn = {},
-  doi = {}}
+
+@online{expert,
+  author = {Laushkina, Anastasia and Smirnov, Ivan and Medvedev, Anatolii et al.},
+  title = {2023},
+  url = {https://github.com/expertspec/expert},
+  urldate = {2023-03-20},
+}
 
 
-.. |eng| image:: https://img.shields.io/badge/lang-en-red.svg
+.. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
    :alt: Documentation in English
    :target: /README.rst
 
-.. |rus| image:: https://img.shields.io/badge/lang-ru-yellow.svg
+.. |rus| image:: https://img.shields.io/badge/lang-ru-red.svg
    :alt: Documentation in Russian
    :target: /README_ru.rst
-
-.. |py_8| image:: https://img.shields.io/badge/python_3.8-passing-success
-   :alt: Supported Python Versions
-   :target: https://img.shields.io/badge/python_3.8-passing-success
 
 .. |py_9| image:: https://img.shields.io/badge/python_3.9-passing-success
    :alt: Supported Python Versions
    :target: https://img.shields.io/badge/python_3.9-passing-success
 
-.. |py_10| image:: https://img.shields.io/badge/python_3.10-passing-success
-   :alt: Supported Python Versions
-   :target: https://img.shields.io/badge/python_3.10-passing-success
-
 .. |license| image:: https://img.shields.io/github/license/expertspec/expert
    :alt: Supported License
    :target: https://github.com/expertspec/expert/blob/master/LICENSE.md
+
+.. |itmo| image:: docs/img/en/ITMO_badge.svg
+   :alt: Acknowledgement ITMO
+   :target: https://itmo.ru/
