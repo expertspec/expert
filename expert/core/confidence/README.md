@@ -5,8 +5,9 @@ Module for evaluating the level of confidence with non-verbal (facial micro-expr
 
 The module evaluates the level of confidence with analysis of the non-verbal features of the speaker's from the picked video. The main class called ConfidenceDetector is located in the <b>confidence_analysis.py</b>. This class gets as input the path to the video and the results of feature extraction. Optionally, it is possible to specify the speaker with the setting of the specified image.
 The executable function of the ContradictionDetector is get_confidence. It returns the path to the report, which contains the list with records in the next form:
+```
 {'time_sec' : time, 'confidence' : "No face" (in case, if there no face (couldn't be detected) in the fragment) | float (the level of confidence)}
-
+```
 
 ### The example of the usage
 
