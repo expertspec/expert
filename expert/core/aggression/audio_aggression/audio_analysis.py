@@ -54,6 +54,7 @@ class AudioAggression:
         self.loud_part = 0
         self.fast_part = 0
         self.div_aud_agg = []
+        self.full_aud_agg = {}
 
     def _get_average(self) -> None:
         if self.stamps:
@@ -159,9 +160,9 @@ class AudioAggression:
         self.loud_part = round(self.loud_part / len(self.div_aud_agg), 2)
         self.fast_part = round(self.fast_part / len(self.div_aud_agg), 2)
 
-        full_aud_agg = {
+        self.full_aud_agg = {
             "loud_part": self.loud_part,
             "fast_part": self.fast_part,
         }
 
-        return (self.div_aud_agg, full_aud_agg)
+        return (self.div_aud_agg, self.full_aud_agg)

@@ -93,6 +93,8 @@ class VideoAggression:
             min_detection_confidence=min_detection_confidence,
             min_tracking_confidence=min_tracking_confidence,
         )
+        self.div_vid_agg = []
+        self.full_vid_agg = {}
 
     @property
     def device(self) -> torch.device:
@@ -152,7 +154,6 @@ class VideoAggression:
         state_low = True
         state_rap = True
         state_rot = True
-        div_vid_agg = []
 
         # Upper face activity. Calculate difference between the average position of the face and the current.
         mean = data["upp_part"].mean()
@@ -235,7 +236,7 @@ class VideoAggression:
                     else:
                         state_rot = True
 
-                div_vid_agg.append(
+                self.div_vid_agg.append(
                     {
                         "video_path": self.video_path,
                         "time_sec": float(data["time_sec"][start]),
@@ -256,7 +257,7 @@ class VideoAggression:
                 state_rap = True
                 state_rot = True
 
-        full_vid_agg = {
+        self.full_vid_agg = {
             "video_path": self.video_path,
             "uppface_activity": float(
                 data[data["upp_motion"] != 0]["upp_motion"].count() / len(data)
@@ -272,4 +273,4 @@ class VideoAggression:
             ),
         }
 
-        return (div_vid_agg, full_vid_agg, self.key)
+        return (self.div_vid_agg, self.full_vid_agg, self.key)

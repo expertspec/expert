@@ -108,7 +108,7 @@ class TextAggression:
                 result_list = []
                 for fragment in self.fragments:
                     prediction = depreciation.is_depreciation(fragment["text"])
-                    fragment["is_deprecation"] = prediction
+                    fragment["is_depreciation"] = prediction
                     result_list.append(prediction)
                 return result_list
         elif self.lang == "ru":
@@ -118,10 +118,8 @@ class TextAggression:
             elif type(self.fragments) is list:
                 result_list = []
                 for fragment in self.fragments:
-                    prediction = len(
-                        depreciation.is_depreciation(fragment["text"])[1]
-                    )
-                    fragment["is_deprecation"] = prediction
+                    prediction = len(depreciation.is_depreciation(fragment["text"])[1])
+                    fragment["is_depreciation"] = prediction
                     result_list.append(prediction)
                 return result_list
 
