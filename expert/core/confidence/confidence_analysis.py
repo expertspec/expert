@@ -97,12 +97,12 @@ class ConfidenceDetector:
             os.path.splitext(os.path.basename(self.path_to_image))[0]
         )
         face_report = face_report[
-            face_report["cluster"] == expert_idx
+            face_report["speaker_by_video"] == expert_idx
         ].reset_index(drop=True)
         key = (
             face_report.groupby(by="speaker_by_audio")
             .count()
-            .sort_values(by="cluster", ascending=False)
+            .sort_values(by="speaker_by_video", ascending=False)
             .index[0]
         )
 
