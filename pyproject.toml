@@ -9,12 +9,13 @@ authors = [
     { name = "Nikita Nosov", email = "nnmastodont@gmail.com" },
 ]
 dependencies = ["pip>=22.0"]
-requires-python = "~=3.9.0"
+requires-python = "~=3.9.1"
 readme = "README.rst"
 license = { text = "BSD-3-Clause-Clear" }
 
 [project.optional-dependencies]
 all = [
+    "catalyst @ git+https://github.com/AndrewLaptev/catalyst",
     "pydantic~=1.10.2",
     "nltk~=3.8.1",
     "detoxify~=0.5.1",
@@ -84,6 +85,7 @@ congruence = [
     "opencv-python~=4.7.0.68",
 ]
 confidence = [
+    "catalyst @ git+https://github.com/AndrewLaptev/catalyst",
     "torch~=1.13.1",
     "torchaudio~=0.13.1",
     "torchvision~=0.14.1",
@@ -134,9 +136,6 @@ antiplagiarism = [
 [build-system]
 requires = ["pdm-pep517>=1.0"]
 build-backend = "pdm.pep517.api"
-
-[tool.pdm.scripts]
-post_install = "pip install git+https://github.com/AndrewLaptev/catalyst.git" # v22.4.1 (custom version for pdm)
 
 [tool.pdm.dev-dependencies]
 tools = ["pre-commit~=3.0.3"]
