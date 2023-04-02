@@ -24,9 +24,13 @@ class EvasivenessDetector:
         output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
 
     Returns:
-        str: Path to JSON file with information about evasiveness. JSON includes List of lists, where index number of
-        a list corresponds to a respondent's number. Every list consisted of dicts with the following structure:
-        {resp: str, question: srt, answer: str, label: str, model_conf: float, pred_answer: str}
+        str: Path to JSON file with information about evasiveness. JSON includes List of lists, where the first List
+        includes summary for each respondent's responses and has the following structure:
+        [{"resp": speaker's name, "total": total number of questions, "evasive": number of evasive answers,
+        "not evasive": number of not evasive answers, "neutral": number of neutral answers}],
+        index numbers of the following lists correspond to a respondents numbers + 1. Every list consisted of
+        dicts with the following structure:
+        {resp: str, question: str, answer: str, label: str, model_conf: float, pred_answer: str}
 
     Example:
         >>> detector = EvasivenessDetector(
@@ -67,10 +71,10 @@ class EvasivenessDetector:
 
         self.ev_model, self.qs_model = get_models(self.lang)
 
-        with open(self.diarization_path, "r") as file:
+        with open(self.diarization_path, "r", encoding="utf-8") as file:
             self.stamps = json.load(file)
 
-        with open(self.transcription_path, "r") as file:
+        with open(self.transcription_path, "r", encoding="utf-8") as file:
             self.transcription = json.load(file)
 
     @property
@@ -92,6 +96,9 @@ class EvasivenessDetector:
         """
         wrds = self.transcription
         speakers_names = list(self.stamps.keys())
+        assert (
+            len(speakers_names) > 1
+        ), f"More than one speaker is needed, only {len(speakers_names)} is detected"
 
         def get_speaker_timestamps(speaker: str) -> List:
             """Get all phrases for a chosen speaker
@@ -127,16 +134,14 @@ class EvasivenessDetector:
                  [([1,5], 'SPEAKER_00'), ([5,10], 'SPEAKER_01')]
             """
             merged_dialogue_timestamps = []
-            i = len(dialogue_timestamps) - 1
+            i = len(timestamps) - 1
             while i >= 0:
-                start = dialogue_timestamps[i][0][0]
-                while (i > 0) and (
-                    dialogue_timestamps[i][1] == dialogue_timestamps[i - 1][1]
-                ):
+                start = timestamps[i][0][0]
+                while (i > 0) and (timestamps[i][1] == timestamps[i - 1][1]):
                     i -= 1
-                end = dialogue_timestamps[i][0][1]
+                end = timestamps[i][0][1]
                 merged_dialogue_timestamps.append(
-                    ([start, end], dialogue_timestamps[i][1])
+                    ([start, end], timestamps[i][1])
                 )
                 i -= 1
             return merged_dialogue_timestamps
@@ -160,7 +165,7 @@ class EvasivenessDetector:
                 >>> cut_phrase("tonight. I'll wait for you. When")
                  'I'll wait for you.'
             """
-            pattern = r"[A-Z].*[.?!]"
+            pattern = r"[A-Z|А-Я].*[.?!]"
             cut_phrase = re.findall(pattern, phrase)
             if len(cut_phrase) == 0:
                 return ""
@@ -190,6 +195,7 @@ class EvasivenessDetector:
     def get_evasiveness(self) -> str:
         dialogue, speakers_names = self.get_dialogues_phrases()
         answers = [[] for _ in range(len(speakers_names))]
+        print(dialogue)
 
         def get_questions(text: str) -> List:
             """Find questions in full speech part
@@ -241,6 +247,18 @@ class EvasivenessDetector:
             else:
                 return int(num.lstrip("0"))
 
+        res = []  # summary of each respondent's responses
+        for name in speakers_names:
+            res.append(
+                {
+                    "resp": name,
+                    "total": 0,
+                    "evasive": 0,
+                    "not evasive": 0,
+                    "neutral": 0,
+                }
+            )
+
         for i in range(len(dialogue) - 1):
             if (
                 "?" in dialogue[i][2]
@@ -251,7 +269,10 @@ class EvasivenessDetector:
                     answer_info = self.ev_model.get_evas_info(
                         question, dialogue[i + 1][2]
                     )
-                    answers[get_number(dialogue[i][1])].append(
+                    speaker_num = get_number(dialogue[i][1])
+                    res[speaker_num]["total"] += 1
+                    res[speaker_num][answer_info[0]] += 1
+                    answers[speaker_num].append(
                         {
                             "resp": dialogue[i][1],
                             "question": question,
@@ -262,8 +283,12 @@ class EvasivenessDetector:
                         }
                     )
         with open(
-            os.path.join(self.temp_path, "evasiveness.json"), "w"
+            os.path.join(
+                self.temp_path,
+                "evasiveness.json",
+            ),
+            "w",
         ) as filename:
-            json.dump(answers, filename)
+            json.dump([res] + answers, filename)
 
         return os.path.join(self.temp_path, "evasiveness.json")

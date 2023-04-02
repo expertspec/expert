@@ -4,17 +4,31 @@ from transformers import pipeline
 
 
 def get_models(lang):
-    assert lang == "en", "Only english language is supported"
+    assert lang in [
+        "en",
+        "ru",
+    ], "Only english and russian languages are supported"
     if lang == "en":
         return EvasiveAnswers(), QuestionStatement()
+    elif lang == "ru":
+        return (
+            EvasiveAnswers(
+                model_path="AlexKay/xlm-roberta-large-qa-multilingual-finedtuned-ru",
+                model_limit=0.5,
+            ),
+            QuestionStatement(),
+        )
 
 
 class EvasiveAnswers:
-    def __init__(self):
-        self.MODEL_PATH = "deepset/roberta-base-squad2"
+    def __init__(
+        self, model_path="deepset/roberta-base-squad2", model_limit=0.055
+    ):
+        self.MODEL_PATH = model_path
         self.ev_detection = pipeline(
             "question-answering", model=self.MODEL_PATH
         )
+        self.limit = model_limit
 
     def get_evas_info(self, question: str, answer: str) -> List:
         """Classify whether an answer is evasive
@@ -30,7 +44,7 @@ class EvasiveAnswers:
         qa_input = {"question": question, "context": answer}
         try:
             res = self.ev_detection(qa_input)
-            if res["score"] > 0.055:
+            if res["score"] > self.limit:
                 return ["not evasive", res["score"], res["answer"]]
             else:
                 return ["evasive", res["score"], res["answer"]]
