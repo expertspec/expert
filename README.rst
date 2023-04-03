@@ -128,7 +128,7 @@ Images, GIFs and code cells are welcome.
 Documentation
 =============
 
-Link to the documentation.
+https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documentation.rst
 
 Publications About Expert
 =========================
@@ -175,13 +175,10 @@ Citation
 ========
 
 @online{expert,
-  title = {},
   author = {Laushkina, Anastasia and Smirnov, Ivan and Medvedev, Anatolii et al.},
-  journal = {},
-  year = {2023},
-  issn = {},
-  doi = {}}
-  
+  title = {2023},
+  url = {https://github.com/expertspec/expert},
+  urldate = {2023-03-20}}
 
 .. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
    :alt: Documentation in English
