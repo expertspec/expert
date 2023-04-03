@@ -20,7 +20,7 @@
 **Expert** - is a library that is designed to assess the validity of expert opinion based on dynamic intellectual analysis of video content.
 
 Expert Features
-==========================================================
+===============
 
 "Expert" is designed to assess the validity of expert opinion based on various parameters obtained by multimodal analysis of audio, video and text data. This development can be applied in the field of education and online learning, HR processes, issues related to the analysis of information of social and political nature.
 
@@ -31,8 +31,22 @@ The library was developed as part of a research project funded from the centrali
     :align: center
     :alt: Expert Diagram in English
 
+Table of Contents
+=================
+
+- `Expert Applications <Expert Applications_>`_
+- `Requirements <Requirements_>`_
+- `Installation <Installation_>`_
+- `How to Use <How to Use_>`_
+- `Documentation <Documentation_>`_
+- `Publications About Expert <Publications About Expert_>`_
+- `Acknowledgments <Acknowledgments_>`_
+- `Supported by <Supported by_>`_
+- `Contacts <Contacts_>`_
+- `Citation <Citation_>`_
+
 Expert Applications
-==========================================================
+===================
 
 - **Confidence** - is a characteristic that allows to evaluate a property of personality, the core of which is a positive assessment of an individual's own skills and abilities as sufficient to achieve goals meaningful to him and meet his needs.
 - **Aggression** - is a qualitative characteristic of a person's attitude toward someone or something, expressed in a state of hostility, ill-will, aggression, anger toward the object of hostility.
@@ -42,14 +56,14 @@ Expert Applications
 - **Speech  Recognition and Summarization**
 
 Requirements
-==========================================================
+============
 
 - Python ~=3.9 (python3.9-full, python3.9-dev)
 - pip >=22.0 or PDM ~=2.4.8
 - CUDA >= 11.6
 
 Installation
-==========================================================
+============
 
 - **Case A**: If You use Expert as a dependency or third-party package:
 
@@ -106,18 +120,18 @@ Run pre-commited hooks:
     $ pre-commit run <hook_name> (specified hook)
 
 How to Use
-==========================================================
+==========
 
 Describe examples how it should work and should be used.
 Images, GIFs and code cells are welcome.
 
 Documentation
-==========================================================
+=============
 
-Link to the documentation.
+https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documentation.rst
 
 Publications About Expert
-==========================================================
+=========================
 
 .. [1] Sinko M.V., Medvedev A.A., Smirnov I.Z., Laushkina A.A., Kadnova A., Basov O.O. Method
        of constructing and identifying predictive models of human behavior based on information
@@ -128,12 +142,12 @@ Publications About Expert
        physics - 2022, Vol. 11, No. 4, pp. 210–216
 
 Acknowledgments
-==========================================================
+===============
 
 We acknowledge the contributors for their important impact and the participants of numerous scientific conferences and workshops for their valuable advice and suggestions.
 
 Supported by
-==========================================================
+============
 
 .. image:: docs/img/en/itmo_logo.png
     :width: 300px
@@ -143,7 +157,7 @@ Supported by
 Funding research project No. 622279 "Development of a service for assessing the validity of expert opinion based on dynamic intelligent analysis of video content".
 
 Contacts
-==========================================================
+========
 
 - Anatolii Medvedev - ML-engineer
 - Ivan Smirnov - ML-engineer
@@ -158,15 +172,13 @@ Contacts
 - Anastasia Laushkina - Project Manager, Researcher
 
 Citation
-==========================================================
+========
 
 @online{expert,
   author = {Laushkina, Anastasia and Smirnov, Ivan and Medvedev, Anatolii et al.},
   title = {2023},
   url = {https://github.com/expertspec/expert},
-  urldate = {2023-03-20},
-}
-
+  urldate = {2023-03-20}}
 
 .. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
    :alt: Documentation in English
