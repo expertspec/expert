@@ -59,8 +59,8 @@ Requirements
 ============
 
 - Python ~=3.9 (python3.9-full, python3.9-dev)
-- pip >=22.0 or PDM ~=2.4.8
-- CUDA >= 11.6
+- pip >=22.0 or PDM >=2.4.8
+- CUDA >= 11.7
 
 Installation
 ============
@@ -79,11 +79,20 @@ or with ``pdm``:
 
     $ pdm add "expert[all] @ git+https://github.com/expertspec/expert.git"
 
+In the case of installation via ``pdm`` as a third-party package, after installation, run the command:
+
+.. code-block:: bash
+
+    $ pdm run pip install mmcv-full~=1.7.0 --ignore-installed --no-cache-dir
+
+This command is needed because the method of installing dependencies in ``pdm`` conflicts with the specific
+installation method ``mmcv-full``.
+
 The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed.
 If you want to install dependencies only from a group of a certain library module,
 then enter the name of the required module instead of ``all``.
 Installing without specifying a dependency group will result in installing a library
-without dependencies
+with basic dependencys
 
 - **Case B**: If You develop and run Expert directly, install it from source:
 
@@ -97,13 +106,13 @@ Install all dependencies from ``pdm.lock`` file:
 
 .. code-block:: bash
 
-    $ pdm install -G all
+    $ pdm sync -G all -v
 
 or optional dependencies for each library module (check ``pyproject.toml``):
 
 .. code-block:: bash
 
-    $ pdm install -G <group>
+    $ pdm sync -G <group> -v
 
 For update dependency (package) version you need change version in ``pyproject.toml`` and after execute:
 
