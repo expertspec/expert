@@ -9,4 +9,5 @@ Core
 
    aggression/index.rst
    antiplagiarism/index.rst
+   confidence/index.rst
    functional_tools.rst
