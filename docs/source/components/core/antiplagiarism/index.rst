@@ -7,5 +7,5 @@ Antiplagiarism
    :glob:
    :maxdepth: 4
 
-   plagiarism_tools/index.rst
    antiplagiarism_module
+   plagiarism_tools/index.rst
