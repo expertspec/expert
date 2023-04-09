@@ -11,4 +11,5 @@ Core
    antiplagiarism/index.rst
    confidence/index.rst
    congruence/index.rst
+   contradiction/index.rst
    functional_tools.rst
