@@ -8,3 +8,4 @@ Core
    :maxdepth: 3
 
    aggression/index.rst
+   functional_tools.rst
