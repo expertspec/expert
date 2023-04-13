@@ -58,7 +58,9 @@ class QuestionStatement:
     def __init__(self, lang):
         self.MODEL_PATH = "shahrukhx01/question-vs-statement-classifier"
         self.qs_classifier = pipeline(
-            "text-classification", model=self.MODEL_PATH)
+            "text-classification", model=self.MODEL_PATH
+        )
+
         self.lang = lang
 
     def get_qs_label(self, text: str) -> int:
@@ -70,7 +72,7 @@ class QuestionStatement:
         Returns:
             int: label(0 - statement, 1 - question)
         """
-        if self.lang == 'ru':
+        if self.lang == "ru":
             return 0
         try:
             if self.qs_classifier(text)[0]["label"] == "LABEL_1":
