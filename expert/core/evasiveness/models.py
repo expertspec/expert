@@ -13,10 +13,10 @@ def get_models(lang):
     elif lang == "ru":
         return (
             EvasiveAnswers(
-                model_path="AlexKay/xlm-roberta-large-qa-multilingual-finedtuned-ru",
-                model_limit=0.5,
+                model_path="mrm8488/bert-multi-cased-finetuned-xquadv1",
+                model_limit=0.09,
             ),
-            QuestionStatement(),
+            QuestionStatement(lang),
         )
 
 
@@ -55,11 +55,11 @@ class EvasiveAnswers:
 
 
 class QuestionStatement:
-    def __init__(self):
+    def __init__(self, lang):
         self.MODEL_PATH = "shahrukhx01/question-vs-statement-classifier"
         self.qs_classifier = pipeline(
-            "text-classification", model=self.MODEL_PATH
-        )
+            "text-classification", model=self.MODEL_PATH)
+        self.lang = lang
 
     def get_qs_label(self, text: str) -> int:
         """Classify whether text is a question or a statement
@@ -70,6 +70,8 @@ class QuestionStatement:
         Returns:
             int: label(0 - statement, 1 - question)
         """
+        if self.lang == 'ru':
+            return 0
         try:
             if self.qs_classifier(text)[0]["label"] == "LABEL_1":
                 return 1

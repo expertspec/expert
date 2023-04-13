@@ -221,7 +221,7 @@ class EvasivenessDetector:
             text = re.findall(r"[^.!?)]+[!?.]", text)
             ques_text = []
             for sent in text:
-                if self.qs_model.get_qs_label(sent) == 1:
+                if self.qs_model.get_qs_label(sent) == 1 or "?" in sent:
                     ques_text.append(sent)
             if len(ques_text) == 0:
                 return [full_question]
