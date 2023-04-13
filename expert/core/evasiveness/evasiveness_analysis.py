@@ -215,6 +215,7 @@ class EvasivenessDetector:
                 ['What is your name?', 'How old are you']
                 >>> txt = "Your father passed away last night. And I wonder why are you here?"
                 >>> get_questions(txt)
+
                 ["Your father passed away last night. And I wonder why are you here?"]
             """
             full_question = text
