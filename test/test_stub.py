@@ -1,11 +1,13 @@
 # File to test CodeCov and bypass 'no tests ran' Error
 
+
 def test_a():
-  assert "a" == "a"
-  
+    assert 1 == 1
+
+
 def test_b():
-  assert 2 == 2
-  
+    assert "a" == "a"
+
+
 def test_c():
-  assert true and true
-  
+    assert True is not False
