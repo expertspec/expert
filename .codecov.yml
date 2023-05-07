@@ -1,0 +1,8 @@
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0% # TODO: change to at least 1%
+    patch: false
+ignore:
+  - "expert/core/functional_tools.py"  # TODO: example how to ignore a file or an entire folder 
