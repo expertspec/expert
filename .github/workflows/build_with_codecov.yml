@@ -1,4 +1,4 @@
-name: Build with CodeCov
+name: Build
 
 on:
   push:
@@ -24,5 +24,5 @@ jobs:
         pip install pytest-cov
     - name: Run tests and collect coverage
       run: pytest --cov=expert --cov-report=xml
-    - name: Upload coverage reports to Codecov with GitHub Action
+    - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
