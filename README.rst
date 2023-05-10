@@ -214,6 +214,6 @@ Citation
 .. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY 
    :target: https://codecov.io/gh/expertspec/expert
 
-.. |build| image:: https://github.com/expertspec/expert/actions/workflows/codecov.yml/badge.svg?branch=main
+.. |build| image:: https://github.com/expertspec/expert/actions/workflows/build_with_codecov.yml/badge.svg?branch=main
    :alt: Build Status
    :target: https://github.com/expertspec/expert/actions
