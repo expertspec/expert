@@ -9,6 +9,8 @@
 
    * - package
      - | |py_9|
+   * - tests
+     - | |build| |codecov|
    * - license
      - | |license|
    * - languages
@@ -209,3 +211,10 @@ https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documenta
 .. |itmo| image:: docs/img/ru/ITMO_badge_rus.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
+
+.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY 
+   :target: https://codecov.io/gh/expertspec/expert
+
+.. |build| image:: https://github.com/expertspec/expert/actions/workflows/codecov.yml/badge.svg?branch=main
+   :alt: Build Status
+   :target: https://github.com/expertspec/expert/actions
