@@ -41,11 +41,11 @@ def transcribe_video(
     elif model == "local":
         model = whisper.load_model("base", device=_device)
 
-    transribation = transcribe.transcribe_timestamped(
+    transcribation = transcribe.transcribe_timestamped(
         model=model, audio=video_path, language=lang
     )
 
-    return transribation
+    return transcribation
 
 
 def get_all_words(transcribation: Dict) -> Tuple[List, str]:
@@ -84,7 +84,6 @@ def get_phrases(all_words: list, duration: int = 10) -> list:
                 {"time": [init_elem["start"], init_elem["end"]], "text": phrase}
             )
             time_left -= init_elem["end"] - end_time
-            end_time = init_elem["end"]
             continue
         while time_left > 0 and all_words:
             elem = all_words.pop(0)
@@ -122,8 +121,6 @@ def between_timestamps(all_words: List, start: float, end: float) -> str:
                 return [lowIdx, lowIdx]
             elif elem == val:
                 return [idx, idx]
-            elif elem == val:
-                return [highIdx, highIdx]
             elif elem > val:
                 if highIdx == idx:
                     return [lowIdx, highIdx]
