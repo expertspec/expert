@@ -11,6 +11,8 @@
      - | |py_9|
    * - tests
      - | |build| |codecov|
+   * - docs
+     - | |docs|
    * - license
      - | |license|
    * - languages
@@ -218,3 +220,7 @@ https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documenta
 .. |build| image:: https://github.com/expertspec/expert/actions/workflows/build_with_codecov.yml/badge.svg?branch=main
    :alt: Build Status
    :target: https://github.com/expertspec/expert/actions
+
+.. |docs| image:: https://readthedocs.org/projects/expertspec/badge/?version=latest
+    :target: https://expertspec.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
