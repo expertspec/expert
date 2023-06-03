@@ -89,14 +89,13 @@
 
     $ pdm run pip install mmcv-full~=1.7.0 --ignore-installed --no-cache-dir
 
-Данная команда нужна из-за того, что метод установки зависимостей в ``pdm`` конфликтует со специфическим
-методом установки ``mmcv-full``.
+Данная команда нужна из-за того, что метод установки зависимостей в ``pdm`` конфликтует со специфическим методом установки ``mmcv-full``.
 
 Запись ``expert[all]`` означает, что будут установлены зависимости из группы ``all``.
 Если вы хотите установить зависимости только из группы определенного модуля библиотеки,
 то впишите вместо ``all`` название необходимого модуля.
 Установка без указания группы зависимостей приведет к установке
-библиотеки лишь с базовыми зависимостями
+библиотеки лишь с базовыми зависимостями.
 
 - **Случай Б**: Если Вы разрабатываете и запускаете Expert напрямую, установите его из исходников:
 
@@ -142,7 +141,7 @@
 Документация
 ============
 
-https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documentation.rst
+`Официальная документация <https://expertspec.readthedocs.io/en/latest/index.html>`_
 
 Публикации об Эксперт
 =====================
@@ -188,11 +187,16 @@ https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documenta
 Цитирование
 ===========
 
-@online{expert,
-  author = {Laushkina, Anastasia and Smirnov, Ivan and Medvedev, Anatolii et al.},
-  title = {2023},
-  url = {https://github.com/expertspec/expert},
-  urldate = {2023-03-20}}
+.. code-block:: bash
+
+    @software{expertspec,
+        title = {expert},
+        author = {Laushkina, Anastasiya and Smirnov, Ivan and Medvedev, Anatolii et al.},
+        year = {2023},
+        url = {https://github.com/expertspec/expert},
+        version = {1.0.0}
+    }
+
 
 .. |eng| image:: https://img.shields.io/badge/lang-en-red.svg
    :alt: Documentation in English
@@ -206,15 +210,15 @@ https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documenta
    :alt: Supported Python Versions
    :target: https://img.shields.io/badge/python_3.9-passing-success
 
-.. |license| image:: https://img.shields.io/github/license/expertspec/expert
+.. |license| image:: https://img.shields.io/github/license/expertspec/expert?color=deepgreen
    :alt: Supported License
-   :target: https://github.com/expertspec/expert/blob/master/LICENSE.md
+   :target: https://github.com/expertspec/expert/blob/master/LICENSE
 
 .. |itmo| image:: docs/img/ru/ITMO_badge_rus.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
 
-.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY 
+.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY
    :target: https://codecov.io/gh/expertspec/expert
 
 .. |build| image:: https://github.com/expertspec/expert/actions/workflows/build_with_codecov.yml/badge.svg?branch=main

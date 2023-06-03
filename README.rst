@@ -52,10 +52,10 @@ Table of Contents
 Expert Applications
 ===================
 
-- **Confidence** - is a characteristic that allows to evaluate a property of personality, the core of which is a positive assessment of an individual's own skills and abilities as sufficient to achieve goals meaningful to him and meet his needs.
+- **Confidence** - is a characteristic that allows to evaluate a property, the core of which is a positive assessment of an individual's own skills and abilities sufficient to achieve goals meaningful to him.
 - **Aggression** - is a qualitative characteristic of a person's attitude toward someone or something, expressed in a state of hostility, ill-will, aggression, anger toward the object of hostility.
-- **Congruence** - is a characteristic that allows us to evaluate the level of consistency of information simultaneously transmitted by a person verbally and non-verbally (audio, video and textual channels).
-- **Inconsistency** - is a characteristic that allows us to evaluate two statements of which one is the negation of the other. If two statements are in a contradictory relation, then one of them is equivalent to the negation of the other.
+- **Congruence** - is a characteristic that allows to evaluate the level of consistency of information simultaneously transmitted by a person verbally and non-verbally (audio, video and textual channels).
+- **Contradiction** - is a characteristic that allows to evaluate two statements of which one is the negation of the other. If two statements are in a contradictory relation, then one of them is equivalent to the negation of the other.
 - **Speaker Verification**
 - **Speech  Recognition and Summarization**
 
@@ -89,14 +89,13 @@ In the case of installation via ``pdm`` as a third-party package, after installa
 
     $ pdm run pip install mmcv-full~=1.7.0 --ignore-installed --no-cache-dir
 
-This command is needed because the method of installing dependencies in ``pdm`` conflicts with the specific
-installation method ``mmcv-full``.
+This command is needed because the method of installing dependencies in ``pdm`` conflicts with the specific installation method ``mmcv-full``.
 
 The ``expert[all]`` entry means that dependencies from the ``all`` group will be installed.
 If you want to install dependencies only from a group of a certain library module,
 then enter the name of the required module instead of ``all``.
 Installing without specifying a dependency group will result in installing a library
-with basic dependencys
+with basic dependencies.
 
 - **Case B**: If You develop and run Expert directly, install it from source:
 
@@ -141,7 +140,7 @@ Images, GIFs and code cells are welcome.
 Documentation
 =============
 
-https://github.com/ITMO-NSS-team/open-source-ops/blob/master/tutorials/documentation.rst
+`Official Documentation <https://expertspec.readthedocs.io/en/latest/index.html>`_
 
 Publications About Expert
 =========================
@@ -180,18 +179,23 @@ Contacts
 - Andrei Laptev - Backend Developer
 - Nikita Nosov - Backend Developer
 - Artyom Chemezov - Frontend Develop
-- Olga Hoffman - Scientist
+- Olga Gofman - Scientist
 - Nika Kraynovskikh - Researcher
-- Anastasia Laushkina - Project Manager, Researcher
+- Anastasiya Laushkina - Project Manager, Researcher
 
 Citation
 ========
 
-@online{expert,
-  author = {Laushkina, Anastasia and Smirnov, Ivan and Medvedev, Anatolii et al.},
-  title = {2023},
-  url = {https://github.com/expertspec/expert},
-  urldate = {2023-03-20}}
+.. code-block:: bash
+
+    @software{expertspec,
+        title = {expert},
+        author = {Laushkina, Anastasiya and Smirnov, Ivan and Medvedev, Anatolii et al.},
+        year = {2023},
+        url = {https://github.com/expertspec/expert},
+        version = {1.0.0}
+    }
+
 
 .. |eng| image:: https://img.shields.io/badge/lang-en-deepgreen.svg
    :alt: Documentation in English
@@ -205,15 +209,15 @@ Citation
    :alt: Supported Python Versions
    :target: https://img.shields.io/badge/python_3.9-passing-success
 
-.. |license| image:: https://img.shields.io/github/license/expertspec/expert
+.. |license| image:: https://img.shields.io/github/license/expertspec/expert?color=deepgreen
    :alt: Supported License
-   :target: https://github.com/expertspec/expert/blob/master/LICENSE.md
+   :target: https://github.com/expertspec/expert/blob/master/LICENSE
 
 .. |itmo| image:: docs/img/en/ITMO_badge.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
 
-.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY 
+.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY
    :target: https://codecov.io/gh/expertspec/expert
 
 .. |build| image:: https://github.com/expertspec/expert/actions/workflows/build_with_codecov.yml/badge.svg?branch=main
