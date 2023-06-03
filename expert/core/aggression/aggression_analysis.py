@@ -114,7 +114,7 @@ class AggressionDetector:
 
         self.div_agg = {}
         self.full_agg = {}
-        
+
     @property
     def device(self) -> torch.device:
         """Check the device type.

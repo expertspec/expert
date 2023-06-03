@@ -54,7 +54,9 @@ class ConfidenceDetector:
     def convert(self, target_fps=30):
         # Get fps info.
         probe = ffmpeg.probe(self.video_path)
-        video_info = next(s for s in probe["streams"] if s["codec_type"] == "video")
+        video_info = next(
+            s for s in probe["streams"] if s["codec_type"] == "video"
+        )
         orig_fps = int(video_info["r_frame_rate"].split("/")[0])
         if orig_fps != target_fps:
             try:
@@ -63,11 +65,15 @@ class ConfidenceDetector:
                 audio = input.audio
                 video = ffmpeg.filter(video, "fps", fps=target_fps, round="up")
                 converted_name = os.path.basename(self.video_path).split(".")
-                converted_name = converted_name[0] + "_conv" + "." + converted_name[1]
+                converted_name = (
+                    converted_name[0] + "_conv" + "." + converted_name[1]
+                )
                 out = ffmpeg.output(
                     video,
                     audio,
-                    os.path.join(os.path.dirname(self.video_path), converted_name),
+                    os.path.join(
+                        os.path.dirname(self.video_path), converted_name
+                    ),
                 )
                 ffmpeg.run(out, capture_stderr=True)
 
@@ -133,11 +139,17 @@ class ConfidenceDetector:
                         ]
                         temporary.unsqueeze_(dim=0)
                         sample["audio_frames"] = temporary.to("cuda")
-                    sample["video_frames"] = sample["video_frames"].to(self._device)
-                    sample["audio_frames"] = sample["audio_frames"].to(self._device)
+                    sample["video_frames"] = sample["video_frames"].to(
+                        self._device
+                    )
+                    sample["audio_frames"] = sample["audio_frames"].to(
+                        self._device
+                    )
                     predict = runner.predict_sample(sample)
                     if isinstance(predict, str):
-                        report.append({"time_sec": current_time, "confidence": predict})
+                        report.append(
+                            {"time_sec": current_time, "confidence": predict}
+                        )
                     else:
                         report.append(
                             {
@@ -157,9 +169,9 @@ class ConfidenceDetector:
                 except Exception:
                     sample = vr[start:]
                 if sample["video_frames"].size()[0] != cfg.window:
-                    sample["video_frames"] = sample["video_frames"][: cfg.window].to(
-                        self._device
-                    )
+                    sample["video_frames"] = sample["video_frames"][
+                        : cfg.window
+                    ].to(self._device)
                     temporary = sample["audio_frames"][0][
                         : cfg["window_secs"] * cfg["audio_fps"]
                     ].to(self._device)
@@ -170,7 +182,9 @@ class ConfidenceDetector:
                 predict = runner.predict_sample(sample)
                 current_time = 0
                 if isinstance(predict, str):
-                    report.append({"time_sec": current_time, "confidence": predict})
+                    report.append(
+                        {"time_sec": current_time, "confidence": predict}
+                    )
                 else:
                     report.append(
                         {
@@ -183,7 +197,9 @@ class ConfidenceDetector:
                 current_time += cfg.window / cfg.video_fps
 
         # Save results to temporary path.
-        with open(os.path.join(self.temp_path, "confidence.json"), "w") as filename:
+        with open(
+            os.path.join(self.temp_path, "confidence.json"), "w"
+        ) as filename:
             json.dump(report, filename)
 
         return os.path.join(self.temp_path, "confidence.json")

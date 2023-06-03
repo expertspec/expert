@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from os import PathLike
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 import torch

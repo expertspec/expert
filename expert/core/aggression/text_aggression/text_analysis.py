@@ -118,7 +118,9 @@ class TextAggression:
             elif type(self.fragments) is list:
                 result_list = []
                 for fragment in self.fragments:
-                    prediction = len(depreciation.is_depreciation(fragment["text"])[1])
+                    prediction = len(
+                        depreciation.is_depreciation(fragment["text"])[1]
+                    )
                     fragment["is_depreciation"] = prediction
                     result_list.append(prediction)
                 return result_list

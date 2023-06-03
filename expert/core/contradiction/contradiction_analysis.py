@@ -4,7 +4,7 @@ import json
 import os
 from datetime import timedelta
 from os import PathLike
-from typing import List, Tuple, Union
+from typing import List, Union
 
 import torch
 
@@ -169,9 +169,7 @@ class ContradictionDetector:
             words = json.load(f)
 
         if self.chosen_intervals:
-            fragments = self.get_phrases(
-                words[:], duration=self.interval_duration
-            )
+            fragments = get_phrases(words[:], duration=self.interval_duration)
             intervals = dict.fromkeys(range(len(fragments)))
             for interval in self.chosen_intervals:
                 interval_words = []

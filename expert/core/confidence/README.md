@@ -27,4 +27,4 @@ Confidence.get_confidence()
 ### Weights
 Here are two options for the models(different configs): only micro-expressions (landmarks_transformer) and with audio features (recommended and set as default) (landmarks_audio_transformer).
 
-- The weights of the model should be localted in the `weights/` 
+- The weights of the model should be localted in the `weights/`
