@@ -69,7 +69,7 @@ class EvasivenessDetector:
         if device is not None:
             self._device = device
 
-        self.ev_model, self.qs_model = get_models(self.lang)
+        self.ev_model = get_models(self.lang)
 
         with open(self.diarization_path, "r", encoding="utf-8") as file:
             self.stamps = json.load(file)
@@ -222,7 +222,8 @@ class EvasivenessDetector:
             text = re.findall(r"[^.!?)]+[!?.]", text)
             ques_text = []
             for sent in text:
-                if self.qs_model.get_qs_label(sent) == 1 or "?" in sent:
+                #if self.qs_model.get_qs_label(sent) == 1 or "?" in sent:
+                if "?" in sent:
                     ques_text.append(sent)
             if len(ques_text) == 0:
                 return [full_question]
@@ -262,12 +263,12 @@ class EvasivenessDetector:
 
         for i in range(len(dialogue) - 1):
             if (
-                "?" in dialogue[i][2]
-                or self.qs_model.get_qs_label(dialogue[i][2]) == 1
-            ):
+                "?" in dialogue[i][2]):
+                #or self.qs_model.get_qs_label(dialogue[i][2]) == 1
+
                 questions = get_questions(dialogue[i][2])
                 for question in questions:
-                    answer_info = self.ev_model.get_evas_info(
+                    answer_info = self.ev_model.get_evasive_info(
                         question, dialogue[i + 1][2]
                     )
                     speaker_num = get_number(dialogue[i][1])
