@@ -5,8 +5,8 @@ Module for detecting the number of evasive answers in speech.
 
 The module detects the number of evasive answers in speech.
 The main class called EvasivenessDetector is located in the <b>evasiveness_analysis.py</b>.
-This class gets as input the path to the video and the results of feature extraction. 
-The executable function of the EvasivenessDetector is get_evasiveness. 
+This class gets as input the path to the video and the results of feature extraction.
+The executable function of the EvasivenessDetector is get_evasiveness.
 It returns the path to the report, which contains lists with information about evasiveness for every speaker.\
 The first list includes summary for each respondent's responses and has the following structure:
 ```
@@ -39,7 +39,7 @@ The QA model generates an answer from a context.
 The speaker's response is passed to the model as the context.
 The model returns probable answer and a confidence in the answer found.
 If the model recognizes the response in the context with sufficient confidence,
-the response is considered not evasive. 
+the response is considered not evasive.
 The threshold values of this confidence are obtained empirically.\
 [link for english model](https://huggingface.co/deepset/roberta-base-squad2),\
 [link for russian model](https://huggingface.co/mrm8488/bert-multi-cased-finetuned-xquadv1)
@@ -54,7 +54,7 @@ label: LABEL_0 - not evasive, LABEL_1 - evasive.\
 [link for russian model](https://huggingface.co/alenaa/ru_evasiveness)\
 
 **EvasivenessClassificator**\
-Evasiveness classificator is a decision tree model, which get a predicted label 
+Evasiveness classificator is a decision tree model, which get a predicted label
 from Evasiveness model and confidence from QA model and then returns final result:
 evasive/not evasive.\
 english model - **rf_evas_model.pickle** \
