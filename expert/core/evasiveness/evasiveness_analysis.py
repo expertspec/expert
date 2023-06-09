@@ -246,6 +246,7 @@ class EvasivenessDetector:
             num = name.split("_")[1]
             if bool(re.fullmatch("0+", num)):
                 return 0
+
             else:
                 return int(num.lstrip("0"))
 
