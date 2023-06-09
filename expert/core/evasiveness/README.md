@@ -38,8 +38,8 @@ detector.get_evasiveness()
 The QA model generates an answer from a context.
 The speaker's response is passed to the model as the context.
 The model returns probable answer and a confidence in the answer found.
-If the model recognizes the response in the context with sufficient confidence,
-the response is considered not evasive.
+If the model recognizes the response in the context with sufficient
+confidence, the response is considered not evasive.
 The threshold values of this confidence are obtained empirically.\
 [link for english model](https://huggingface.co/deepset/roberta-base-squad2),\
 [link for russian model](https://huggingface.co/mrm8488/bert-multi-cased-finetuned-xquadv1)

@@ -60,7 +60,7 @@ class EvasiveAnswers:
             Returns:
                 str: full sentence with answer
             Examples:
-                >>> txt = "My name is Sam. I live in London."
+                >>> txt = "My name is Sam. I live in London. And I'm 20 years old."
                 >>> find_full_answer(txt, 11, 13)
                 'My name is Sam'
             """
