@@ -50,7 +50,6 @@ class Linear_insult_pred:
             self.text_trans = pickle.load(f)
 
         if lang == "rus":
-            # python -m spacy download ru_core_news_lg !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             self.russian_nlp = spacy.load("ru_core_news_lg")
 
     def remove_stop_and_make_lemma(

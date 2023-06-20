@@ -15,6 +15,10 @@ Classes of the prediction:
 <li>"Текст с оскорблениями"</li>
 <li>"Текст с сарказмом"</li>
 
+### It is VERY IMPORTANT to download weights for spacy in the terminal in advance
+
+python -m spacy download ru_core_news_lg
+
 
 ### The example of the usage
 
