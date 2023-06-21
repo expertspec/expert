@@ -272,7 +272,7 @@ class EvasivenessDetector:
                         answer_info = self.ev_model.get_evasive_info(
                             question, dialogue[i + 1][2]
                         )
-                    except:
+                    except Exception:
                         break
                     speaker_num = get_number(dialogue[i][1])
                     res[speaker_num]["total"] += 1
