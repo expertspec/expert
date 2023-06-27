@@ -16,7 +16,7 @@ def get_models(lang):
         return EvasiveAnswers(
             qa_model_path="mrm8488/bert-multi-cased-finetuned-xquadv1",
             ev_model_path="alenaa/ru_evasiveness",
-            classifier_path="rf_evas_model_ru.pickle",
+            classifier_path="weights/rf_evas_model_ru.pickle",
         )
 
 
@@ -25,7 +25,7 @@ class EvasiveAnswers:
         self,
         qa_model_path="deepset/roberta-base-squad2",
         ev_model_path="alenaa/evasiveness",
-        classifier_path="rf_evas_model.pickle",
+        classifier_path="weights/rf_evas_model.pickle",
     ):
         self.QA_MODEL_PATH = qa_model_path
         self.EV_MODEL_PATH = ev_model_path
@@ -86,6 +86,7 @@ class EvasiveAnswers:
             cl_input = np.array([float(confidence), int(pred_evasive)]).reshape(
                 1, -1
             )
+            # get result from model for evasiveness prediction by passing confidence and label from previous models
             res = self.classifier.predict(cl_input)[0]
 
             if res == 0:
@@ -97,36 +98,3 @@ class EvasiveAnswers:
             Exception
         ):  # if answer length is too long, a neutral label is assigned
             return ["neutral", -1, ""]
-
-
-'''
-class QuestionStatement:
-    def __init__(self, lang):
-        self.MODEL_PATH = "shahrukhx01/question-vs-statement-classifier"
-        self.qs_classifier = pipeline(
-            "text-classification", model=self.MODEL_PATH
-        )
-
-        self.lang = lang
-
-    def get_qs_label(self, text: str) -> int:
-        """Classify whether text is a question or a statement
-
-        Args:
-            text (str): text for which we determine is it a question or a statement
-
-        Returns:
-            int: label(0 - statement, 1 - question)
-        """
-        if self.lang == "ru":
-            return 0
-        try:
-            if self.qs_classifier(text)[0]["label"] == "LABEL_1":
-                return 1
-            else:
-                return 0
-        except (
-                RuntimeError
-        ):  # if sentence length is too long, is becomes a statement
-            return 0
-'''
