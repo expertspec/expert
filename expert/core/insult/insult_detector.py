@@ -80,7 +80,7 @@ class InsultDetector:
 
     def remove_stop_and_make_lemma(
         self,
-        data: str = "",
+        data: str,
     ) -> list[str]:
         """Preprocesses raw text by removing stop words and lemmatizing tokens.
         
@@ -97,7 +97,7 @@ class InsultDetector:
 
         return tokens
 
-    def predict(self, text: str = "") -> dict:
+    def predict(self, text: str) -> dict:
         """Predicts the category of the input text and returns a dictionary with the prediction label and html representation.
         
         Args:
