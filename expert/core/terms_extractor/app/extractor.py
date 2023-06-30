@@ -1,8 +1,9 @@
 from typing import Dict, List
 from app.text_preprocessing import preproces_text
+from expert.expert.core.terms_extractor.app.util import Language
 
 
-def find_terms_in_text(text: str, terms: Dict[str, List[str]]) -> List[Dict]:
+def find_terms_in_text(text: str, terms: Dict[str, List[str]], lang=Language.EN) -> List[Dict]:
     tokens = preproces_text(text)
     found_terms = []
     for token, start, end in tokens:

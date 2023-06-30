@@ -40,10 +40,10 @@ def extract_terms(text: str, lang: str = 'en') -> List[Dict]:
         raise ValueError("Unsupported language. Please choose either 'en' or 'ru'.")
     
     if language == Language('en'):
-        dictionary = Dictionary.EN4
+        dictionary = Dictionary.EN3_5
     elif language == Language('ru'):
-        dictionary = Dictionary.RU4
+        dictionary = Dictionary.RU3_5
         
     terms_index = load_terms(dictionary)
-    found_terms = find_terms_in_text(text, terms_index)
+    found_terms = find_terms_in_text(text, terms_index, language)
     return found_terms
