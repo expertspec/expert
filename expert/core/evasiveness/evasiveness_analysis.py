@@ -8,7 +8,7 @@ from typing import List, Tuple
 
 import torch
 
-from expert.core.evasiveness.models import get_models
+from expert.core.evasiveness.evas_models import get_models
 from expert.data.annotation.speech_to_text import between_timestamps
 
 
@@ -27,7 +27,7 @@ class EvasivenessDetector:
         str: Path to JSON file with information about evasiveness. JSON includes List of lists, where the first List
         includes summary for each respondent's responses and has the following structure:
         [{"resp": speaker's name, "total": total number of questions, "evasive": number of evasive answers,
-        "not evasive": number of not evasive answers, "neutral": number of neutral answers}],
+        "not_evasive": number of not evasive answers, "neutral": number of neutral answers}],
         index numbers of the following lists correspond to a respondents numbers + 1. Every list consisted of
         dicts with the following structure:
         {resp: str, question: str, answer: str, label: str, model_conf: float, pred_answer: str}
@@ -195,7 +195,6 @@ class EvasivenessDetector:
     def get_evasiveness(self) -> str:
         dialogue, speakers_names = self.get_dialogues_phrases()
         answers = [[] for _ in range(len(speakers_names))]
-        print(dialogue)
 
         def get_questions(text: str) -> List:
             """Find questions in full speech part
@@ -257,7 +256,7 @@ class EvasivenessDetector:
                     "resp": name,
                     "total": 0,
                     "evasive": 0,
-                    "not evasive": 0,
+                    "not_evasive": 0,
                     "neutral": 0,
                 }
             )

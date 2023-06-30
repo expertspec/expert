@@ -6,10 +6,8 @@ from transformers import pipeline
 
 
 def get_models(lang):
-    assert lang in [
-        "en",
-        "ru",
-    ], "Only english and russian languages are supported"
+    if lang not in ["en", "ru"]:
+        raise NotImplementedError("'lang' must be 'en' or 'ru'.")
     if lang == "en":
         return EvasiveAnswers()
     elif lang == "ru":
