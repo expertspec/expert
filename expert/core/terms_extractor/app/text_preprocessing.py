@@ -1,7 +1,8 @@
 import re
-import nltk
-from nltk.stem import WordNetLemmatizer
 from typing import List, Tuple
+
+from nltk.stem import WordNetLemmatizer
+
 
 def get_tokens(text: str) -> List[Tuple[str, int, int]]:
     """
@@ -131,6 +132,7 @@ def lemm_tokens(tokens: List[Tuple[str, int, int, str]]) -> List[Tuple[str, int,
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = [(lemmatizer.lemmatize(token[0]), token[1], token[2], token[3]) for token in tokens]
     return lemmatized_tokens
+
 
 def preproces_text(text: str) -> List[Tuple[str, int, int, str]]:
     """

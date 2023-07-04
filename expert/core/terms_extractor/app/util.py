@@ -7,6 +7,7 @@ class Dictionary(Enum):
     RU4 = 'ru4'
     RU3_5 = 'ru3.5'
 
+
 class Language(Enum):
     EN = 'en'
     RU = 'ru'
