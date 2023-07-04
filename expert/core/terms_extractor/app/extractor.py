@@ -3,6 +3,7 @@ from expert.core.terms_extractor.app.text_preprocessing import preproces_text
 from expert.core.terms_extractor.app.util import Language
 
 
+
 def find_terms_in_text(text: str, terms: Dict[str, List[str]], lang=Language.EN) -> List[Dict]:
     """
     Находит термины из заданного словаря в тексте и возвращает информацию о найденных терминах.
@@ -36,5 +37,5 @@ def find_terms_in_text(text: str, terms: Dict[str, List[str]], lang=Language.EN)
                 "end_pos": end,
                 "themes": theme,
             })
-    
+
     return found_terms

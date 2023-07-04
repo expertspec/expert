@@ -17,7 +17,7 @@ def load_terms_from_file(terms_path: str) -> Dict[str, List[str]]:
     """
     with open(terms_path, 'rb') as f:
         term_index = pickle.load(f)
-        
+
     return term_index
 
 
@@ -42,9 +42,9 @@ def load_terms(dict_name: Dictionary) -> Dict[str, List[str]]:
         Dictionary.RU4: 'data/ru_term_index_4.pickle',
         Dictionary.RU3_5: 'data/ru_term_index_3.5.pickle'
     }
-    
+
     term_index = load_terms_from_file(dict_map[dict_name])
-    
+
     return term_index
-    
-    
+
+

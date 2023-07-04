@@ -3,6 +3,7 @@ from expert.core.terms_extractor.app.extractor import find_terms_in_text
 from expert.core.terms_extractor.app.work_with_terms import load_terms
 from expert.core.terms_extractor.app.util import Dictionary, Language
 
+
 class TermsExtractor():
     """
     Класс для извлечения терминов из текста и возврата информации о найденных терминах.
@@ -33,7 +34,7 @@ class TermsExtractor():
             language = Language(lang)
         except ValueError:
             raise ValueError("Unsupported language. Please choose either 'en' or 'ru'.")
-        
+
         self.language = language
 
     def extract_terms(self, severity=2) -> List[Dict]:
@@ -60,7 +61,7 @@ class TermsExtractor():
         found_terms = terms_extractor.extract_terms(severity=2)
         for term in found_terms:
             print(term)
-            
+
         >>  {
                 "term": "pattern",
                 "normal_term": "pattern",
@@ -70,7 +71,7 @@ class TermsExtractor():
             }
         """
         dictionary = self._switch_dictionary(severity)
-            
+
         terms_index = load_terms(dictionary)
         found_terms = find_terms_in_text(self.text, terms_index, self.language)
         return found_terms
@@ -81,8 +82,8 @@ class TermsExtractor():
         Возвращает словарь, основываясь на языке и уровне строгости.
 
         Аргументы:
-        - severity (int): Уровень строгости. Значение больше 1 соответствует версии словаря EN3_5 или RU3_5, 
-                        что являются более урезанными версиями словаря, в противном случае 
+        - severity (int): Уровень строгости. Значение больше 1 соответствует версии словаря EN3_5 или RU3_5,
+                        что являются более урезанными версиями словаря, в противном случае
                         используется белее крупная версия словаря EN4 или RU4.
 
         Возвращает:
@@ -99,5 +100,5 @@ class TermsExtractor():
                 dictionary = Dictionary.RU3_5
             else:
                 dictionary = Dictionary.RU4
-        
+
         return dictionary

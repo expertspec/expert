@@ -3,7 +3,6 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 from typing import List, Tuple
 
-
 def get_tokens(text: str) -> List[Tuple[str, int, int]]:
     """
     Извлекает токены из текста и возвращает список кортежей с токенами и их позициями.
@@ -26,7 +25,7 @@ def get_tokens(text: str) -> List[Tuple[str, int, int]]:
 
 def prep_tokens(tokens: List[Tuple[str, int, int]]) -> List[Tuple[str, int, int, str]]:
     """
-    Подготавливает токены в списке кортежей для дальнейшей обработки. 
+    Подготавливает токены в списке кортежей для дальнейшей обработки.
 
     Аргументы:
     - tokens: Список кортежей формата ('token', start_pos, end_pos), представляющих токены и соответствующие позиции.
@@ -38,7 +37,7 @@ def prep_tokens(tokens: List[Tuple[str, int, int]]) -> List[Tuple[str, int, int,
     >>> tokens = [('Hello', 0, 5), ('world!', 6, 12), ('This', 13, 17), (' is ', 18, 22), ('a', 23, 24), (' sample ', 25, 32), ('text.', 33, 38)]
     >>> result = prep_tokens(tokens)
     >>> print(result)
-    [('hello', 0, 5, 'Hello'), ('world', 6, 12, 'world!'), ('this', 13, 17, 'This'), ('is', 18, 22, ' is '), 
+    [('hello', 0, 5, 'Hello'), ('world', 6, 12, 'world!'), ('this', 13, 17, 'This'), ('is', 18, 22, ' is '),
     ('a', 23, 24, 'a'), ('sample', 25, 32, ' sample'), ('text', 33, 38, 'text.')]
     """
     tokens = [(token[0].lower(), token[1], token[2], token[0]) for token in tokens]
@@ -62,7 +61,7 @@ def create_2grams(tokens: List[Tuple[str, int, int, str]]) -> List[Tuple[str, in
     >>> tokens = [('token1', 0, 5, 'token1'), ('token2', 6, 12, 'token2'), ('token3', 13, 20, 'token3')]
     >>> result = create_2grams(tokens)
     >>> print(result)
-    
+
     [('token1 token2', 0, 12, 'token1 token2'), ('token2 token3', 6, 20, 'token2 token3')]
     """
     ngrams = []
@@ -160,5 +159,5 @@ def preproces_text(text: str) -> List[Tuple[str, int, int, str]]:
     tokens2 = create_2grams(tokens)
     tokens3 = create_3grams(tokens)
     tokens = tokens + tokens2 + tokens3
-    
+
     return tokens
