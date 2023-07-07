@@ -178,7 +178,6 @@
 - Артём Бондарь - ML-engineer
 - Алёна Комарова - ML-engineer
 - Андрей Лаптев - Backend Developer
-- Никита Носов - Backend Developer
 - Артем Чемезов - Frontend Develop
 - Ольга Гофман - Scientist
 - Ника Крайновских - Researcher
