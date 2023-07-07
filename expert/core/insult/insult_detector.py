@@ -95,7 +95,6 @@ class InsultDetector:
 
         if not output_dir:
             self.basename = os.path.splitext(os.path.basename(video_path))[0]
-            print(get_folder_order(video_path))
             self.output_dir = os.path.join(*(get_folder_order(video_path)[:-1]), "temp")
 
         if not os.path.exists(self.output_dir):
@@ -205,7 +204,6 @@ class InsultDetector:
             data = get_sentences(json.load(f))
 
         for sentence in data:
-            print(sentence)
             insult_information.append(
                 self.predict(sentence["text"])
                 | {
