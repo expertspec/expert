@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from os import PathLike
 from typing import Dict, List, Tuple
 
@@ -98,6 +99,31 @@ def get_phrases(all_words: list, duration: int = 10) -> list:
     return phrases
 
 
+def get_sentences(all_words: list):
+    pattern = re.compile("[\.!?]")
+    sentences = []
+    current_sentence = []
+    for elem in all_words:
+        if pattern.match(elem["text"][-1]) and len(current_sentence) > 0:
+            current_sentence.append(elem["text"])
+            sentences.append(
+                {
+                    "time_start": current_sentence[0],
+                    "text": " ".join(current_sentence[1:]),
+                    "time_end": elem["end"],
+                }
+            )
+            current_sentence = []
+        elif not pattern.match(elem["text"][-1]) and len(current_sentence) == 0:
+            current_sentence.append(elem["start"])
+            current_sentence.append(elem["text"])
+        else:
+            if len(current_sentence) == 0:
+                current_sentence.append(elem["start"])
+            current_sentence.append(elem["text"])
+    return sentences
+
+
 def between_timestamps(all_words: List, start: float, end: float) -> str:
     """Get phrase between specific timestamps (start, finish) in seconds.
     Find closest left index for start stamp and closest right index for end.
@@ -132,10 +158,13 @@ def between_timestamps(all_words: List, start: float, end: float) -> str:
         return [lowIdx, highIdx]
 
     assert start >= 0, "Innapropriate start stamp (negative value)"
-    assert end <= all_words[-1]["end"], "Innapropriate end stamp (out of video)"
+
     starts = [elem["start"] for elem in all_words]
     ends = [elem["end"] for elem in all_words]
     start_idx = min(_binary_search(starts, start))
     end_idx = max(_binary_search(ends, end))
+    # to get the last word
+    if end > all_words[-1]["end"]:
+        end_idx += 1
     words = [elem["text"] for elem in all_words[start_idx:end_idx]]
     return " ".join(words)
