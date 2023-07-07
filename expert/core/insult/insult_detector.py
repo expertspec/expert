@@ -3,6 +3,7 @@ import pickle
 import re
 
 import eli5
+import numpy as np
 import spacy
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.linear_model import LogisticRegression
@@ -17,6 +18,7 @@ class InsultDetector:
     Returns:
         Dictionary with keys:
             - verdict: string representation of the prediction (e.g. "Text with insults")
+            - probability: float prediction probability 
             - html: html representation of the prediction (e.g. <p>Text with insults</p>)
     
     Attributes:
@@ -98,19 +100,19 @@ class InsultDetector:
         return tokens
 
     def predict(self, text: str) -> dict:
-        """Predicts the category of the input text and returns a dictionary with the prediction label and html representation.
+        """Predicts the category of the input text and returns a dictionary with the prediction label, its probability and html representation.
         
         Args:
             text (str): input text
         
         Returns:
-            dictionary with keys 'verdict' and 'html'
+            dictionary with keys 'verdict', 'probability' and 'html'
         """
         
         if self.lang == "eng":
-            verdict = self.model.predict(self.text_trans.transform([text.lower()]))[0]
+            verdict = self.model.predict_proba(self.text_trans.transform([text.lower()]))[0]
         else:
-            verdict = self.model.predict(
+            verdict = self.model.predict_proba(
                 self.text_trans.transform([self.remove_stop_and_make_lemma(text)])
             )[0]
         
@@ -122,7 +124,7 @@ class InsultDetector:
             feature_names=self.text_trans.named_steps["vect"].get_feature_names_out(),
         )
         
-        return {"verdict": self.preobr[verdict], "html": html_ipynb.data}
+        return {"verdict": self.preobr[np.argmax(verdict)], "probability":np.max(verdict), "html": html_ipynb.data}
 
 if __name__ == "__main__":
     ext = InsultDetector(lang="rus")
@@ -130,9 +132,9 @@ if __name__ == "__main__":
     print(
         ext.predict(
             "Я работаю 40 часов в неделю, для того чтобы оставаться бедным"
-        )["verdict"]
+        )["probability"]
     )
 
     print(ext.predict("Ну ты и тварь, конечно.")["html"])
-    print(ext.predict("Ушлёпок. Я до тебя ещё доберусь.")["verdict"])
+    print(ext.predict("Ушлёпок. Я до тебя ещё доберусь.")["probability"])
     print(ext.predict("А тут мы можем наблюдать восходящий тренд.")["verdict"])

@@ -2,10 +2,10 @@
 
 # Deviant Patterns in the Speaker's Speech
 
-This module analyzes a passage of text and determines whether or not it contains sarcasm or insults. The main class is called `InsultDetector` and is located in `insult_detector.py`. This class receives the language as an argument, with "eng" being the default value. However, it is also possible to specify "rus". A `predict` function of the class is called for direct analysis. It takes a sentence or the text itself as an argument. As a response, it returns a dictionary with two fields: "verdict", which shows whether something is detected in the text or not, and "html", which contains the HTML code obtained from eli5 that highlights the words that contribute the most to the definition.
+This module analyzes a passage of text and determines whether or not it contains sarcasm or insults. The main class is called `InsultDetector` and is located in `insult_detector.py`. This class receives the language as an argument, with "eng" being the default value. However, it is also possible to specify "rus". A `predict` function of the class is called for direct analysis. It takes a sentence or the text itself as an argument. As a response, it returns a dictionary with three fields: "verdict", which shows whether something is detected in the text or not, "probability", float prediction probability. Еhat is, how confident the model is in referring to this particular class and "html", which contains the HTML code obtained from eli5 that highlights the words that contribute the most to the definition.
 
 ```
-{'verdict': 'Text with insults', 'html': 'some HTML code here'}
+{'verdict': 'Text with insults', 'probability':0.78, 'html': 'some HTML code here'}
 ```
 
 Classes of prediction:
