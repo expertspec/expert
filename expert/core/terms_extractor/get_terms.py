@@ -1,8 +1,8 @@
 from typing import Dict, List
 
-from expert.core.terms_extractor.app.extractor import find_terms_in_text
-from expert.core.terms_extractor.app.util import Dictionary, Language
-from expert.core.terms_extractor.app.work_with_terms import load_terms
+from expert.core.terms_extractor.tools.extractor import find_terms_in_text
+from expert.core.terms_extractor.tools.util import Dictionary, Language
+from expert.core.terms_extractor.tools.work_with_terms import load_terms
 
 
 class TermsExtractor():

@@ -1,7 +1,7 @@
 import pickle
 from typing import Dict, List
 
-from expert.core.terms_extractor.app.util import Dictionary
+from expert.core.terms_extractor.tools.util import Dictionary
 
 
 def load_terms_from_file(terms_path: str) -> Dict[str, List[str]]:
