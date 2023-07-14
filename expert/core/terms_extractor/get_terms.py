@@ -7,20 +7,20 @@ from expert.core.terms_extractor.app.work_with_terms import load_terms
 
 class TermsExtractor():
     """
-    Класс для извлечения терминов из текста и возврата информации о найденных терминах.
+    Class for extracting terms from text and returning information about found terms.
     """
 
     def __init__(self, text_or_filepath: str, lang: str = 'en'):
         """
-        Инициализация объекта TermsExtractor.
+        Initializing the TermsExtractor Object.
 
-        Аргументы:
-        - text_or_filepath (str): Текст или путь к файлу с текстом, в котором нужно найти термины.
-        - lang (str): Язык исходного текста, в котором нужно искать термины. По умолчанию 'en'.
+        Args:
+        - text_or_filepath (str): Text or path to a file with text in which to find terms.
+        - lang (str): The language of the source text in which to search for terms. Default 'en'.
 
         Raises:
-        - ValueError: Если text_or_filepath является пустой строкой.
-        - ValueError: Если указан неподдерживаемый язык. Поддерживаются 'en' и 'ru'.
+        - ValueError: If text_or_filepath is an empty string.
+        - ValueError: If an unsupported language is specified. 'en' and 'ru' supported.
         """
         if not text_or_filepath:
             raise ValueError("text_or_filepath cannot be an empty string. Expected text or .txt file path.")
@@ -40,22 +40,22 @@ class TermsExtractor():
 
     def extract_terms(self, severity=2) -> List[Dict]:
         """
-        Находит термины из заданного словаря в тексте и возвращает информацию о найденных терминах.
+        Finds terms from the given dictionary in the text and returns information about the found terms.
 
-        Аргументы:
-        - severity (int): Уровень 'строгости'. Значение 1 использует более крупный словарь терминов, что может привести
-                        к большому количеству выделения общих слов вместо терминов.
+        Args:
+        - severity (int): 'Severity' level. The value 1 uses a larger vocabulary of terms, which may result in
+                        to a lot of highlighting common words instead of terms.
 
-        Возвращает:
-        - found_terms (List[Dict]): Список словарей, представляющих найденные термины в тексте.
-        Каждый словарь содержит следующую информацию о найденном термине:
-            - "term" (str): Исходный не предобработанный термин из текста.
-            - "normal_term" (str): Нормализованный термин.
-            - "start_pos" (int): Начальная позиция термина в исходном тексте.
-            - "end_pos" (int): Конечная позиция термина в исходном тексте.
-            - "themes" (List[str]): Список тем, к которым относится термин.
+        Returns:
+        - found_terms (List[Dict]): List of dictionaries representing the found terms in the text.
+        Each dictionary contains the following information about the found term:
+            - "term" (str): The original non-preprocessed term from the text.
+            - "normal_term" (str): Normalized term.
+            - "start_pos" (int): The starting position of the term in the source text.
+            - "end_pos" (int): The end position of the term in the source text.
+            - "themes" (List[str]): List of topics the term refers to.
 
-        Пример использования:
+        Example:
         text = "This text contains the word pattern, which is a term."
 
         terms_extractor = TermsExtractor(text, lang='en')
@@ -79,15 +79,15 @@ class TermsExtractor():
 
     def _switch_dictionary(self, severity: int):
         """
-        Возвращает словарь, основываясь на языке и уровне строгости.
+        Returns a dictionary based on language and severity level.
 
-        Аргументы:
-        - severity (int): Уровень строгости. Значение больше 1 соответствует версии словаря EN3_5 или RU3_5,
-                        что являются более урезанными версиями словаря, в противном случае
-                        используется белее крупная версия словаря EN4 или RU4.
+        Args:
+        - severity (int): severity level. A value greater than 1 corresponds to the dictionary version EN3_5 or RU3_5,
+                        which are more stripped-down versions of the dictionary, otherwise
+                        a larger version of the EN4 or RU4 dictionary is used.
 
-        Возвращает:
-        - dictionary (Dictionary): Объект словаря, соответствующий языку и уровню строгости.
+        Returns:
+        - dictionary (Dictionary): Dictionary object corresponding to language and severity level.
 
         """
         if self.language == Language('en'):

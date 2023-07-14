@@ -23,6 +23,15 @@ Each dictionary contains the following information about the found term:
 - "end_pos" (int): End position of the original term in source text.
 - "themes" (List[str]): List of topics to which the term refers.
 
+### Data
+The date folder contains 4 dictionaries:
+- Russian (ru_term_index_4.pickle)
+- Russian elaborate (ru_term_index_3.5.pickle)
+- English (en_term_index.pickle) 
+- English elaborate (en_term_index_3.5.pickle)
+
+The elaborated version of the dictionary is smaller than the regular version and contains fewer commonly used words.
+
 ### The example of the usage
 
 ```python
