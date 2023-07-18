@@ -37,10 +37,10 @@ def load_terms(dict_name: Dictionary) -> Dict[str, List[str]]:
     print(term_index)
     """
     dict_map = {
-        Dictionary.EN4: "data/en_term_index.pickle",
-        Dictionary.EN3_5: "data/en_term_index_3.5.pickle",
-        Dictionary.RU4: "data/ru_term_index_4.pickle",
-        Dictionary.RU3_5: "data/ru_term_index_3.5.pickle",
+        Dictionary.EN4: "./expert/core/terms_extractor/data/en_term_index.pickle",
+        Dictionary.EN3_5: "./expert/core/terms_extractor/data/en_term_index_3.5.pickle",
+        Dictionary.RU4: "./expert/core/terms_extractor/data/ru_term_index_4.pickle",
+        Dictionary.RU3_5: "./expert/core/terms_extractor/data/ru_term_index_3.5.pickle",
     }
 
     term_index = load_terms_from_file(dict_map[dict_name])
