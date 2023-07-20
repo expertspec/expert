@@ -177,7 +177,6 @@ Contacts
 - Artyom Bondar - ML-engineer
 - Alena Komarova - ML-engineer
 - Andrei Laptev - Backend Developer
-- Nikita Nosov - Backend Developer
 - Artyom Chemezov - Frontend Develop
 - Olga Gofman - Scientist
 - Nika Kraynovskikh - Researcher
