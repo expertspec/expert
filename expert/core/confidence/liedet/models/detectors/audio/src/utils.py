@@ -7,9 +7,10 @@ import warnings
 import librosa
 import noisereduce as nr
 import numpy as np
-from moviepy.editor import VideoFileClip
+from decord import AudioReader, bridge
 from pydub import AudioSegment
 
+bridge.set_bridge(new_bridge="torch")
 
 warnings.filterwarnings("ignore")
 
@@ -101,17 +102,12 @@ def chunkizer(chunk_length, audio, sr):
 
 
 def prepare_audio_from_video(video_path):
-    video = VideoFileClip(video_path)
-    # Извлечение имени файла из пути, для создания одноименного аудиофайла
-    template = r"\w+.mp4$"
-    video_name = re.search(template, video_path)
-    folder = video_path.replace(video_name[0], "")
-    video_name = video_name[0][:-4]
+    audio = AudioReader(video_path, sample_rate=22050, mono=True)
+    sr = 22050
+    audio = audio[:]
+    video_name = os.path.basename(video_path).split(".")[0]
+    folder = os.path.dirname(video_path)
     audio_path = os.path.join(folder, video_name + ".mp3")
-    video.audio.write_audiofile(audio_path)  # Сохранение аудиофайла
-
-    # Предобработка звука
-    audio, sr = librosa.load(audio_path)
     reduced_noise = nr.reduce_noise(y=audio, sr=sr)
     # перевод librosa в pydub
     audio = np.array(reduced_noise * (1 << 15), dtype=np.int16)

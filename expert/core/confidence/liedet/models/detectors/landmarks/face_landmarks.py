@@ -6,9 +6,7 @@ from mediapipe.python.solutions import face_mesh
 from torch import Tensor
 
 from expert.core.confidence.liedet.models.base_module import BaseModule
-from expert.core.confidence.liedet.models.detectors.landmarks.rotate_regressor import (
-    Regressor,
-)
+from expert.core.confidence.liedet.models.detectors.landmarks.rotate_regressor import Regressor
 from expert.core.confidence.liedet.models.registry import registry
 
 
@@ -86,6 +84,7 @@ class FaceLandmarks(BaseModule):
         device = x.device
 
         self.regressor.to(device)
+        self.regressor.eval()
         if self.window is not None:
             h = rearrange(x, "b t c h w -> b t h w c")
             # h = rearrange(tensor=x, pattern="(b t) c h w -> b t h w c", t=self.window)

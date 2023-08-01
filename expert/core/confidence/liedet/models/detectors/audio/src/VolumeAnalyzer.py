@@ -4,7 +4,6 @@ from math import ceil, isnan
 import librosa
 import numpy as np
 
-
 warnings.filterwarnings("ignore")
 
 
@@ -20,7 +19,7 @@ class VolumeAnalyzer:
         path_to_audio=False,
     ):
         if isinstance(signal, np.ndarray):  # Если переданы значения сигнала
-            self.y = signal
+            self.y = signal[0]
             self.sr = sr
             self.get_duration()
         else:
