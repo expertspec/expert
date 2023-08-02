@@ -55,22 +55,13 @@ class AudioFeatures(nn.Module):
         x = x.cpu()
         h = []
         for i in range(batch_size):
-            tmp_path = uuid.uuid4()
-            tmp_path = (
-                f"/tmp/{tmp_path}.wav"  # FIXME убрать харкод пути # nosec
-            )
-            torchaudio.save(tmp_path, x[i], self.sample_rate)
-
             hi = main(
-                audio_path=tmp_path,
+                signal = x[i].numpy(),
                 fps=self.video_fps,
                 normalization=self.normalization,
                 sr=self.sample_rate,
                 chunk_length=self.chunk_length,
-                csv=False,
             )
             h.append(hi)
-
-            os.remove(tmp_path)
 
         return torch.stack(h, dim=0).to(device)

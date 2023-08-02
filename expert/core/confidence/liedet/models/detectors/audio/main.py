@@ -8,24 +8,12 @@ from Signal_Analysis.features import signal as sig
 from sklearn.preprocessing import OneHotEncoder
 from torch import load
 
-from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import (
-    AudioModel,
-)
-from expert.core.confidence.liedet.models.detectors.audio.src.TempsAnalyzer import (
-    TempsAnalyzer,
-)
-from expert.core.confidence.liedet.models.detectors.audio.src.ToneAnalyzer import (
-    ToneAnalyzer,
-)
-from expert.core.confidence.liedet.models.detectors.audio.src.Torch_emotion import (
-    Torch_emotion,
-)
-from expert.core.confidence.liedet.models.detectors.audio.src.utils import (
-    prepare_audio_from_video,
-)
-from expert.core.confidence.liedet.models.detectors.audio.src.VolumeAnalyzer import (
-    VolumeAnalyzer,
-)
+from expert.core.confidence.liedet.models.detectors.audio.src.AudioModel import AudioModel
+from expert.core.confidence.liedet.models.detectors.audio.src.TempsAnalyzer import TempsAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.ToneAnalyzer import ToneAnalyzer
+from expert.core.confidence.liedet.models.detectors.audio.src.Torch_emotion import Torch_emotion
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import prepare_audio_from_video
+from expert.core.confidence.liedet.models.detectors.audio.src.VolumeAnalyzer import VolumeAnalyzer
 
 
 def features_to_timeseries(
@@ -108,7 +96,7 @@ def features_to_timeseries(
     return results
 
 
-# Дублирование парамтеров в зависимости от числа кадров в секунду
+# Дублирование параметров в зависимости от числа кадров в секунду
 def to_fps(
     fps,
     results,
@@ -116,7 +104,6 @@ def to_fps(
     audio_path=False,
     duration=1,
     name=False,
-    csv=True,
 ):
     for feat in results.keys():
         suited_param = []  # Значения переведенные в соответствии с fps
@@ -127,10 +114,7 @@ def to_fps(
 
     df = pd.DataFrame(results)
     df = dummies("predicts", df, audio_path, name)
-    if csv:
-        df.to_csv(output_path, index=False)
-    else:
-        return df
+    return df
 
 
 # one-hot encoding для эмоций
@@ -179,10 +163,8 @@ def main(
     name=False,
     chunk_length=1,
     sr=22050,
-    csv=True,
     model_path=str(Path(__file__).parent / "weights/Torch_model.pth"),
     device="cpu",
-    output_path="res.csv",
 ):
     # Отключение вывода в консоль (функция get_jitter выводит тип объекта)
     # sys.stdout = open(os.devnull, "w")
@@ -198,6 +180,7 @@ def main(
         )
     else:
         results = features_to_timeseries(
+            signal=signal,
             audio_path=audio_path,
             model_path=model_path,
             device=device,
@@ -209,8 +192,6 @@ def main(
         fps=fps,
         results=results,
         audio_path=audio_path,
-        csv=csv,
-        output_path=output_path,
         name=name,
     )
 
