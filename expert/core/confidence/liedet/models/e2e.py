@@ -184,8 +184,9 @@ class LieDetectorRunner(dl.Runner):
         Returns:
             Tensor: batch of target class indexes.
         """
-        self.model.eval()
-        logits = self.model(batch)
+        with torch.no_grad():
+            self.model.eval()
+            logits = self.model(batch)
         if isinstance(logits, str):
             return "No face"
         probs = torch.sigmoid(logits)
@@ -216,7 +217,8 @@ class LieDetectorRunner(dl.Runner):
             batch["audio_frames"],
             batch["labels"],
         )
-
-        logits = self.model(batch)
+        with torch.no_grad():
+            self.model.eval()
+            logits = self.model(batch)
 
         self.batch = dict(logits=logits, labels=labels)

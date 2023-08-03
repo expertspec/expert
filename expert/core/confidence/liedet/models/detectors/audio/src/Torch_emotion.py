@@ -3,9 +3,7 @@ import numpy as np
 import torch
 import torchaudio
 
-from expert.core.confidence.liedet.models.detectors.audio.src.utils import (
-    chunkizer,
-)
+from expert.core.confidence.liedet.models.detectors.audio.src.utils import chunkizer
 
 
 class Torch_emotion:
@@ -78,6 +76,7 @@ class Torch_emotion:
         # Перевод списка тензоров к тензору тензоров
         self.test = torch.stack(self.test).to(self.device)
 
+        self.model.eval()
         # Предсказание
         for i in range(self.test.shape[0]):
             c = self.test[i]

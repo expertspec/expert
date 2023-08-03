@@ -84,8 +84,8 @@ class VideoReader(Dataset):
         for frame in video_reader:
             video_frame, audio_frame = frame["video_frames"], frame["audio_frames"]
 
-        # window = video fps * secs
-        window = 30 * 10
+        window = video_fps * window_secs
+        
         for start_index in range(0, len(video_reader), window):
             frames = video_reader[start_index : start_index + window]
             video_frames, audio_frames = frame["video_frames"], frame["audio_frames"]
