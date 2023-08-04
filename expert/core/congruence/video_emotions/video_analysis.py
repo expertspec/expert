@@ -10,8 +10,10 @@ import pandas as pd
 import torch
 from albumentations.pytorch.transforms import ToTensorV2
 from torch import nn
+from timm.models.layers import conv2d_same
+import timm
 
-from expert.core.congruence.video_emotions.video_model import DAN
+from expert.core.functional_tools import get_model_weights_url
 from expert.data.video_reader import VideoReader
 
 
@@ -28,10 +30,17 @@ def get_video_emotions(
         video_path (str | PathLike): Path to local video file.
         features_path (str | PathLike): Path to JSON file with information about detected faces.
         face_image (str | PathLike): Path to face image selected by user.
-        device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+        device (torch.device | None, optional): Device type on local machine (GPU recommended).
+            Defaults to None.
     """
     softmax = nn.Softmax(dim=1)
-    att_resnet = DAN(pretrained=True, device=device).eval()
+    
+    model_name = "enet_b0_8_best_afew.pt"
+    url = "https://github.com/HSE-asavchenko/face-emotion-recognition/raw/main/models/affectnet_emotions/enet_b0_8_best_afew.pt"
+    cached_dir = get_model_weights_url(model_name=model_name, url=url)
+    model = torch.load(cached_dir, map_location=torch.device("cpu"))
+    model = model.to(device).eval()
+    
     # Declare an augmentation pipeline.
     transforms = A.Compose(
         [
@@ -65,7 +74,7 @@ def get_video_emotions(
         transformed = (
             transforms(image=current_frame)["image"].unsqueeze(0).to(device)
         )
-        emotions, _, _ = att_resnet(transformed)
+        emotions = model(transformed)
         emotions = softmax(emotions)[0].cpu().detach()
         lim_emotions = softmax(
             torch.Tensor([[emotions[6], emotions[0], emotions[1]]])

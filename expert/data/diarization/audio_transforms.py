@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import Dict, List
+from typing import Dict, List, Optional, Union
 
 import torch
 from torch import Tensor
 
 
-def rttm_to_timestamps(path: str | PathLike) -> List:
+def rttm_to_timestamps(path: Optional[Union[str, PathLike]]) -> List:
     with open(path, "r", encoding="utf-8") as file:
         lines = []
         for line in file:
@@ -56,7 +56,7 @@ def separate_marks_for_speakers(dict_with_marks: List) -> Dict:
 
 
 def create_separated_signals(
-    signal: List, speakers_info: Dict, name: str, sr: int = 16000
+    signal: List, speakers_info: Dict, name: str, sr: Optional[int] = 16000
 ) -> Tensor:
     first = signal[0][
         int(speakers_info[name][0][0] * sr) : int(

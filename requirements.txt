@@ -195,7 +195,6 @@ ruamel-yaml==0.17.21
 ruamel-yaml-clib==0.2.7
 scikit-image==0.20.0
 scikit-learn==1.2.2
-# scipy==1.10.1
 segtok==1.5.11
 semver==2.13.0
 sentencepiece==0.1.95
@@ -230,6 +229,7 @@ text-preprocessing==0.1.1
 textsearch==0.0.24
 threadpoolctl==3.1.0
 tifffile==2023.3.21
+timm==0.6.7
 tokenizers==0.12.1
 tomli==2.0.1
 torch==1.13.1

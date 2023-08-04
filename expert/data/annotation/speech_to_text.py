@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from os import PathLike
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union, Optional
 
 import torch
 import whisper
@@ -11,18 +11,18 @@ import expert.data.annotation.transcribe as transcribe
 
 
 def transcribe_video(
-    video_path: str | PathLike,
-    lang: str = "en",
-    model: str = "server",
-    device: torch.device | None = None,
+    video_path: Union[str, PathLike],
+    lang: Optional[str] = "en",
+    model: Optional[str] = "server",
+    device: Optional[Union[torch.device, None]] = None,
 ) -> Dict:
     """Speech recognition module from video.
 
     Args:
-        video_path (str | Pathlike): Path to the local video file.
-        lang (str, optional): Language for speech recognition ['ru', 'en']. Defaults to 'en'.
-        model (str, optional): Model configuration for speech recognition ['server', 'local']. Defaults to 'server'.
-        device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+        video_path (Union[str, PathLike]): Path to the local video file.
+        lang (Optional[str]): Language for speech recognition ['ru', 'en']. Defaults to 'en'.
+        model (Optional[str]): Model configuration for speech recognition ['server', 'local']. Defaults to 'server'.
+        device (Optional[Union[torch.device, None]]): Device type on local machine (GPU recommended). Defaults to None.
 
     Raises:
         NotImplementedError: If 'lang' is not equal to 'en' or 'ru'.
@@ -64,7 +64,7 @@ def get_all_words(transcribation: Dict) -> Tuple[List, str]:
     return all_words, full_text
 
 
-def get_phrases(all_words: list, duration: int = 10) -> list:
+def get_phrases(all_words: list, duration: Optional[int] = 10) -> list:
     """Split transcribed text into segments of a fixed length.
 
     Args:
@@ -99,7 +99,7 @@ def get_phrases(all_words: list, duration: int = 10) -> list:
     return phrases
 
 
-def get_sentences(all_words: list):
+def get_sentences(all_words: Optional[List]):
     pattern = re.compile("[\.!?]")
     sentences = []
     current_sentence = []

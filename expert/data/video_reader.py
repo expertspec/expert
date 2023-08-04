@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from os import PathLike
-from typing import Tuple
+from typing import Tuple, Optional, Union
 
 import cv2
 import numpy as np
@@ -42,7 +42,7 @@ class Cache:
             self._cache.popitem(last=False)
         self._cache[key] = val
 
-    def get(self, key: int, default: int | None = None):
+    def get(self, key: int, default: Optional[Union[int, None]] = None):
         val = self._cache[key] if key in self._cache else default
 
         return val
@@ -64,7 +64,7 @@ class VideoReader:
     """
 
     def __init__(
-        self, filename: str | PathLike, cache_capacity: int = 10
+        self, filename: Optional[Union[str, PathLike]], cache_capacity: Optional[int] = 10
     ) -> None:
         self._vcap = cv2.VideoCapture(filename)
         self._cache = Cache(cache_capacity)
@@ -160,14 +160,14 @@ class VideoReader:
     def _get_real_position(self) -> int:
         return int(round(self._vcap.get(cv2.CAP_PROP_POS_FRAMES)))
 
-    def _set_real_position(self, frame_id) -> None:
+    def _set_real_position(self, frame_id: int) -> None:
         self._vcap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
         pos = self._get_real_position()
         for _ in range(frame_id - pos):
             self._vcap.read()
         self._position = frame_id
 
-    def read(self) -> np.ndarray | None:
+    def read(self) -> Union[np.ndarray, None]:
         """Read the next frame.
 
         If the next frame have been decoded before and in the cache, then
@@ -193,7 +193,7 @@ class VideoReader:
 
         return image
 
-    def get_frame(self, frame_id: int) -> np.ndarray | None:
+    def get_frame(self, frame_id: int) -> Union[np.ndarray, None]:
         """Get frame by index.
 
         Args:
@@ -221,7 +221,7 @@ class VideoReader:
             self._position += 1
         return image
 
-    def current_frame(self) -> np.ndarray | None:
+    def current_frame(self) -> Union[np.ndarray, None]:
         """Get the current frame (the frame is just visited).
 
         Returns:

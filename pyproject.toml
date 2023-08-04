@@ -6,7 +6,6 @@ authors = [
     { name = "Anatolii Medvedev", email = "anatolmdvdv@gmail.com" },
     { name = "Ivan Smirnov", email = "1vany1@mail.ru" },
     { name = "Timur Samigulin", email = "timursamigulin98@gmail.com" },
-    { name = "Nikita Nosov", email = "nnmastodont@gmail.com" },
     { name = "Andrew Laptev", email = "nickname.avast@gmail.com" },
 ]
 dependencies = ["pip>=22.0", "wheel", "setuptools", "torch~=1.13.1"]
