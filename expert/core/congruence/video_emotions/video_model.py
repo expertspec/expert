@@ -48,7 +48,7 @@ class DAN(nn.Module):
         self._device = torch.device("cpu")
 
         if pretrained:
-            url = "https://drive.google.com/uc?export=view&id=17lzsrHyuSGd2cZuNHdAAPCw6JsrjgFIn"
+            url = "https://drive.google.com/uc?export=view&id=1uHNADViICyJEjJljv747nfvrGu12kjtu"
             model_name = "affecnet8_epoch5_acc0.6209.pth"
             cached_file = get_model_weights(model_name=model_name, url=url)
             state_dict = torch.load(cached_file, map_location=self._device)

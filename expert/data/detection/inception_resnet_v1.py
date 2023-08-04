@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import Union, Optional
+
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 
-from expert.core.functional_tools import get_model_weights
+from expert.core.functional_tools import get_model_weights_url
 
 
 class BasicConv2d(nn.Module):
@@ -249,21 +251,21 @@ class InceptionResnetV1(nn.Module):
 
     def __init__(
         self,
-        pretrained: str | None = None,
-        classify: bool = False,
-        num_classes: int | None = None,
-        dropout_prob: float | None = 0.6,
-        device: torch.device | None = None,
+        pretrained: Optional[Union[str, None]] = "vggface2",
+        classify: Optional[bool] = False,
+        num_classes: Optional[Union[int, None]] = None,
+        dropout_prob: Optional[Union[float, None]] = 0.6,
+        device: Optional[Union[torch.device, None]] = None,
     ) -> None:
         """
         Args:
-            pretrained (str, optional): Optional pretraining dataset. Either 'vggface2' or 'casia-webface'.
-            classify (bool, optional): Whether the model should output classification probabilities or feature embeddings.
-            num_classes (int | None, optional): Number of output classes. If 'pretrained' is set and num_classes not
+            pretrained (Optional[Union[str, None]]): Optional pretraining dataset. Either 'vggface2' or 'casia-webface'.
+            classify (Optional[bool]): Whether the model should output classification probabilities or feature embeddings.
+            num_classes (Optional[Union[int, None]]): Number of output classes. If 'pretrained' is set and num_classes not
                 equal to that used for the pretrained model, the final linear layer will be randomly
                 initialized.
-            dropout_prob (float | None, optional): Dropout probability.
-            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+            dropout_prob (Optional[Union[float, None]]): Dropout probability.
+            device (Optional[Union[torch.device, None]]): Device type on local machine (GPU recommended). Defaults to None.
         """
 
         super().__init__()
@@ -274,11 +276,11 @@ class InceptionResnetV1(nn.Module):
 
         if pretrained == "vggface2":
             tmp_classes = 8631
-            url = "https://drive.google.com/uc?export=view&id=1P4OqfwcUXXuycmow_Fb8EXqQk5E7-H5E"
+            url = "https://github.com/timesler/facenet-pytorch/releases/download/v2.2.9/20180402-114759-vggface2.pt"
             model_name = "20180402-114759-vggface2.pt"
         elif pretrained == "casia-webface":
             tmp_classes = 10575
-            url = "https://drive.google.com/uc?export=view&id=1rgLytxUaOUrtjpxCl-mQFGYdUfSWgQCo"
+            url = "https://github.com/timesler/facenet-pytorch/releases/download/v2.2.9/20180408-102900-casia-webface.pt"
             model_name = "20180408-102900-casia-webface.pt"
         elif pretrained is None and self.classify and self.num_classes is None:
             raise Exception(
@@ -345,7 +347,7 @@ class InceptionResnetV1(nn.Module):
 
         if pretrained is not None:
             self.logits = nn.Linear(in_features=512, out_features=tmp_classes)
-            cached_file = get_model_weights(model_name=model_name, url=url)
+            cached_file = get_model_weights_url(model_name=model_name, url=url)
             state_dict = torch.load(cached_file, map_location=self._device)
             self.load_state_dict(state_dict, strict=True)
 

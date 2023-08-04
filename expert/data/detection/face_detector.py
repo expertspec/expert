@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional, Union
 
 import albumentations as A
 import cv2
@@ -23,20 +23,20 @@ class FaceDetector:
 
     def __init__(
         self,
-        model_selection: int = 0,
-        min_detection_confidence: float = 0.75,
-        max_num_faces: int = 10,
-        device: torch.device | None = None,
+        model_selection: Optional[int] = 0,
+        min_detection_confidence: Optional[float] = 0.75,
+        max_num_faces: Optional[int] = 10,
+        device: Optional[Union[torch.device, None]] = None,
     ) -> None:
         """
         Args:
-            model_selection (int, optional): 0 or 1. 0 to select a short-range model that works
+            model_selection (Optional[int]): 0 or 1. 0 to select a short-range model that works
                 best for faces within 2 meters from the camera, and 1 for a full-range
                 model best for faces within 5 meters. Defaults to 0.
-            min_detection_confidence (float, optional): Minimum confidence value ([0.0, 1.0]) for face
+            min_detection_confidence (Optional[float]): Minimum confidence value ([0.0, 1.0]) for face
                 detection to be considered successful. Defaults to 0.75.
-            max_num_faces (int, optional): Maximum number of faces to detect. Defaults to 10.
-            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+            max_num_faces (Optional[int]): Maximum number of faces to detect. Defaults to 10.
+            device (Optional[Union[torch.device, None]): Device type on local machine (GPU recommended). Defaults to None.
         """
         super().__init__()
 

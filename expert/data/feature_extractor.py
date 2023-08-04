@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from os import PathLike
-from typing import Dict, List, Tuple
+from typing import Union, Optional, Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -48,34 +48,33 @@ class FeatureExtractor:
 
     Example:
         >>> import torch
-        >>> test_video_path: str = "test_video.mp4"
-        >>> extractor = FeatureExtractor(video_path=test_video_path, device=torch.device("cuda"))
+        >>> extractor = FeatureExtractor(video_path="test_video.mp4", device=torch.device("cuda"))
         >>> extractor.get_features()
         "temp/test_video"
     """
 
     def __init__(
         self,
-        video_path: str | PathLike,
-        cache_capacity: int = 10,
-        device: torch.device | None = None,
-        stt_mode: str = "server",
-        model_selection: int = 0,
-        min_detection_confidence: float = 0.75,
-        max_num_faces: int = 10,
-        frame_per_second: int = 3,
-        min_cluster_samples: int = 25,
-        max_eps: int = 2,
-        sr: int = 16000,
-        phrase_duration: int = 60,
-        lang: str = "en",
-        get_summary: bool = True,
-        summary_max_length: int = 25,
-        summary_percent: int = 25,
-        sum_sentences_count: int = 2,
-        sum_max_length: int = 300,
-        sum_over_chared_postfix: str = "...",
-        sum_allowed_punctuation: List = [
+        video_path: Union[str, PathLike],
+        cache_capacity: Optional[int] = 10,
+        device: Optional[Union[torch.device, None]] = None,
+        stt_mode: Optional[str] = "local",
+        model_selection: Optional[int] = 0,
+        min_detection_confidence: Optional[float] = 0.75,
+        max_num_faces: Optional[int] = 10,
+        frame_per_second: Optional[int] = 3,
+        min_cluster_samples: Optional[int] = 25,
+        max_eps: Optional[int] = 2,
+        sr: Optional[int] = 16000,
+        phrase_duration: Optional[int] = 60,
+        lang: Optional[str] = "en",
+        get_summary: Optional[bool] = True,
+        summary_max_length: Optional[int] = 25,
+        summary_percent: Optional[int] = 25,
+        sum_sentences_count: Optional[int] = 2,
+        sum_max_length: Optional[int] = 300,
+        sum_over_chared_postfix: Optional[str] = "...",
+        sum_allowed_punctuation: Optional[List] = [
             ",",
             ".",
             "!",
@@ -94,42 +93,42 @@ class FeatureExtractor:
             '"',
             "'",
         ],
-        output_dir: str | PathLike | None = None,
-        output_img_size: int | Tuple = 512,
-        drop_extra: bool = True,
+        output_dir: Optional[Union[str, PathLike, None]] = None,
+        output_img_size: Optional[Union[int, Tuple]] = 512,
+        drop_extra: Optional[bool] = True,
     ) -> None:
         """
         Initialization of audio, text and video models parameters.
 
         Args:
-            video_path (str | PathLike): Path to local video file.
-            cache_capacity (int, optional): Buffer size for storing frames. Defaults to 10.
-            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
-            stt_mode (str, optional): Model configuration for speech recognition ['server', 'local']. Defaults to 'server'.
-            model_selection (int, optional): 0 or 1. 0 to select a short-range model that works best
+            video_path (Union[str, PathLike]): Path to local video file.
+            cache_capacity (Optional[int]): Buffer size for storing frames. Defaults to 10.
+            device (Optional[Union[torch.device, None]]): Device type on local machine (GPU recommended). Defaults to None.
+            stt_mode (Optional[str]): Model configuration for speech recognition ['server', 'local']. Defaults to 'local'.
+            model_selection (Optional[int]): 0 or 1. 0 to select a short-range model that works best
                 for faces within 2 meters from the camera, and 1 for a full-range model best for
                 faces within 5 meters. Defaults to 0.
-            min_detection_confidence (float, optional): Minimum confidence value ([0.0, 1.0]) for face
+            min_detection_confidence (Optional[float]): Minimum confidence value ([0.0, 1.0]) for face
                 detection to be considered successful. Defaults to 0.75.
-            max_num_faces (int, optional): Maximum number of faces to detect. Defaults to 10.
-            frame_per_second (int, optional): Frame rate for the face detector. Defaults to 3.
-            min_cluster_samples (int, optional): Minimum number of samples for clustering. Defaults to 25.
-            max_eps (int, optional): The maximum distance between two faces. Defaults to 2.
-            sr (int, optional): Sample rate. Defaults to 16000.
-            phrase_duration (int, optional): Length of intervals for extracting phrases from speech. Defaults to 60.
-            lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
-            get_summary (bool, optional): Whether or not to annotate the transcribed speech fragments. Defaults to True.
-            summary_max_length (int, optional): Maximum number of tokens in the generated text. Defaults to 25.
-            summary_percent (int, optional): Maximum annotation percentage of original text size. Defaults to 25.
-            sum_sentences_count (int, optional): Sentences count in output annotation. Defaults to 2.
-            sum_max_length (int, optional): Maximum number of symbols for annotation
+            max_num_faces (Optional[int]): Maximum number of faces to detect. Defaults to 10.
+            frame_per_second (Optional[int]): Frame rate for the face detector. Defaults to 3.
+            min_cluster_samples (Optional[int]): Minimum number of samples for clustering. Defaults to 25.
+            max_eps (Optional[int]): The maximum distance between two faces. Defaults to 2.
+            sr (Optional[int]): Sample rate. Defaults to 16000.
+            phrase_duration (Optional[int]): Length of intervals for extracting phrases from speech. Defaults to 60.
+            lang (Optional[str]): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
+            get_summary (Optional[bool]): Whether or not to annotate the transcribed speech fragments. Defaults to True.
+            summary_max_length (Optional[int]): Maximum number of tokens in the generated text. Defaults to 25.
+            summary_percent (Optional[int]): Maximum annotation percentage of original text size. Defaults to 25.
+            sum_sentences_count (Optional[int]): Sentences count in output annotation. Defaults to 2.
+            sum_max_length (Optional[int]): Maximum number of symbols for annotation
                 in output annotation. Defaults to 300.
-            sum_over_chared_postfix (str, optional): End of line character for annotation
+            sum_over_chared_postfix (Optional[str]): End of line character for annotation
                 when truncated. Defaults to "...".
-            sum_allowed_punctuation (List, optional): Allowed punctuation for annotation.
-            output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
-            output_img_size (int | Tuple, optional): Size of faces extracted from video. Defaults to 512.
-            drop_extra (bool, optional): Remove intermediate features from the final results. Defaults to True.
+            sum_allowed_punctuation (Optional[List]): Allowed punctuation for annotation.
+            output_dir (Optional[Union[str, PathLike, None]]): Path to the folder for saving results. Defaults to None.
+            output_img_size (Optional[Union[int, Tuple]]): Size of faces extracted from video. Defaults to 512.
+            drop_extra (Optional[bool]): Remove intermediate features from the final results. Defaults to True.
         """
         self.video_path = video_path
         self.cache_capacity = cache_capacity
