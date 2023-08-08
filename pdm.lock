@@ -943,21 +943,6 @@ requires_python = ">=3.7"
 summary = "More routines for operating on iterables, beyond itertools"
 
 [[package]]
-name = "moviepy"
-version = "1.0.3"
-summary = "Video editing with Python"
-dependencies = [
-    "decorator<5.0,>=4.0.2",
-    "imageio-ffmpeg>=0.2.0; python_version >= \"3.4\"",
-    "imageio<3.0,>=2.5; python_version >= \"3.4\"",
-    "numpy; python_version >= \"2.7\"",
-    "numpy>=1.17.3; python_version != \"2.7\"",
-    "proglog<=1.0.0",
-    "requests<3.0,>=2.8.1",
-    "tqdm<5.0,>=4.11.2",
-]
-
-[[package]]
 name = "mpld3"
 version = "0.3"
 summary = "D3 Viewer for Matplotlib"
@@ -3579,9 +3564,6 @@ content_hash = "sha256:a61009ab6b10861257bf753dc6b3a61925e75fc1e6cca63dbc3826887
 "more-itertools 9.1.0" = [
     {url = "https://files.pythonhosted.org/packages/2e/d0/bea165535891bd1dcb5152263603e902c0ec1f4c9a2e152cc4adff6b3a38/more-itertools-9.1.0.tar.gz", hash = "sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d"},
     {url = "https://files.pythonhosted.org/packages/85/01/e2678ee4e0d7eed4fd6be9e5b043fff9d22d245d06c8c91def8ced664189/more_itertools-9.1.0-py3-none-any.whl", hash = "sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3"},
-]
-"moviepy 1.0.3" = [
-    {url = "https://files.pythonhosted.org/packages/18/54/01a8c4e35c75ca9724d19a7e4de9dc23f0ceb8769102c7de056113af61c3/moviepy-1.0.3.tar.gz", hash = "sha256:2884e35d1788077db3ff89e763c5ba7bfddbd7ae9108c9bc809e7ba58fa433f5"},
 ]
 "mpld3 0.3" = [
     {url = "https://files.pythonhosted.org/packages/91/95/a52d3a83d0a29ba0d6898f6727e9858fe7a43f6c2ce81a5fe7e05f0f4912/mpld3-0.3.tar.gz", hash = "sha256:4d455884a211bf99b37ecc760759435c7bb6a5955de47d8daf4967e301878ab7"},

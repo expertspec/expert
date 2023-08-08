@@ -13,8 +13,25 @@ from expert.data.annotation.speech_to_text import get_phrases
 
 
 class ContradictionDetector:
-    """Class for working with detector of contradiction."""
+    """Class for working with detector of contradiction.
 
+    Args:
+        transcription_path (str | PathLike): Path to JSON file with words from transcribation.
+        video_path (str | PathLike): Path to local video file.
+        lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
+        device (str, optional): Device type on local machine (GPU recommended). Defaults to None.
+        output_dir (str | PathLike): Path to save JSON with information about contradictions.
+        chosen_intervals (list[int], optional): Flags for intervals for analyzis. Defaults to [].
+            For default settings will be analyzed full text.
+        interval_duration (int, optional): The length of intervals (value in seconds). Defaults to 60.
+    
+    Returns:
+        str: Path to the contradiction report.
+
+    Raises:
+        NotImplementedError: If 'lang' is not equal to 'en' or 'ru'.
+
+    """
     def __init__(
         self,
         transcription_path: str | PathLike,
@@ -25,19 +42,6 @@ class ContradictionDetector:
         chosen_intervals: List[int] = None,
         interval_duration: int = 60,
     ) -> None:
-        """Object initialization.
-         Creates instance with information about language and device.
-
-        Args:
-            transcription_path (str | PathLike): Path to JSON file with words from transcribation.
-            video_path (str | PathLike): Path to local video file.
-            lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
-            device (str, optional): Device type on local machine (GPU recommended). Defaults to None.
-            output_dir (str | PathLike): Path to save JSON with information about contradictions.
-            chosen_intervals (list[int], optional): Flags for intervals for analyzis. Defaults to [].
-                For default settings will be analyzed full text.
-            interval_duration (int, optional): The length of intervals (value in seconds). Defaults to 60.
-        """
         if lang not in ["en", "ru"]:
             raise NotImplementedError("'lang' must be 'en' or 'ru'.")
         self.lang = lang
