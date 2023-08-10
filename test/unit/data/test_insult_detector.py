@@ -8,8 +8,8 @@ from expert.core.insult import InsultDetector
 @pytest.fixture()
 def insult_detector():
     insult_detector = InsultDetector(
-        video_path="./test/unit/data/test_insult/transcription.json",
-        transcription_path="./test/unit/data/test_insult/transcription.json",
+        video_path="./test/unit/data/test_insult_data/transcription.json",
+        transcription_path="./test/unit/data/test_insult_data/transcription.json",
         lang="ru",
     )
 
