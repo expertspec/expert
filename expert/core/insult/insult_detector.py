@@ -142,7 +142,7 @@ class InsultDetector:
     def remove_stop_and_make_lemma(
         self,
         data: str,
-    ) -> list[str]:
+    ) -> str:
         """Preprocesses raw text by removing stop words and lemmatizing tokens.
 
         Args:
@@ -220,8 +220,8 @@ class InsultDetector:
 
 if __name__ == "__main__":
     ext = InsultDetector(
-        video_path="./EXPERT_NEW/text_agressive/models/transcription.json",
-        transcription_path="./EXPERT_NEW/text_agressive/models/transcription.json",
+        video_path="somepath/transcription.json",
+        transcription_path="another_somepath/transcription.json",
         lang="ru",
     )
 
