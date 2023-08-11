@@ -15,25 +15,31 @@ from expert.core.confidence.liedet.models.registry import build
 
 
 class ConfidenceDetector:
+    """Determination of expert confidence.
+
+    Args:
+        video_path (str | PathLike): Path to original video.
+        features_path (str | PathLike): Path to the result of feature extraction module.
+        face_image (str | PathLike): Path to the face image selected by user.
+        diarization_path (str | PathLike): Path to the result of diarization module.
+        output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
+    
+    Returns:
+        str: Path to the contradiction report.
+
+    Raises:
+        ffmpeg.Error if problems with convertation are detected
+    """
     def __init__(
         self,
-        video_path: str,
-        features_path: str,
-        face_image: str,
-        diarization_path: str,
+        video_path: str | PathLike,
+        features_path: str | PathLike ,
+        face_image: str | PathLike,
+        diarization_path: str | PathLike,
         device: torch.device | None = None,
         output_dir: str | PathLike | None = None,
     ) -> None:
-        """Determination of expert's confidence.
 
-        Args:
-            video_path (str): Path to original video.
-            features_path (str): Path to the result of feature extraction module.
-            face_image (str): Path to the face image selected by user.
-            diarization_path (str): Path to the result of diarization module.
-            output_dir (str): Path to the folder for saving results. Defaults to None.
-
-        """
         self._device = torch.device("cpu")
         if device is not None:
             self._device = device
