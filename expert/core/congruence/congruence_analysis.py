@@ -41,7 +41,7 @@ class CongruenceDetector:
 
     Example:
         >>> import torch
-        >>> cong_detector = CongruenceDetection(
+        >>> cong_detector = CongruenceDetector(
                 video_path="test_video.mp4",
                 features_path="temp/test_video/features.json",
                 face_image="temp/test_video/faces/0.jpg",
