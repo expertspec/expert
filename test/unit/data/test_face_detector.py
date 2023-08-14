@@ -22,7 +22,7 @@ def resnet():
 
 @pytest.fixture()
 def image():
-    image = cv2.imread("test/data/test_image.jpeg")
+    image = cv2.imread("test/assets/test_image.jpeg")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
     return image
