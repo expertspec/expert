@@ -15,7 +15,8 @@ def get_models(lang):
         return EvasiveAnswers(
             qa_model_path="mrm8488/bert-multi-cased-finetuned-xquadv1",
             ev_model_path="alenaa/ru_evasiveness",
-            classifier_path=os.path.dirname(os.path.abspath(__file__)) + "/weights/rf_evas_model_ru.pickle",
+            classifier_path=os.path.dirname(os.path.abspath(__file__))
+            + "/weights/rf_evas_model_ru.pickle",
         )
 
 
