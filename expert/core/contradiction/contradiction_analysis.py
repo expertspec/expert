@@ -102,10 +102,10 @@ class ContradictionDetector:
         return utterances
 
     def analysis(
-        self, entered_text: str, utterances: Union[str, List[str]], ind=0
+        self, entered_text: str, utterances: Union[dict, List[dict]], ind=0
     ) -> List[dict]:
         analysis_results = []
-        if isinstance(utterances, str):
+        if isinstance(utterances, dict):
             part, predict = model_tools.predict_inference(
                 entered_text,
                 utterances["text"],
