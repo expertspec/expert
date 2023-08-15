@@ -40,4 +40,3 @@ def test_cong(cong_detector):
 
     assert type(congruence) == list
     assert len(congruence) > 1
-

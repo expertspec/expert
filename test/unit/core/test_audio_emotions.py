@@ -20,4 +20,3 @@ def test_audio(model):
     assert pred[0]["audio_neutral"] == pred[0]["audio_neutral"]
     assert pred[0]["audio_happiness"] == pred[0]["audio_happiness"]
     assert sum(list(pred[0].values())) >= 0
-

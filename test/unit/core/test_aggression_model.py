@@ -84,9 +84,8 @@ def test_anger_analysis(detector):
 
     with open(full_agg_path, "r") as file:
         full_agg = json.load(file)
-    
+
     assert type(full_agg) == dict
     assert type(full_agg["video"]) == dict
     assert type(full_agg["audio"]) == dict
     assert type(full_agg["text"]) == dict
-
