@@ -21,7 +21,7 @@ class AudioAnalysis:
     def __init__(
         self,
         video_path: str | PathLike,
-        stamps: Dict | None = None,
+        stamps: Dict,
         speaker: str = "SPEAKER_00",
         sr: int = 44100,
         duration: int = 10,
@@ -30,10 +30,14 @@ class AudioAnalysis:
         """
         Args:
             video_path (str | PathLike): Path to local video file.
-            stamps (Dict, optional): Dictionary with information about detected faces.
-            speaker (str, optional): Expert selected by user. Defaults to 'SPEAKER_00'.
+            stamps (Dict, optional): Dictionary with information about detected speakers.
+            speaker (str, optional): Expert selected by user.
+                Defaults to 'SPEAKER_00'.
             sr (int, optional): Sample rate. Defaults to 44100.
-            device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
+            duration (int, optional): Length of intervals for extracting features.
+                Defaults to 10.
+            device (torch.device | None, optional): Device type on local machine (GPU recommended).
+                Defaults to None.
         """
         self.sr = sr
         if isinstance(video_path, (str, PathLike)):
