@@ -28,7 +28,7 @@ class CongruenceDetector:
         transcription_path (str | PathLike): Path to JSON file with text transcription.
         diarization_path (str | PathLike): Path to JSON file with diarization information.
         lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
-        duration: Length of intervals for extracting features. Defaults to 10.
+        duration (int, optional): Length of intervals for extracting features. Defaults to 10.
         sr (int, optional): Sample rate. Defaults to 16000.
         device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
         output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
