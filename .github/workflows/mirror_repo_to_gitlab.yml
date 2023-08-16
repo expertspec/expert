@@ -4,7 +4,8 @@ on: [push, pull_request, delete]
 
 jobs:
   git-lfs:
-    run: git config lfs.https://gitlab.actcognitive.org/itmo-nirma-code/expert.git/info/lfs.locksverify true
+    steps:
+      run: git config lfs.https://gitlab.actcognitive.org/itmo-nirma-code/expert.git/info/lfs.locksverify true
   call-nss-ops-mirror-workflow:
     uses: ITMO-NSS-team/NSS-Ops/.github/workflows/mirror-repo.yml@master
     with:
