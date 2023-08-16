@@ -3,14 +3,13 @@ name: Mirror repo to GitLab
 on: [push, pull_request, delete]
 
 jobs:
-  config-git-lfs:
-    runs-on: ubuntu-latest
-    steps:
-      - run: git config lfs.https://gitlab.actcognitive.org/itmo-nirma-code/expert.git/info/lfs.locksverify true
+
   call-nss-ops-mirror-workflow:
     uses: ITMO-NSS-team/NSS-Ops/.github/workflows/mirror-repo.yml@master
     with:
       GITLAB_URL: 'https://gitlab.actcognitive.org/itmo-nirma-code/expert'
+      steps:
+        - run: git config lfs.https://gitlab.actcognitive.org/itmo-nirma-code/expert.git/info/lfs.locksverify true
     secrets:
       GITLAB_USER: ${{ secrets.GITLAB_USER }}
       GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
