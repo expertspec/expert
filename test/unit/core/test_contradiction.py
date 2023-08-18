@@ -1,5 +1,3 @@
-import pytest
-import torch
 import json
 from expert.core.contradiction import contradiction_analysis
 from expert.data.annotation.speech_to_text import get_phrases
