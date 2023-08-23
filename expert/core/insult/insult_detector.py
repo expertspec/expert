@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import pickle
@@ -41,6 +43,7 @@ class InsultDetector:
     Args:
         video_path (str | PathLike): Path to local video file.
         transcription_path (str | PathLike): Path to JSON file with text transcription.
+        model_path (str | PathLike): Path to the model weights.
         output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
         lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
 
@@ -86,6 +89,7 @@ class InsultDetector:
         self,
         video_path: str | PathLike,
         transcription_path: str | PathLike,
+        model_path: str | PathLike = "./weights/insult",
         output_dir: str | PathLike | None = None,
         lang: str = "en",
     ):
@@ -113,10 +117,7 @@ class InsultDetector:
         # Load classifier model and text transformer
         with open(
             os.path.join(
-                os.getcwd(),
-                "EXPERT_NEW",
-                "text_agressive",
-                "models",
+                model_path,
                 f"linear_{lang}.pkl",
             ),
             "rb",
@@ -125,10 +126,7 @@ class InsultDetector:
 
         with open(
             os.path.join(
-                os.getcwd(),
-                "EXPERT_NEW",
-                "text_agressive",
-                "models",
+                model_path,
                 f"linear_{lang}_transformer.pkl",
             ),
             "rb",
