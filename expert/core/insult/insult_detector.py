@@ -9,9 +9,7 @@ from os import PathLike
 import eli5
 import numpy as np
 import spacy
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
+
 
 from expert.data.annotation.speech_to_text import get_sentences
 
