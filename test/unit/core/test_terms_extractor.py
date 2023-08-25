@@ -9,11 +9,13 @@ def ru_text():
 
     return text
 
+
 @pytest.fixture()
 def en_text():
     text = "This text contains one term - pattern"
 
     return text
+
 
 def test_ru_text_term_extractor(ru_text):
     extractor = TermsExtractor(ru_text, lang='ru')
@@ -23,6 +25,7 @@ def test_ru_text_term_extractor(ru_text):
     assert terms[0].term == "паттерн"
     assert terms[0].start_pos == 39
     assert terms[0].end_pos == 46
+
 
 def test_en_text_term_extractor(en_text):
     extractor = TermsExtractor(en_text, lang='en')
