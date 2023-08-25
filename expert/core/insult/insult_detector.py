@@ -41,7 +41,6 @@ class InsultDetector:
     Args:
         video_path (str | PathLike): Path to local video file.
         transcription_path (str | PathLike): Path to JSON file with text transcription.
-        model_path (str | PathLike): Path to the model weights.
         output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
         lang (str, optional): Speech language for text processing ['ru', 'en']. Defaults to 'en'.
 
@@ -87,7 +86,6 @@ class InsultDetector:
         self,
         video_path: str | PathLike,
         transcription_path: str | PathLike,
-        model_path: str | PathLike = "./weights/insult",
         output_dir: str | PathLike | None = None,
         lang: str = "en",
     ):
@@ -97,13 +95,17 @@ class InsultDetector:
 
         if not output_dir:
             self.basename = os.path.splitext(os.path.basename(video_path))[0]
-            self.output_dir = os.path.join(*(get_folder_order(video_path)[:-1]), "temp")
+            self.output_dir = os.path.join(
+                *(get_folder_order(video_path)[:-1]), "temp"
+            )
 
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
         if not output_dir:
-            self.output_dir = os.path.join(self.output_dir, self.basename + ".json")
+            self.output_dir = os.path.join(
+                self.output_dir, self.basename + ".json"
+            )
 
         self.lang = lang
         self.preobr = {
@@ -115,7 +117,9 @@ class InsultDetector:
         # Load classifier model and text transformer
         with open(
             os.path.join(
-                model_path,
+                os.getcwd(),
+                "weights",
+                "insult",
                 f"linear_{lang}.pkl",
             ),
             "rb",
@@ -124,7 +128,9 @@ class InsultDetector:
 
         with open(
             os.path.join(
-                model_path,
+                os.getcwd(),
+                "weights",
+                "insult",
                 f"linear_{lang}_transformer.pkl",
             ),
             "rb",
@@ -138,7 +144,7 @@ class InsultDetector:
     def remove_stop_and_make_lemma(
         self,
         data: str,
-    ) -> list[str]:
+    ) -> str:
         """Preprocesses raw text by removing stop words and lemmatizing tokens.
 
         Args:
@@ -150,7 +156,9 @@ class InsultDetector:
 
         data = re.sub(r"[^a-zA-Zа-яА-Я!?,.]", " ", data)
         my_data = self.russian_nlp(str(data.lower()))
-        tokens = " ".join([token.lemma_ for token in my_data if (not token.is_stop)])
+        tokens = " ".join(
+            [token.lemma_ for token in my_data if (not token.is_stop)]
+        )
 
         return tokens
 
@@ -170,7 +178,9 @@ class InsultDetector:
             )[0]
         else:
             verdict = self.model.predict_proba(
-                self.text_trans.transform([self.remove_stop_and_make_lemma(text)])
+                self.text_trans.transform(
+                    [self.remove_stop_and_make_lemma(text)]
+                )
             )[0]
 
         # Generate html representation of the prediction
@@ -178,7 +188,9 @@ class InsultDetector:
             self.model,
             doc=text,
             vec=self.text_trans.named_steps["vect"],
-            feature_names=self.text_trans.named_steps["vect"].get_feature_names_out(),
+            feature_names=self.text_trans.named_steps[
+                "vect"
+            ].get_feature_names_out(),
         )
 
         otv = {
@@ -216,15 +228,15 @@ class InsultDetector:
 
 if __name__ == "__main__":
     ext = InsultDetector(
-        video_path="./EXPERT_NEW/text_agressive/models/transcription.json",
-        transcription_path="./EXPERT_NEW/text_agressive/models/transcription.json",
+        video_path="somepath/transcription.json",
+        transcription_path="another_somepath/transcription.json",
         lang="ru",
     )
 
     print(
-        ext.predict("Я работаю 40 часов в неделю, для того чтобы оставаться бедным")[
-            "verdict"
-        ]
+        ext.predict(
+            "Я работаю 40 часов в неделю, для того чтобы оставаться бедным"
+        )["verdict"]
     )
 
     print(ext.predict("Ну ты и тварь, конечно.")["verdict"])
