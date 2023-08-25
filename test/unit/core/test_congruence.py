@@ -1,5 +1,7 @@
 import pytest
 
+from timm.models.layers import conv2d_same 
+import timm
 from expert.core.congruence.congruence_analysis import CongruenceDetector
 import json
 import os
