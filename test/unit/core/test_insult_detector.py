@@ -8,8 +8,8 @@ from expert.core.insult import InsultDetector
 @pytest.fixture()
 def insult_detector():
     insult_detector = InsultDetector(
-        video_path="./test/unit/data/test_insult_data/transcription.json",
-        transcription_path="./test/unit/data/test_insult_data/transcription.json",
+        video_path="./test/assets/insult_transcription.json",
+        transcription_path="./test/assets/insult_transcription.json",
         lang="ru",
     )
 
@@ -40,13 +40,15 @@ def test_predict(insult_detector):
     assert (
         insult_detector.predict(
             "Я работаю 40 часов в неделю, для того чтобы оставаться бедным"
-        )
+        )["verdict"]
         == "Text with sarcasm"
     )
 
     # Test with Russian text without insults
     assert (
-        insult_detector.predict("А тут мы можем наблюдать восходящий тренд.")["verdict"]
+        insult_detector.predict("А тут мы можем наблюдать восходящий тренд.")[
+            "verdict"
+        ]
         == "Text without insults and sarcasm"
     )
     # Empty

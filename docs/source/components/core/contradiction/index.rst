@@ -9,4 +9,4 @@ Contradiction
 
    contradiction_analysis
    contr_tools/index.rst
-   
+
