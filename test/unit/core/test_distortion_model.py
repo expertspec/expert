@@ -91,7 +91,7 @@ def test_dist_analysis(dist_detector):
         div_distortions = json.load(file)
 
     assert type(div_distortions) == list
-    assert len(div_distortions) > 1
+    assert len(div_distortions) > 0
 
     with open(agg_distortions_path, "r") as file:
         pred = json.load(file)

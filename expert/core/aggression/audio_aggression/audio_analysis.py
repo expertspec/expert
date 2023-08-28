@@ -128,7 +128,7 @@ class AudioAggression:
             part = self.audio[0][
                 elem * self.sr : (elem + self.duration) * self.sr
             ].numpy()
-            onset_env = librosa.onset.onset_strength(part, sr=self.sr)
+            onset_env = librosa.onset.onset_strength(y=part, sr=self.sr)
             tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=self.sr)[0]
             self.features[elem] = {
                 "volume": self.features[elem][0],

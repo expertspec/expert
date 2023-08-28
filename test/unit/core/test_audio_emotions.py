@@ -1,11 +1,16 @@
 import pytest
 
+import timm
+from timm.models.layers import conv2d_same
 from expert.core.congruence.audio_emotions.audio_analysis import AudioAnalysis
 
 
 @pytest.fixture()
 def model():
-    model = AudioAnalysis(video_path="test/assets/test_audio.mp3", stamps={"SPEAKER_00": [[0, 10]]})
+    model = AudioAnalysis(
+        video_path="test/assets/test_audio.mp3",
+        stamps={"SPEAKER_00": [[0, 10]]},
+    )
 
     return model
 

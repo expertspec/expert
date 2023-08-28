@@ -1,1 +1,478 @@
-[{"video_path":"dialogue.mp4","time_sec":4,"frame_index":84,"face_bbox":[[732,374],[310,310]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":-1},{"video_path":"dialogue.mp4","time_sec":10,"frame_index":238,"face_bbox":[[1083,367],[288,288]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":13,"frame_index":294,"face_bbox":[[1089,303],[273,273]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":14,"frame_index":315,"face_bbox":[[1043,404],[308,308]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":15,"frame_index":336,"face_bbox":[[1069,365],[296,296]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":27,"frame_index":630,"face_bbox":[[1056,350],[327,327]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":28,"frame_index":651,"face_bbox":[[1088,340],[298,298]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":29,"frame_index":672,"face_bbox":[[1065,374],[327,327]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":30,"frame_index":700,"face_bbox":[[1071,314],[294,294]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":31,"frame_index":721,"face_bbox":[[344,174],[270,270]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":32,"frame_index":749,"face_bbox":[[340,175],[276,276]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":32,"frame_index":763,"face_bbox":[[1049,369],[326,326]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":33,"frame_index":770,"face_bbox":[[1053,350],[332,332]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":34,"frame_index":798,"face_bbox":[[1051,357],[337,337]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":35,"frame_index":819,"face_bbox":[[1052,354],[309,309]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":36,"frame_index":840,"face_bbox":[[1059,332],[310,310]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":36,"frame_index":854,"face_bbox":[[572,242],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":45,"frame_index":1057,"face_bbox":[[557,247],[315,315]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":45,"frame_index":1064,"face_bbox":[[1072,344],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":46,"frame_index":1085,"face_bbox":[[1044,266],[281,281]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":47,"frame_index":1106,"face_bbox":[[1042,263],[286,286]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":48,"frame_index":1127,"face_bbox":[[1033,333],[320,320]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":49,"frame_index":1155,"face_bbox":[[1020,358],[335,335]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":49,"frame_index":1169,"face_bbox":[[574,257],[307,307]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":56,"frame_index":1323,"face_bbox":[[589,255],[294,294]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":57,"frame_index":1344,"face_bbox":[[588,258],[294,294]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":57,"frame_index":1358,"face_bbox":[[1002,264],[314,314]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":58,"frame_index":1372,"face_bbox":[[913,292],[321,321]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":59,"frame_index":1393,"face_bbox":[[938,296],[341,341]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":60,"frame_index":1421,"face_bbox":[[985,282],[293,293]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":61,"frame_index":1442,"face_bbox":[[1000,313],[296,296]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":61,"frame_index":1456,"face_bbox":[[580,250],[312,312]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":62,"frame_index":1463,"face_bbox":[[578,256],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":71,"frame_index":1680,"face_bbox":[[1066,242],[327,327]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":72,"frame_index":1708,"face_bbox":[[1051,199],[271,271]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":73,"frame_index":1729,"face_bbox":[[973,285],[317,317]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":74,"frame_index":1757,"face_bbox":[[972,279],[348,348]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":75,"frame_index":1778,"face_bbox":[[1007,268],[327,327]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":76,"frame_index":1799,"face_bbox":[[977,235],[321,321]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":77,"frame_index":1827,"face_bbox":[[938,275],[347,347]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":78,"frame_index":1848,"face_bbox":[[934,273],[321,321]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":78,"frame_index":1869,"face_bbox":[[586,257],[302,302]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":87,"frame_index":2065,"face_bbox":[[1029,322],[287,287]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":88,"frame_index":2086,"face_bbox":[[1014,339],[335,335]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":89,"frame_index":2114,"face_bbox":[[981,264],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":90,"frame_index":2135,"face_bbox":[[956,342],[315,315]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":90,"frame_index":2149,"face_bbox":[[540,241],[310,310]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":91,"frame_index":2163,"face_bbox":[[540,243],[312,312]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":92,"frame_index":2184,"face_bbox":[[546,262],[309,309]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":94,"frame_index":2233,"face_bbox":[[544,258],[321,321]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":95,"frame_index":2254,"face_bbox":[[536,242],[336,336]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":95,"frame_index":2268,"face_bbox":[[1085,233],[281,281]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":96,"frame_index":2282,"face_bbox":[[1069,231],[290,290]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":97,"frame_index":2303,"face_bbox":[[1051,237],[284,284]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":98,"frame_index":2331,"face_bbox":[[581,251],[301,301]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":99,"frame_index":2352,"face_bbox":[[584,254],[297,297]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":99,"frame_index":2359,"face_bbox":[[1050,313],[333,333]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":100,"frame_index":2380,"face_bbox":[[1045,319],[334,334]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":101,"frame_index":2401,"face_bbox":[[1010,303],[323,323]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":101,"frame_index":2415,"face_bbox":[[578,259],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":105,"frame_index":2499,"face_bbox":[[1143,305],[314,314]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":106,"frame_index":2520,"face_bbox":[[1149,258],[282,282]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":107,"frame_index":2548,"face_bbox":[[1092,348],[325,325]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":108,"frame_index":2569,"face_bbox":[[1112,356],[311,311]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":109,"frame_index":2590,"face_bbox":[[1125,323],[312,312]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":109,"frame_index":2597,"face_bbox":[[527,234],[334,334]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":110,"frame_index":2618,"face_bbox":[[523,235],[337,337]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":112,"frame_index":2667,"face_bbox":[[547,246],[329,329]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":112,"frame_index":2681,"face_bbox":[[1089,285],[290,290]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":113,"frame_index":2688,"face_bbox":[[1083,288],[290,290]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":114,"frame_index":2716,"face_bbox":[[1053,363],[317,317]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":114,"frame_index":2723,"face_bbox":[[561,247],[310,310]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":115,"frame_index":2737,"face_bbox":[[566,245],[292,292]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":116,"frame_index":2758,"face_bbox":[[576,257],[302,302]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":119,"frame_index":2842,"face_bbox":[[1259,314],[719,719]],"speaker_by_audio":"SPEAKER_01","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":16,"frame_index":364,"face_bbox":[[431,208],[233,233]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":17,"frame_index":385,"face_bbox":[[433,209],[234,234]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":18,"frame_index":413,"face_bbox":[[426,203],[232,232]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":18,"frame_index":420,"face_bbox":[[1089,367],[329,329]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":19,"frame_index":434,"face_bbox":[[1088,330],[311,311]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":20,"frame_index":462,"face_bbox":[[1087,335],[333,333]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":20,"frame_index":469,"face_bbox":[[396,195],[252,252]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":21,"frame_index":483,"face_bbox":[[396,194],[253,253]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":22,"frame_index":504,"face_bbox":[[403,197],[246,246]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":23,"frame_index":532,"face_bbox":[[413,203],[237,237]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":24,"frame_index":553,"face_bbox":[[410,199],[243,243]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":25,"frame_index":581,"face_bbox":[[433,200],[227,227]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":25,"frame_index":588,"face_bbox":[[1064,365],[315,315]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":26,"frame_index":602,"face_bbox":[[1056,362],[325,325]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":37,"frame_index":868,"face_bbox":[[568,244],[313,313]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":38,"frame_index":889,"face_bbox":[[585,248],[316,316]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":39,"frame_index":917,"face_bbox":[[585,255],[301,301]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":40,"frame_index":938,"face_bbox":[[584,253],[299,299]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":41,"frame_index":966,"face_bbox":[[564,245],[322,322]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":42,"frame_index":987,"face_bbox":[[566,240],[323,323]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":43,"frame_index":1008,"face_bbox":[[1029,284],[334,334]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":44,"frame_index":1036,"face_bbox":[[1095,201],[295,295]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":44,"frame_index":1043,"face_bbox":[[558,245],[318,318]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":50,"frame_index":1176,"face_bbox":[[576,259],[309,309]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":51,"frame_index":1204,"face_bbox":[[582,257],[302,302]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":52,"frame_index":1225,"face_bbox":[[584,258],[302,302]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":53,"frame_index":1253,"face_bbox":[[581,250],[309,309]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":54,"frame_index":1274,"face_bbox":[[586,243],[324,324]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":55,"frame_index":1295,"face_bbox":[[581,260],[305,305]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":63,"frame_index":1491,"face_bbox":[[567,250],[303,303]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":64,"frame_index":1512,"face_bbox":[[531,237],[323,323]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":65,"frame_index":1540,"face_bbox":[[526,238],[326,326]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":66,"frame_index":1561,"face_bbox":[[538,238],[318,318]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":66,"frame_index":1575,"face_bbox":[[1054,273],[304,304]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":67,"frame_index":1589,"face_bbox":[[1153,270],[297,297]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":68,"frame_index":1610,"face_bbox":[[1211,298],[283,283]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":68,"frame_index":1624,"face_bbox":[[560,247],[315,315]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":69,"frame_index":1631,"face_bbox":[[561,248],[312,312]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":70,"frame_index":1659,"face_bbox":[[574,263],[300,300]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":70,"frame_index":1666,"face_bbox":[[1065,243],[323,323]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":79,"frame_index":1876,"face_bbox":[[585,256],[300,300]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":80,"frame_index":1897,"face_bbox":[[582,248],[317,317]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":80,"frame_index":1918,"face_bbox":[[951,293],[308,308]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":81,"frame_index":1925,"face_bbox":[[986,238],[302,302]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":82,"frame_index":1946,"face_bbox":[[1184,341],[275,275]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":83,"frame_index":1967,"face_bbox":[[1138,317],[307,307]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":83,"frame_index":1974,"face_bbox":[[568,242],[298,298]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":84,"frame_index":1995,"face_bbox":[[548,251],[314,314]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":85,"frame_index":2016,"face_bbox":[[534,240],[327,327]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":85,"frame_index":2037,"face_bbox":[[1015,308],[317,317]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":86,"frame_index":2044,"face_bbox":[[1010,320],[325,325]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":0},{"video_path":"dialogue.mp4","time_sec":93,"frame_index":2212,"face_bbox":[[539,246],[322,322]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":102,"frame_index":2422,"face_bbox":[[585,263],[299,299]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":103,"frame_index":2450,"face_bbox":[[577,242],[288,288]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":104,"frame_index":2471,"face_bbox":[[565,249],[313,313]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":111,"frame_index":2639,"face_bbox":[[536,237],[318,318]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":1},{"video_path":"dialogue.mp4","time_sec":119,"frame_index":2842,"face_bbox":[[1259,314],[719,719]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":-1},{"video_path":"dialogue.mp4","time_sec":120,"frame_index":2863,"face_bbox":[[672,40],[347,347]],"speaker_by_audio":"SPEAKER_00","speaker_by_video":-1}]
+[
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 0,
+        "frame_index": 0,
+        "face_bbox": [
+            [
+                275,
+                173
+            ],
+            [
+                164,
+                164
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 1,
+        "frame_index": 8,
+        "face_bbox": [
+            [
+                271,
+                173
+            ],
+            [
+                167,
+                167
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 2,
+        "frame_index": 32,
+        "face_bbox": [
+            [
+                270,
+                167
+            ],
+            [
+                167,
+                167
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 3,
+        "frame_index": 56,
+        "face_bbox": [
+            [
+                268,
+                166
+            ],
+            [
+                172,
+                172
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 3,
+        "frame_index": 64,
+        "face_bbox": [
+            [
+                735,
+                266
+            ],
+            [
+                228,
+                228
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 4,
+        "frame_index": 80,
+        "face_bbox": [
+            [
+                733,
+                255
+            ],
+            [
+                226,
+                226
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 5,
+        "frame_index": 104,
+        "face_bbox": [
+            [
+                739,
+                254
+            ],
+            [
+                217,
+                217
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 5,
+        "frame_index": 112,
+        "face_bbox": [
+            [
+                248,
+                161
+            ],
+            [
+                174,
+                174
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 6,
+        "frame_index": 128,
+        "face_bbox": [
+            [
+                247,
+                158
+            ],
+            [
+                177,
+                177
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 7,
+        "frame_index": 152,
+        "face_bbox": [
+            [
+                254,
+                163
+            ],
+            [
+                171,
+                171
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 8,
+        "frame_index": 176,
+        "face_bbox": [
+            [
+                257,
+                160
+            ],
+            [
+                177,
+                177
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 9,
+        "frame_index": 208,
+        "face_bbox": [
+            [
+                265,
+                157
+            ],
+            [
+                170,
+                170
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 10,
+        "frame_index": 232,
+        "face_bbox": [
+            [
+                260,
+                164
+            ],
+            [
+                186,
+                186
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 10,
+        "frame_index": 232,
+        "face_bbox": [
+            [
+                706,
+                262
+            ],
+            [
+                247,
+                247
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 11,
+        "frame_index": 256,
+        "face_bbox": [
+            [
+                706,
+                272
+            ],
+            [
+                226,
+                226
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 12,
+        "frame_index": 280,
+        "face_bbox": [
+            [
+                707,
+                264
+            ],
+            [
+                219,
+                219
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_01",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 13,
+        "frame_index": 304,
+        "face_bbox": [
+            [
+                729,
+                270
+            ],
+            [
+                218,
+                218
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 13,
+        "frame_index": 312,
+        "face_bbox": [
+            [
+                722,
+                288
+            ],
+            [
+                233,
+                233
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 14,
+        "frame_index": 328,
+        "face_bbox": [
+            [
+                717,
+                265
+            ],
+            [
+                232,
+                232
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 15,
+        "frame_index": 352,
+        "face_bbox": [
+            [
+                717,
+                240
+            ],
+            [
+                221,
+                221
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 16,
+        "frame_index": 376,
+        "face_bbox": [
+            [
+                227,
+                149
+            ],
+            [
+                183,
+                183
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 17,
+        "frame_index": 408,
+        "face_bbox": [
+            [
+                220,
+                153
+            ],
+            [
+                186,
+                186
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 0
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 17,
+        "frame_index": 424,
+        "face_bbox": [
+            [
+                706,
+                252
+            ],
+            [
+                242,
+                242
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 18,
+        "frame_index": 432,
+        "face_bbox": [
+            [
+                704,
+                247
+            ],
+            [
+                241,
+                241
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 19,
+        "frame_index": 456,
+        "face_bbox": [
+            [
+                710,
+                259
+            ],
+            [
+                237,
+                237
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 20,
+        "frame_index": 480,
+        "face_bbox": [
+            [
+                696,
+                258
+            ],
+            [
+                234,
+                234
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 21,
+        "frame_index": 504,
+        "face_bbox": [
+            [
+                701,
+                254
+            ],
+            [
+                240,
+                240
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 1
+    },
+    {
+        "video_path": "test\/assets\/videos\/dialogue.mp4",
+        "time_sec": 21,
+        "frame_index": 512,
+        "face_bbox": [
+            [
+                378,
+                200
+            ],
+            [
+                213,
+                213
+            ]
+        ],
+        "speaker_by_audio": "SPEAKER_00",
+        "speaker_by_video": 0
+    }
+]
