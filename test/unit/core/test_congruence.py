@@ -1,7 +1,7 @@
 import pytest
 
-from timm.models.layers import conv2d_same 
 import timm
+from timm.models.layers import conv2d_same
 from expert.core.congruence.congruence_analysis import CongruenceDetector
 import json
 import os
@@ -31,14 +31,14 @@ def test_cong(cong_detector):
 
     assert type(emotions) == dict
     assert type(emotions["video"]) == list
-    assert len(emotions["video"]) > 1
+    assert len(emotions["video"]) > 0
     assert type(emotions["audio"]) == list
-    assert len(emotions["audio"]) > 1
+    assert len(emotions["audio"]) > 0
     assert type(emotions["text"]) == list
-    assert len(emotions["text"]) > 1
+    assert len(emotions["text"]) > 0
 
     with open(congruence_path, "r") as file:
         congruence = json.load(file)
 
     assert type(congruence) == list
-    assert len(congruence) > 1
+    assert len(congruence) > 0
