@@ -13,7 +13,7 @@ import expert.data.annotation.transcribe as transcribe
 def transcribe_video(
     video_path: Union[str, PathLike],
     lang: Optional[str] = "en",
-    model: Optional[str] = "server",
+    model: Optional[str] = "local",
     device: Optional[Union[torch.device, None]] = None,
 ) -> Dict:
     """Speech recognition module from video.

@@ -65,6 +65,7 @@ class CongruenceDetector:
         sr: int = 44100,
         device: torch.device | None = None,
         output_dir: str | PathLike | None = None,
+        return_path: bool = False,
     ):
         if lang not in ["en", "ru"]:
             raise NotImplementedError("'lang' must be 'en' or 'ru'.")
@@ -91,6 +92,8 @@ class CongruenceDetector:
             self.temp_path = os.path.join("temp", basename)
         if not os.path.exists(self.temp_path):
             os.makedirs(self.temp_path)
+
+        self.return_path = return_path
 
     @property
     def device(self) -> torch.device:
@@ -194,15 +197,19 @@ class CongruenceDetector:
         emotions_data["audio"] = audio_data.to_dict(orient="records")
         emotions_data["text"] = text_data.to_dict(orient="records")
 
-        with open(
-            os.path.join(self.temp_path, "emotions.json"), "w"
-        ) as filename:
-            json.dump(emotions_data, filename)
+        if self.return_path:
+            with open(
+                os.path.join(self.temp_path, "emotions.json"), "w"
+            ) as filename:
+                json.dump(emotions_data, filename)
 
-        cong_data[["video_path", "time_sec", "congruence"]].to_json(
-            os.path.join(self.temp_path, "congruence.json"), orient="records"
-        )
+            cong_data[["video_path", "time_sec", "congruence"]].to_json(
+                os.path.join(self.temp_path, "congruence.json"),
+                orient="records",
+            )
 
-        return os.path.join(self.temp_path, "emotions.json"), os.path.join(
-            self.temp_path, "congruence.json"
-        )
+            return os.path.join(self.temp_path, "emotions.json"), os.path.join(
+                self.temp_path, "congruence.json"
+            )
+        else:
+            return {"emotions": emotions_data, "congruence": cong_data}
