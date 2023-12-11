@@ -56,7 +56,7 @@ class SpeakerDiarization:
         if device is not None:
             self._device = device
 
-        token = "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"  # FIXME убрать харкод пароля # nosec
+        token = "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"
         self.pipeline = Pipeline.from_pretrained(
             "pyannote/speaker-diarization@2.1", use_auth_token=token
         )
