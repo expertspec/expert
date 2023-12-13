@@ -158,6 +158,7 @@ def between_timestamps(all_words: List, start: float, end: float) -> str:
         return [lowIdx, highIdx]
 
     assert start >= 0, "Innapropriate start stamp (negative value)"
+    assert end <= all_words[-1]["end"], "Innapropriate end stamp (out of video)"
 
     starts = [elem["start"] for elem in all_words]
     ends = [elem["end"] for elem in all_words]

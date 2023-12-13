@@ -15,6 +15,7 @@ def cong_detector():
         face_image="test/assets/videos/dialogue/0.jpg",
         transcription_path="test/assets/videos/dialogue/transcription.json",
         diarization_path="test/assets/videos/dialogue/diarization.json",
+        return_path=True,
     )
 
     return cong_detector

@@ -32,6 +32,7 @@ class CongruenceDetector:
         sr (int, optional): Sample rate. Defaults to 16000.
         device (torch.device | None, optional): Device type on local machine (GPU recommended). Defaults to None.
         output_dir (str | Pathlike | None, optional): Path to the folder for saving results. Defaults to None.
+        return_path (bool): flag to define the return mode for get_congruence. True is for path, False is for dict. Defaults to False
 
     Returns:
         Tuple[str, str]: Paths to the emotion and congruence reports.
@@ -203,10 +204,12 @@ class CongruenceDetector:
             ) as filename:
                 json.dump(emotions_data, filename)
 
-            cong_data[["video_path", "time_sec", "congruence"]].to_json(
-                os.path.join(self.temp_path, "congruence.json"),
-                orient="records",
-            )
+        cong_data[["video_path", "time_sec", "congruence"]].to_json(
+            os.path.join(self.temp_path, "congruence.json"),
+            orient="records",
+        )
+
+        if self.return_path:
 
             return os.path.join(self.temp_path, "emotions.json"), os.path.join(
                 self.temp_path, "congruence.json"
