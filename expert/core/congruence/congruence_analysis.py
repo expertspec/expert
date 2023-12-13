@@ -198,10 +198,11 @@ class CongruenceDetector:
         emotions_data["audio"] = audio_data.to_dict(orient="records")
         emotions_data["text"] = text_data.to_dict(orient="records")
 
-        with open(
-            os.path.join(self.temp_path, "emotions.json"), "w"
-        ) as filename:
-            json.dump(emotions_data, filename)
+        if self.return_path:
+            with open(
+                os.path.join(self.temp_path, "emotions.json"), "w"
+            ) as filename:
+                json.dump(emotions_data, filename)
 
         cong_data[["video_path", "time_sec", "congruence"]].to_json(
             os.path.join(self.temp_path, "congruence.json"),
@@ -209,6 +210,7 @@ class CongruenceDetector:
         )
 
         if self.return_path:
+
             return os.path.join(self.temp_path, "emotions.json"), os.path.join(
                 self.temp_path, "congruence.json"
             )
