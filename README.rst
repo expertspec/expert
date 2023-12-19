@@ -41,7 +41,6 @@ Table of Contents
 - `Expert Applications <Expert Applications_>`_
 - `Requirements <Requirements_>`_
 - `Installation <Installation_>`_
-- `How to Use <How to Use_>`_
 - `Documentation <Documentation_>`_
 - `Publications About Expert <Publications About Expert_>`_
 - `Acknowledgments <Acknowledgments_>`_
