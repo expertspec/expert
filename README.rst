@@ -10,7 +10,7 @@
    * - package
      - | |py_9|
    * - tests
-     - | |build| |codecov|
+     - | |build|
    * - docs
      - | |docs|
    * - license
@@ -131,12 +131,6 @@ Run pre-commited hooks:
     $ pre-commit run --all-files (all hooks for all changes)
     $ pre-commit run <hook_name> (specified hook)
 
-How to Use
-==========
-
-Describe examples how it should work and should be used.
-Images, GIFs and code cells are welcome.
-
 Documentation
 =============
 
@@ -166,7 +160,7 @@ Supported by
     :align: center
     :alt: ITMO university logo
 
-Funding research project No. 622279 "Development of a service for assessing the validity of expert opinion based on dynamic intelligent analysis of video content".
+The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) of [ITMO University](https://itmo.ru/) as part of the plan of the center's program: Development and testing of an experimental prototype of the library of strong AI algorithms in terms of the point of view of hybrid decision-making based on the interaction of AI and the decision-maker based on models of professional behavior and cognitive processes of decision-maker in difficult to formalize tasks with high uncertainty.
 
 Contacts
 ========
@@ -215,9 +209,6 @@ Citation
 .. |itmo| image:: docs/img/en/ITMO_badge.svg
    :alt: Acknowledgement ITMO
    :target: https://itmo.ru/
-
-.. |codecov| image:: https://codecov.io/gh/expertspec/expert/branch/main/graph/badge.svg?token=OLKZESJUOY
-   :target: https://codecov.io/gh/expertspec/expert
 
 .. |build| image:: https://github.com/expertspec/expert/actions/workflows/build_with_codecov.yml/badge.svg?branch=main
    :alt: Build Status
