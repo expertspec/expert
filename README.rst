@@ -17,6 +17,8 @@
      - | |license|
    * - languages
      - | |eng| |rus|
+   * - mirror
+     - | |gitlab|
    * - acknowledgments
      - | |itmo|
 .. end-badges
@@ -216,3 +218,7 @@ Citation
 .. |docs| image:: https://readthedocs.org/projects/expertspec/badge/?version=latest
     :target: https://expertspec.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
+
+.. |gitlab| image:: https://camo.githubusercontent.com/9bd7b8c5b418f1364e72110a83629772729b29e8f3393b6c86bff237a6b784f6/68747470733a2f2f62616467656e2e6e65742f62616467652f6769746c61622f6d6972726f722f6f72616e67653f69636f6e3d6769746c6162
+   :alt: GitLab mirror for this repository
+   :target: https://gitlab.actcognitive.org/itmo-nirma-code/expert
