@@ -30,7 +30,7 @@ Expert Features
 
 The library was developed as part of a research project funded from the centralized funds of ITMO University.
 
-.. image:: docs/img/en/diagram_en_2.png
+.. image:: docs/en/diagram_en_2.png
     :width: 750px
     :align: center
     :alt: Expert Diagram in English
