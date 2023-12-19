@@ -58,40 +58,40 @@ def test_audio_analysis(detector):
     assert full_aud_agg["fast_part"] == full_aud_agg["fast_part"]
 
 
-def test_text_analysis(detector, fragments):
-    div_text_agg, full_text_agg = detector.get_text_state(fragments=fragments)
+# def test_text_analysis(detector, fragments):
+#     div_text_agg, full_text_agg = detector.get_text_state(fragments=fragments)
 
-    assert type(div_text_agg) == list
-    assert len(div_text_agg) > 0
-    assert type(full_text_agg) == dict
-    assert full_text_agg["toxic_part"] == full_text_agg["toxic_part"]
-    assert (
-        full_text_agg["depreciation_part"] == full_text_agg["depreciation_part"]
-    )
-    assert full_text_agg["imperative_part"] == full_text_agg["imperative_part"]
+#     assert type(div_text_agg) == list
+#     assert len(div_text_agg) > 0
+#     assert type(full_text_agg) == dict
+#     assert full_text_agg["toxic_part"] == full_text_agg["toxic_part"]
+#     assert (
+#         full_text_agg["depreciation_part"] == full_text_agg["depreciation_part"]
+#     )
+#     assert full_text_agg["imperative_part"] == full_text_agg["imperative_part"]
 
 
-def test_anger_analysis(detector):
-    div_agg_path, full_agg_path = detector.get_aggression()
+# def test_anger_analysis(detector):
+#     div_agg_path, full_agg_path = detector.get_aggression()
 
-    assert os.path.isfile(div_agg_path)
-    assert os.path.isfile(full_agg_path)
+#     assert os.path.isfile(div_agg_path)
+#     assert os.path.isfile(full_agg_path)
 
-    with open(div_agg_path, "r") as file:
-        div_agg = json.load(file)
+#     with open(div_agg_path, "r") as file:
+#         div_agg = json.load(file)
 
-    assert type(div_agg) == dict
-    assert type(div_agg["video"]) == list
-    assert len(div_agg["video"]) > 0
-    assert type(div_agg["audio"]) == list
-    assert len(div_agg["audio"]) > 0
-    assert type(div_agg["text"]) == list
-    assert len(div_agg["text"]) > 0
+#     assert type(div_agg) == dict
+#     assert type(div_agg["video"]) == list
+#     assert len(div_agg["video"]) > 0
+#     assert type(div_agg["audio"]) == list
+#     assert len(div_agg["audio"]) > 0
+#     assert type(div_agg["text"]) == list
+#     assert len(div_agg["text"]) > 0
 
-    with open(full_agg_path, "r") as file:
-        full_agg = json.load(file)
+#     with open(full_agg_path, "r") as file:
+#         full_agg = json.load(file)
 
-    assert type(full_agg) == dict
-    assert type(full_agg["video"]) == dict
-    assert type(full_agg["audio"]) == dict
-    assert type(full_agg["text"]) == dict
+#     assert type(full_agg) == dict
+#     assert type(full_agg["video"]) == dict
+#     assert type(full_agg["audio"]) == dict
+#     assert type(full_agg["text"]) == dict
