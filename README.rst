@@ -160,7 +160,7 @@ Supported by
     :align: center
     :alt: ITMO university logo
 
-The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) of [ITMO University](https://itmo.ru/) as part of the plan of the center's program: Development and testing of an experimental prototype of the library of strong AI algorithms in terms of the point of view of hybrid decision-making based on the interaction of AI and the decision-maker based on models of professional behavior and cognitive processes of decision-maker in difficult to formalize tasks with high uncertainty.
+The study is supported by the `Research Center Strong Artificial Intelligence in Industry <https://sai.itmo.ru/>`_ of `ITMO University <https://itmo.ru/>`_ as part of the plan of the center's program: Development and testing of an experimental prototype of the library of strong AI algorithms in terms of the point of view of hybrid decision-making based on the interaction of AI and the decision-maker based on models of professional behavior and cognitive processes of decision-maker in difficult to formalize tasks with high uncertainty.
 
 Contacts
 ========
