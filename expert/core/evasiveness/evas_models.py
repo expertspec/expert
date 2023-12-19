@@ -15,8 +15,7 @@ def get_models(lang):
         return EvasiveAnswers(
             qa_model_path="mrm8488/bert-multi-cased-finetuned-xquadv1",
             ev_model_path="alenaa/ru_evasiveness",
-            classifier_path=os.path.dirname(os.path.abspath(__file__))
-            + "/weights/rf_evas_model_ru.pickle",
+            classifier_path="weights/evasiveness/rf_evas_model_ru.pickle",
         )
 
 
@@ -25,8 +24,7 @@ class EvasiveAnswers:
         self,
         qa_model_path="deepset/roberta-base-squad2",
         ev_model_path="alenaa/evasiveness",
-        classifier_path=os.path.dirname(os.path.abspath(__file__))
-        + "/weights/rf_evas_model.pickle",
+        classifier_path="weights/evasiveness/rf_evas_model.pickle",
     ):
         self.QA_MODEL_PATH = qa_model_path
         self.EV_MODEL_PATH = ev_model_path
