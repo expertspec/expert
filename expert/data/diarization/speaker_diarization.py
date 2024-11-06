@@ -56,7 +56,7 @@ class SpeakerDiarization:
         if device is not None:
             self._device = device
 
-        token = "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"
+        token = "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"
         self.pipeline = Pipeline.from_pretrained(
             "pyannote/speaker-diarization@2.1", use_auth_token=token
         )
@@ -85,8 +85,21 @@ class SpeakerDiarization:
                 self.annotation.write_rttm(file)
             self.stamps = rttm_to_timestamps(self.rttm_file)
         else:
-            self.stamps = self.annotation.for_json()
-            self.stamps = json_to_timestamps(self.stamps)
+            self.stamps = []
+            # self.stamps = self.annotation.for_json()
+            for segment, track, label in self.annotation.itertracks(yield_label=True):
+                # self.stamps.append({'segment': {'start': segment.start, 'end': segment.end},
+                #                 'track': track,
+                #                 'label': label})
+                self.stamps.append(
+                    {
+                        "speaker": label,
+                        "start": round(segment.start, 3),
+                        "finish":  round(segment.end, 3)
+                    }
+                )
+            # print(self.stamps)
+            # self.stamps = json_to_timestamps(self.stamps)
 
         self.stamps = separate_marks_for_speakers(self.stamps)
         self.stamps = get_rounded_intervals(self.stamps)
